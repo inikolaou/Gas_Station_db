@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from Entities import Supplier, Employee, Contract, Signs
+from Entities import Supplier, Employee, Contract, Signs, Service
 
 def supplier(request):
     names = Supplier.searchByName()
@@ -17,9 +17,14 @@ def signs(request):
     signs = Signs.retrieveAllColumns()
     return render(request, 'signs.html', {'signs': signs})
 
+def service(request):
+    services = Service.retrieveAllColumns()
+    return render(request, 'service.html', {'services': services})
+
 if __name__ == 'Database_Management.views':
     Supplier.createSupplierTable()
     Employee.createEmployeeTable()
     Contract.createContractTable()
     Signs.createSignsTable()
+    Service.createServiceTable()
     

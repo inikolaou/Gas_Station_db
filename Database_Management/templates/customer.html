@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+
+<body>
+    {% for customer in customers %}
+    <p>Email: {{customer.0}}, Fname: {{customer.1}}, Lname: {{customer.2}}, 
+        Birth_Date: {{customer.3}}, Longitude: {{customer.4}},
+        Latitude: {{customer.5}}, Remaining_Points: {{customer.6}}
+    </p>
+    {% endfor %}
+</body>
+
+</html>

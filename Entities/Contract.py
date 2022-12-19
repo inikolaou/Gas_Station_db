@@ -5,12 +5,16 @@ def createContractTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     with conn:
-        c.execute('''CREATE TABLE IF NOT EXISTS CONTRACT
-                    (Id             INTEGER     NOT NULL,
-                    Start_Date      TEXT        NOT NULL,
-                    End_Date        TEXT        NOT NULL,
-                    Salary          REAL        NOT NULL,
-                    PRIMARY KEY (Id));''')
+        try:
+            c.execute('''CREATE TABLE CONTRACT
+                        (Id             INTEGER     NOT NULL,
+                        Start_Date      TEXT        NOT NULL,
+                        End_Date        TEXT        NOT NULL,
+                        Salary          REAL        NOT NULL,
+                        PRIMARY KEY (Id));''')
+            insertFromCsv("Datasets/contract.csv")
+        except Exception as e:
+            pass # Database created
     conn.close()
 
 def insertFromCsv(fileName):

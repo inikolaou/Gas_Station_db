@@ -5,14 +5,18 @@ def createSupplierTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     with conn:
-        c.execute('''CREATE TABLE IF NOT EXISTS SUPPLIER
-                    (Email TEXT NOT NULL,
-                    Fname  TEXT NOT NULL,
-                    Lname  TEXT NOT NULL,
-                    Phone_Number INTEGER,
-                    Longitude REAL NOT NULL,
-                    Latitude REAL NOT NULL,
+        try:
+            c.execute('''CREATE TABLE SUPPLIER
+                        (Email TEXT NOT NULL,
+                        Fname  TEXT NOT NULL,
+                        Lname  TEXT NOT NULL,
+                        Phone_Number INTEGER,
+                        Longitude REAL NOT NULL,
+                        Latitude REAL NOT NULL,
                     PRIMARY KEY (Email));''')
+            insertFromCsv("Datasets/supplier.csv")
+        except Exception as e:
+            pass # Database created
     conn.close()
 
 def insertFromCsv(fileName):

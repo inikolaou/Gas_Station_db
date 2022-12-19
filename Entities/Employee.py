@@ -5,25 +5,29 @@ def createEmployeeTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     with conn:
-        c.execute('''CREATE TABLE IF NOT EXISTS EMPLOYEE
-                    (Ssn            TEXT        NOT NULL        ,
-                    Fname           TEXT        NOT NULL        ,
-                    Lname           TEXT        NOT NULL        ,
-                    Birth_Date      TEXT        NOT NULL        ,
-                    Phone_Number    INTEGER     NOT NULL        ,
-                    Email           TEXT        NOT NULL        ,
-                    Longitude       REAL        NOT NULL        ,
-                    Latitude        REAL        NOT NULL        ,
-                    Role            TEXT        NOT NULL        ,
-                    Hours           INTEGER     NOT NULL        ,
-                    Super_Ssn       INTEGER     DEFAULT     NULL,
-                    GS_Longitude    REAL        NOT NULL        ,
-                    GS_Latitude     REAL        NOT NULL        ,
-                    PRIMARY KEY (Ssn)                           ,
-                    FOREIGN KEY (Super_Ssn)    REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL,
-                    FOREIGN KEY (GS_Longitude) REFERENCES GAS_STATION(Longitude) ON UPDATE CASCADE ON DELETE SET NULL,
-                    FOREIGN KEY (GS_Latitude)  REFERENCES GAS_STATION(Latitude) ON UPDATE CASCADE ON DELETE SET NULL
-                    );''')
+        try:
+            c.execute('''CREATE TABLE EMPLOYEE
+                        (Ssn            TEXT        NOT NULL        ,
+                        Fname           TEXT        NOT NULL        ,
+                        Lname           TEXT        NOT NULL        ,
+                        Birth_Date      TEXT        NOT NULL        ,
+                        Phone_Number    INTEGER     NOT NULL        ,
+                        Email           TEXT        NOT NULL        ,
+                        Longitude       REAL        NOT NULL        ,
+                        Latitude        REAL        NOT NULL        ,
+                        Role            TEXT        NOT NULL        ,
+                        Hours           INTEGER     NOT NULL        ,
+                        Super_Ssn       INTEGER     DEFAULT     NULL,
+                        GS_Longitude    REAL        NOT NULL        ,
+                        GS_Latitude     REAL        NOT NULL        ,
+                        PRIMARY KEY (Ssn)                           ,
+                        FOREIGN KEY (Super_Ssn)    REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL,
+                        FOREIGN KEY (GS_Longitude) REFERENCES GAS_STATION(Longitude) ON UPDATE CASCADE ON DELETE SET NULL,
+                        FOREIGN KEY (GS_Latitude)  REFERENCES GAS_STATION(Latitude) ON UPDATE CASCADE ON DELETE SET NULL
+                        );''')
+            insertFromCsv("Datasets/employee.csv")
+        except Exception as e:
+            pass # Database created
     conn.close()
 
 def insertFromCsv(fileName):

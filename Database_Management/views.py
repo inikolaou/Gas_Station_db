@@ -1,13 +1,16 @@
 from django.shortcuts import render
 from Entities import Supplier, Employee, Contract, Signs, Service, IsAssignedTo, Product, Tank, Pump, Customer
 
+def index(request):
+    return render(request, 'index.html')
+
 def supplier(request):
     names = Supplier.searchByName()
     return render(request, 'supplier.html', {'names': names})
 
 def employee(request):
-    names = Employee.searchByName()
-    return render(request, 'employee.html', {'names': names})
+    data = Employee.orderEmployeesBySalaryByGasStation(3000.0)
+    return render(request, 'employee.html', {'data': data})
 
 def contract(request):
     contracts = Contract.retrieveAllColumns()

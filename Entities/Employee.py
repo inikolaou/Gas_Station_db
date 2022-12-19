@@ -75,3 +75,18 @@ def searchByName():
     data = c.fetchall()
     conn.close()
     return data
+
+def orderEmployeesBySalaryByGasStation(salary):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+    SELECT E.GS_Longitude, Essn, Salary
+    FROM EMPLOYEE as E, SIGNS JOIN CONTRACT ON Contract_Id=Id
+    WHERE Essn=E.Ssn
+    GROUP BY E.GS_Longitude, Essn
+    HAVING Salary = ?
+    ORDER BY E.GS_Longitude;
+    ''', (float(salary),))
+    data = c.fetchall()
+    conn.close()
+    return data

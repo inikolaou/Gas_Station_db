@@ -9,8 +9,8 @@
 </head>
 
 <body>
-    {% for i in names %}
-    <p>Hello {{i.0}}!!</p>
+    {% for columns in data %}
+    <p>GS_Longitude {{columns.0}} Essn {{columns.1}} Salary {{columns.2}}</p>
     {% endfor %}
 </body>
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from Entities import Supplier, Employee, Contract, Signs, Service
+from Entities import Supplier, Employee, Contract, Signs, Service, IsAssignedTo
 
 def supplier(request):
     names = Supplier.searchByName()
@@ -21,10 +21,15 @@ def service(request):
     services = Service.retrieveAllColumns()
     return render(request, 'service.html', {'services': services})
 
+def isAssignedTo(request):
+    assignments = IsAssignedTo.retrieveAllColumns()
+    return render(request, 'isAssignedTo.html', {'assignments': assignments})
+
 if __name__ == 'Database_Management.views':
     Supplier.createSupplierTable()
     Employee.createEmployeeTable()
     Contract.createContractTable()
     Signs.createSignsTable()
     Service.createServiceTable()
+    IsAssignedTo.createIsAssignedToTable()
     

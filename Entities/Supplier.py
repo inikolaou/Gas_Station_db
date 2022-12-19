@@ -8,10 +8,10 @@ def createSupplierTable():
         c.execute('''CREATE TABLE IF NOT EXISTS SUPPLIER
                     (Email TEXT NOT NULL,
                     Fname  TEXT NOT NULL,
-                    LName  TEXT NOT NULL,
+                    Lname  TEXT NOT NULL,
                     Phone_Number INTEGER,
-                    Longitude INTEGER NOT NULL,
-                    Latitude INTEGER NOT NULL,
+                    Longitude REAL NOT NULL,
+                    Latitude REAL NOT NULL,
                     PRIMARY KEY (Email));''')
     conn.close()
 

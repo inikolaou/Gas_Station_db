@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+
+<body>
+    {% for tank in tanks %}
+    <p>Id: {{tank.0}}, last_check: {{tank.1}}, capacity: {{tank.2}}, quantity: {{tank.3}}, product_id: {{tank.4}}
+        GS_longitude: {{tank.5}}, GS_latitude: {{tank.6}},
+    </p>
+    {% endfor %}
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from Entities import Supplier, Employee, Contract, Signs, Service, IsAssignedTo, Product
+from Entities import Supplier, Employee, Contract, Signs, Service, IsAssignedTo, Product, Tank
 
 def supplier(request):
     names = Supplier.searchByName()
@@ -29,6 +29,10 @@ def product(request):
     products = Product.retrieveAllColumns()
     return render(request, 'product.html', {'products': products})
 
+def tank(request):
+    tanks = Tank.retrieveAllColumns()
+    return render(request, 'tank.html', {'tanks': tanks})
+
 if __name__ == 'Database_Management.views':
     Supplier.createSupplierTable()
     Employee.createEmployeeTable()
@@ -37,4 +41,5 @@ if __name__ == 'Database_Management.views':
     Service.createServiceTable()
     IsAssignedTo.createIsAssignedToTable()
     Product.createProductTable()
+    Tank.createTankTable()
     

@@ -10,4 +10,5 @@ urlpatterns = [
     path('services/', views.service, name='service'),
     path('is_assigned_to/', views.isAssignedTo, name='isAssignedTo'),
     path('products/', views.product, name='product'),
+    path('tanks/', views.tank, name='tank'),
 ]

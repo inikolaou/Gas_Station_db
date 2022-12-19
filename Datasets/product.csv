@@ -1,0 +1,30 @@
+ID,Name,Type,Price,Corresponding_Points
+1,95 Unleaded,Fuel,1.957,10
+2,98 Super Unleaded,Fuel,2.002,20
+3,100 Ultimate Unleaded,Fuel,2.177,30
+4,Diesel,Fuel,1.899,10
+5,Ultimate Diesel,Fuel,1.989,20
+6,Natural Gas,Fuel,1.232,10
+7,Coolant,Special Products,39.99,50
+8,Brake Fluid,Special Products,29.99,50
+9,Antifreeze,Special Products,10.99,50
+10,Screenwash,Special Products,5.99,50
+11,Battery Fluid,Special Products,9.99,60
+12,Deionized Water,Special Products,3.99,70
+13,Penetrating Oil Spray,Special Products,2.99,60
+14,Map and Guide,Special Products,4.99,70
+15,Car Accessory,Special Products,13.99,60
+16,Lubricant,Special Products,3.99,50
+17,Coffee,Minimarket Products,3.50,10
+18,Water Bottle,Minimarket Products,0.50,10
+19,Energy Drink,Minimarket Products,1.00,10
+20,Juice,Minimarket Products,1.50,20
+21,Soft Drink,Minimarket Products,1.00,20
+22,Snack,Minimarket Products,2.50,20
+23,Gum,Minimarket Products,0.30,10
+24,Candy,Minimarket Products,0.50,10
+25,Telephone Card,Minimarket Products,15.00,10
+26,Internet Card,Minimarket Products,10.00,20
+27,Tissues,Minimarket Products,1.00,20
+28,Beer,Minimarket Products,3.00,20
+29,Cigarettes,Minimarket Products,6.70,10

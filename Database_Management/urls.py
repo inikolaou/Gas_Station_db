@@ -9,4 +9,5 @@ urlpatterns = [
     path('signs/', views.signs, name='signs'),
     path('services/', views.service, name='service'),
     path('is_assigned_to/', views.isAssignedTo, name='isAssignedTo'),
+    path('products/', views.product, name='product'),
 ]

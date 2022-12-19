@@ -11,4 +11,5 @@ urlpatterns = [
     path('is_assigned_to/', views.isAssignedTo, name='isAssignedTo'),
     path('products/', views.product, name='product'),
     path('tanks/', views.tank, name='tank'),
+    path('pumps/', views.pump, name='pump'),
 ]

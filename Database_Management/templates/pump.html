@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+
+<body>
+    {% for pump in pumps %}
+    <p>Id: {{pump.0}}, Current_State: {{pump.1}}, Last_Check_Up: {{pump.2}}, Nozzle_Last_Check_up: {{pump.3}},
+        Product_Quantity: {{pump.4}},
+        Tank_Id: {{pump.5}}, T_GS_longitude: {{pump.6}}, T_GS_latitude: {{pump.7}}
+    </p>
+    {% endfor %}
+</body>
+
+</html>

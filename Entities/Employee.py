@@ -76,6 +76,14 @@ def searchByName():
     conn.close()
     return data
 
+def retrieveAllColumns():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select * from EMPLOYEE")
+    data = c.fetchall()
+    conn.close()
+    return data
+
 def orderEmployeesBySalaryByGasStation(salary):
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()

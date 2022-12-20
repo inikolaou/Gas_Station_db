@@ -9,8 +9,8 @@ def supplier(request):
     return render(request, 'supplier.html', {'names': names})
 
 def employee(request):
-    data = Employee.orderEmployeesBySalaryByGasStation(3000.0)
-    return render(request, 'employee.html', {'data': data})
+    employees = Employee.retrieveAllColumns()
+    return render(request, 'employee.html', {'employees': employees})
 
 def contract(request):
     contracts = Contract.retrieveAllColumns()

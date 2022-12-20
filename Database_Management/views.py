@@ -9,6 +9,28 @@ def supplier(request):
     return render(request, 'supplier.html', {'names': names})
 
 def employee(request):
+    if request.method=="POST":
+        ssn = request.POST.get('ssn', False)
+        first_name = request.POST['first-name']
+        last_name = request.POST['last-name']
+        email = request.POST['email']
+        birth_date = request.POST['birth-date']
+        phone_number = request.POST['phone-number']
+        longitude = request.POST['longitude']
+        latitude = request.POST['latitude']
+        role = request.POST['role']
+        hours = request.POST['hours']
+        super_ssn = request.POST['super-ssn']
+        gs_longitude = request.POST['gs-longitude']
+        gs_latitude = request.POST['gs-latitude']
+
+        try:
+            Employee.update(ssn, first_name, last_name, email, birth_date,
+            phone_number, longitude, latitude, role, hours, super_ssn,
+            gs_longitude, gs_latitude)
+        except Exception as e:
+            print("View exception")
+            print(e)
     employees = Employee.retrieveAllColumns()
     return render(request, 'employee.html', {'employees': employees})
 

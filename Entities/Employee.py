@@ -50,7 +50,7 @@ def insertInto(ssn, fname, lname, email, birth_date, phone_number, longitude, la
             try:
                 c.execute('''INSERT INTO EMPLOYEE
                             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);''', 
-                            (ssn, fname, lname, email, birth_date, phone_number,
+                            (ssn, fname, lname, birth_date, phone_number, email,
                             longitude, latitude, role, hours, super_ssn,
                             gs_longitude, gs_latitude))
             except Exception as e:
@@ -62,11 +62,30 @@ def insertInto(ssn, fname, lname, email, birth_date, phone_number, longitude, la
             try:
                 c.execute('''INSERT INTO EMPLOYEE
                             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);''', 
-                            (ssn, fname, lname, email, birth_date, phone_number,
+                            (ssn, fname, lname, birth_date, phone_number, email,
                             longitude, latitude, role, hours, super_ssn,
                             gs_longitude, gs_latitude))
             except Exception as e:
                 pass
+
+def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitude, 
+        role, hours, super_ssn, gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE EMPLOYEE
+                        SET Fname = ?, Lname = ?, Birth_Date = ?,
+                        Phone_Number = ?, Email = ?, Longitude = ?,
+                        Latitude = ?, Role = ?, Hours = ?, Super_Ssn = ?,
+                        GS_Longitude = ?, GS_Latitude = ? WHERE Ssn = ?''', 
+                        (fname, lname, birth_date, phone_number, email,
+                        longitude, latitude, role, hours, super_ssn,
+                        gs_longitude, gs_latitude, ssn))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
 
 def searchByName():
     conn = sqlite3.connect("Gas_Station.db")

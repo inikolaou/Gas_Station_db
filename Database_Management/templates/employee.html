@@ -44,14 +44,15 @@
     </nav>
     <div id="all_employees" style="display: block;">
         <table>
+            {% csrf_token %}
             <thead>
                 <tr>
                     <th>Ssn</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Email</th>
                     <th>Birth Date</th>
                     <th>Phone Number</th>
+                    <th>Email</th>
                     <th>Longitude</th>
                     <th>Latitude</th>
                     <th>Role</th>
@@ -114,12 +115,12 @@
             <input type="number" id="gs-longitude" name="gs-longitude"><br>
             <label for="gs-latitude">GS_Latitude:</label><br>
             <input type="number" id="gs-latitude" name="gs-latitude"><br>
-            <input type="submit" value="Submit">
         </form>
     </div>
 </body>
 
 <script>
+
     function editEmployee(id) {
         // Get a reference to the table row
         const row = document.querySelector(`tr[id="${id}"]`);
@@ -129,9 +130,9 @@
         const ssn = cells[0].textContent;
         const first_name = cells[1].textContent;
         const last_name = cells[2].textContent;
-        const email = cells[3].textContent;
-        const birth_date = cells[4].textContent;
-        const phone_number = cells[5].textContent;
+        const birth_date = cells[3].textContent;
+        const phone_number = cells[4].textContent;
+        const email = cells[5].textContent;
         const longitude = cells[6].textContent;
         const latitude = cells[7].textContent;
         const role = cells[8].textContent;
@@ -139,23 +140,21 @@
         const super_ssn = cells[10].textContent;
         const gs_longitude = cells[11].textContent;
         const gs_latitude = cells[12].textContent;
-
+        
         // Replace the cell elements with form inputs
-        cells[0].innerHTML = `<input type="text" value="${ssn}">`;
-        cells[1].innerHTML = `<input type="text" value="${first_name}">`;
-        cells[2].innerHTML = `<input type="text" value="${last_name}">`;
-        cells[3].innerHTML = `<input type="email" value="${email}">`;
-        cells[4].innerHTML = 
-        `<input type="hidden" name="originalDate" value="${birth_date}">
-        <input type="date" name="date">`
-        cells[5].innerHTML = `<input type="number" value="${phone_number}">`;
-        cells[6].innerHTML = `<input type="number" value="${longitude}">`;
-        cells[7].innerHTML = `<input type="number" value="${latitude}">`;
-        cells[8].innerHTML = `<input type="text" value="${role}">`;
-        cells[9].innerHTML = `<input type="number" value="${hours}">`;
-        cells[10].innerHTML = `<input type="text" value="${super_ssn}">`;
-        cells[11].innerHTML = `<input type="number" value="${gs_longitude}">`;
-        cells[12].innerHTML = `<input type="number" value="${gs_latitude}">`;
+        cells[0].innerHTML = `<input type="text" name="ssn" value="${ssn}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="text" name="first-name" value="${first_name}">`;
+        cells[2].innerHTML = `<input type="text" name="last-name" value="${last_name}">`;
+        cells[3].innerHTML = `<input type="text" name="birth-date" value="${birth_date}">`;
+        cells[4].innerHTML = `<input type="number" name="phone-number" value="${phone_number}">`
+        cells[5].innerHTML = `<input type="email" name="email" value="${email}">`;
+        cells[6].innerHTML = `<input type="number" name="longitude" value="${longitude}">`;
+        cells[7].innerHTML = `<input type="number" name="latitude" value="${latitude}">`;
+        cells[8].innerHTML = `<input type="text" name="role" value="${role}">`;
+        cells[9].innerHTML = `<input type="number" name="hours" value="${hours}">`;
+        cells[10].innerHTML = `<input type="text" name="super-ssn" value="${super_ssn}">`;
+        cells[11].innerHTML = `<input type="number" name="gs-longitude" value="${gs_longitude}">`;
+        cells[12].innerHTML = `<input type="number" name="gs-latitude" value="${gs_latitude}">`;
         cells[13].innerHTML = `<a href="#" onclick="saveEmployee('${id}')">Save</a>`;
     }
 
@@ -163,40 +162,24 @@
         // Get a reference to the table row
         const row = document.querySelector(`tr[id="${id}"]`);
 
-        // Get the values of the form inputs
-        const cells = row.querySelectorAll('td');
-        const ssn = cells[0].querySelector('input').value;
-        const first_name = cells[1].querySelector('input').value;
-        const last_name = cells[2].querySelector('input').value;
-        const email = cells[3].querySelector('input').value;
-        const birth_date = cells[4].querySelector('input').value;
-        const phone_number = cells[5].querySelector('input').value;
-        const longitude = cells[6].querySelector('input').value;
-        const latitude = cells[7].querySelector('input').value;
-        const role = cells[8].querySelector('input').value;
-        const hours = cells[9].querySelector('input').value;
-        const super_ssn = cells[10].querySelector('input').value;
-        const gs_longitude = cells[11].querySelector('input').value;
-        const gs_latitude = cells[12].querySelector('input').value;
+        const form = document.createElement('form');
+        form.method = 'POST';
 
-        // Replace the form inputs with the cell elements
-        cells[0].textContent = ssn;
-        cells[1].textContent = first_name;
-        cells[2].textContent = last_name;
-        cells[3].textContent = email;
-        cells[4].textContent = birth_date;
-        cells[5].textContent = phone_number;
-        cells[6].textContent = longitude;
-        cells[7].textContent = latitude;
-        cells[8].textContent = role;
-        cells[9].textContent = hours;
-        cells[10].textContent = super_ssn;
-        cells[11].textContent = gs_longitude;
-        cells[12].textContent = gs_latitude;
-        cells[13].innerHTML = `
-      <a href="#" onclick="editEmployee('{{employee.0}}'">Edit</a> |
-      <a href="#">Delete</a>
-    `;
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'csrfmiddlewaretoken';
+        input.value = '{{ csrf_token }}';
+
+        form.appendChild(input);
+
+        const cells = row.querySelectorAll('td');
+
+        for (let i = 0; i < cells.length; i++) {
+            form.appendChild(cells[i]);
+        }
+
+        row.parentNode.replaceChild(form, row);
+        form.submit();
     }
 </script>
 

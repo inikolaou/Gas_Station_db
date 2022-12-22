@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from Entities import Supplier, Employee, Contract, Signs, Service, IsAssignedTo, Product, Tank, Pump, Customer
+from django.shortcuts import render, redirect
+from Entities import Supplier, Employee, Contract, Signs, Service, IsAssignedTo, Product, Tank, Pump, Customer, GasStation
 
 def index(request):
     return render(request, 'index.html')
@@ -43,6 +43,10 @@ def employee(request):
     employees = Employee.retrieveAllColumns()
     return render(request, 'employee.html', {'employees': employees})
 
+def employee_delete(request, ssn):
+    Employee.delete(ssn)
+    return redirect(employee)
+
 def contract(request):
     contracts = Contract.retrieveAllColumns()
     return render(request, 'contract.html', {'contracts': contracts})
@@ -75,6 +79,10 @@ def customer(request):
     customers = Customer.retrieveAllColumns()
     return render(request, 'customer.html', {'customers': customers})
 
+def gasStation(request):
+    gasStations = GasStation.retrieveAllColumns()
+    return render(request, 'gasStation.html', {'gasStations': gasStations})
+
 if __name__ == 'Database_Management.views':
     Supplier.createSupplierTable()
     Employee.createEmployeeTable()
@@ -86,4 +94,5 @@ if __name__ == 'Database_Management.views':
     Tank.createTankTable()
     Pump.createPumpTable()
     Customer.createCustomerTable()
+    GasStation.createGasStationTable()
     

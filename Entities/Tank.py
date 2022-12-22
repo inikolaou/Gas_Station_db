@@ -14,10 +14,9 @@ def createTankTable():
                         Prod_Id                     INTEGER     NOT NULL,
                         GS_Longitude                REAL        NOT NULL,
                         GS_Latitude                 REAL        NOT NULL,
-                        PRIMARY KEY (Id, GS_Longitude, GS_Latitude)
+                        PRIMARY KEY (Id, GS_Longitude, GS_Latitude),
                         FOREIGN KEY (Prod_Id)     REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE SET NULL,
-                        FOREIGN KEY (GS_Longitude) REFERENCES GAS_STATION(Longitude) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (GS_Latitude)  REFERENCES GAS_STATION(Latitude) ON UPDATE CASCADE ON DELETE CASCADE
+                        FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
             insertFromCsv("Datasets/tank.csv")
         except Exception as e:

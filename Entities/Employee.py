@@ -17,13 +17,12 @@ def createEmployeeTable():
                         Latitude        REAL        NOT NULL        ,
                         Role            TEXT        NOT NULL        ,
                         Hours           INTEGER     NOT NULL        ,
-                        Super_Ssn       INTEGER     DEFAULT     NULL,
+                        Super_Ssn       TEXT        DEFAULT     NULL,
                         GS_Longitude    REAL        NOT NULL        ,
                         GS_Latitude     REAL        NOT NULL        ,
                         PRIMARY KEY (Ssn)                           ,
                         FOREIGN KEY (Super_Ssn)    REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL,
-                        FOREIGN KEY (GS_Longitude) REFERENCES GAS_STATION(Longitude) ON UPDATE CASCADE ON DELETE SET NULL,
-                        FOREIGN KEY (GS_Latitude)  REFERENCES GAS_STATION(Latitude) ON UPDATE CASCADE ON DELETE SET NULL
+                        FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE SET NULL
                         );''')
             insertFromCsv("Datasets/employee.csv")
         except Exception as e:
@@ -54,7 +53,7 @@ def insertInto(ssn, fname, lname, email, birth_date, phone_number, longitude, la
                             longitude, latitude, role, hours, super_ssn,
                             gs_longitude, gs_latitude))
             except Exception as e:
-                pass # tuple already added
+                print(e) # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -84,6 +83,18 @@ def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitu
                         gs_longitude, gs_latitude, ssn))
         except Exception as e:
             print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(ssn):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''DELETE FROM
+                        EMPLOYEE WHERE
+                        Ssn = ?''', (ssn,))
+        except Exception as e:
             print(e)
     conn.close()
 

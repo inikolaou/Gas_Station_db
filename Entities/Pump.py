@@ -15,10 +15,9 @@ def createPumpTable():
                         Tank_Id                     INTEGER     NOT NULL,
                         GS_Longitude                REAL        NOT NULL,
                         GS_Latitude                 REAL        NOT NULL,
-                        PRIMARY KEY (Id, Tank_Id, GS_Longitude, GS_Latitude)
+                        PRIMARY KEY (Id, Tank_Id, GS_Longitude, GS_Latitude),
                         FOREIGN KEY (Tank_Id)      REFERENCES TANK(Id) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (GS_Longitude) REFERENCES TANK(GS_Longitude) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (GS_Latitude)  REFERENCES TANK(GS_Latitude)  ON UPDATE CASCADE ON DELETE CASCADE
+                        FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES TANK(GS_Longitude, GS_Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
             insertFromCsv("Datasets/pump.csv")
         except Exception as e:

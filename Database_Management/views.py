@@ -24,13 +24,22 @@ def employee(request):
         gs_longitude = request.POST['gs-longitude']
         gs_latitude = request.POST['gs-latitude']
 
-        try:
-            Employee.update(ssn, first_name, last_name, email, birth_date,
-            phone_number, longitude, latitude, role, hours, super_ssn,
-            gs_longitude, gs_latitude)
-        except Exception as e:
-            print("View exception")
-            print(e)
+        if "add_employee" in request.POST:
+            try:
+                Employee.insertInto(ssn, first_name, last_name, email, birth_date,
+                    phone_number, longitude, latitude, role, hours, super_ssn,
+                    gs_longitude, gs_latitude)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Employee.update(ssn, first_name, last_name, email, birth_date,
+                phone_number, longitude, latitude, role, hours, super_ssn,
+                gs_longitude, gs_latitude)
+            except Exception as e:
+                print("View exception")
+                print(e)
     employees = Employee.retrieveAllColumns()
     return render(request, 'employee.html', {'employees': employees})
 

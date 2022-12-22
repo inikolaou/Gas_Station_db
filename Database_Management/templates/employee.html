@@ -7,6 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index</title>
     <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -22,6 +31,17 @@
             background-color: #f2f2f2;
         }
 
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
         a {
             color: #0066c0;
             text-decoration: none;
@@ -29,6 +49,45 @@
 
         a:hover {
             color: #003399;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        form input,
+        form textarea {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form #submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        form #submit:hover {
+            background-color: #555;
         }
     </style>
 </head>
@@ -38,9 +97,9 @@
         <h1>Employee Handling</h1>
     </div>
     <nav>
-        <a href="#">Home</a>
-        <a id="all_employees_nav">Employees</a>
-        <a id="add_employee_nav">Add Employee</a>
+        <a href="/">Home</a>
+        <a id="all_employees_nav" onclick="ShowEmployees()">Employees</a>
+        <a id="add_employee_nav" onclick="AddEmployee()">Add Employee</a>
     </nav>
     <div id="all_employees" style="display: block;">
         <table>
@@ -59,6 +118,7 @@
                     <th>Super Ssn</th>
                     <th>GS Longitude</th>
                     <th>GS Latitude</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,23 +147,24 @@
         </table>
     </div>
     <div id="add_employee" style="display: none;">
-        <form>
+        <form method="POST">
+            {% csrf_token %}
             <label for="ssn">Ssn:</label><br>
             <input type="text" id="ssn" name="ssn"><br>
             <label for="first-name">First Name:</label><br>
             <input type="text" id="first-name" name="first-name"><br>
             <label for="last-name">Last Name:</label><br>
             <input type="text" id="last-name" name="last-name"><br>
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email"><br>
             <label for="birth-date">Birth Date:</label><br>
             <input type="date" id="birth-date" name="birth-date"><br>
             <label for="phone-number">Phone Number:</label><br>
             <input type="number" id="phone-number" name="phone-number"><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email"><br>
             <label for="longitude">Longitude:</label><br>
-            <input type="number" id="longitude" name="longitude"><br>
+            <input type="number" step="any" id="longitude" name="longitude"><br>
             <label for="Latitude">Latitude:</label><br>
-            <input type="number" id="latitude" name="latitude"><br>
+            <input type="number" step="any" id="latitude" name="latitude"><br>
             <label for="role">Role:</label><br>
             <input type="text" id="role" name="role"><br>
             <label for="hours">Hours:</label><br>
@@ -111,14 +172,29 @@
             <label for="super-ssn">Super_ssn:</label><br>
             <input type="text" id="super-ssn" name="super-ssn"><br>
             <label for="gs-longitude">GS_Longitude:</label><br>
-            <input type="number" id="gs-longitude" name="gs-longitude"><br>
+            <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
             <label for="gs-latitude">GS_Latitude:</label><br>
-            <input type="number" id="gs-latitude" name="gs-latitude"><br>
+            <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+            <input type="submit" id="submit" name="add_employee" value="submit">
         </form>
     </div>
 </body>
 
 <script>
+
+    function ShowEmployees() {
+        const all_employees = document.getElementById("all_employees");
+        all_employees.style.display = "block";
+        const add_employee = document.getElementById("add_employee");
+        add_employee.style.display = "none";
+    }
+
+    function AddEmployee() {
+        const all_employees = document.getElementById("all_employees");
+        all_employees.style.display = "none";
+        const add_employee = document.getElementById("add_employee");
+        add_employee.style.display = "block";
+    }
 
     function editEmployee(id) {
         // Get a reference to the table row
@@ -139,7 +215,7 @@
         const super_ssn = cells[10].textContent;
         const gs_longitude = cells[11].textContent;
         const gs_latitude = cells[12].textContent;
-        
+
         // Replace the cell elements with form inputs
         cells[0].innerHTML = `<input type="text" name="ssn" value="${ssn}" readonly="readonly">`;
         cells[1].innerHTML = `<input type="text" name="first-name" value="${first_name}">`;

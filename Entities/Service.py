@@ -11,7 +11,8 @@ def createServiceTable():
                         Name                        TEXT        NOT NULL,
                         Price                       REAL        NOT NULL,
                         Corresponding_Points        INTEGER     NOT NULL,
-                        PRIMARY KEY (Id));''')
+                        PRIMARY KEY (Id))
+                        ;''')
             insertFromCsv("Datasets/service.csv")
         except Exception as e:
             pass # Database created

@@ -1,7 +1,7 @@
 import sqlite3
 import csv
 
-def createIsAssignedToTable():
+def createConsistsOfTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     with conn:

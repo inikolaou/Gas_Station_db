@@ -11,7 +11,8 @@ def createContractTable():
                         Start_Date      TEXT        NOT NULL,
                         End_Date        TEXT        NOT NULL,
                         Salary          REAL        NOT NULL,
-                        PRIMARY KEY (Id));''')
+                        PRIMARY KEY (Id))
+                        ;''')
             insertFromCsv("Datasets/contract.csv")
         except Exception as e:
             pass # Database created

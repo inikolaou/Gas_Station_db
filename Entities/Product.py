@@ -12,7 +12,8 @@ def createProductTable():
                         Type                        TEXT        NOT NULL,
                         Price                       REAL        NOT NULL,
                         Corresponding_Points        INTEGER     NOT NULL,
-                        PRIMARY KEY (Id));''')
+                        PRIMARY KEY (Id))
+                        ;''')
             insertFromCsv("Datasets/product.csv")
         except Exception as e:
             pass # Database created

@@ -1,21 +1,20 @@
 import sqlite3
 import csv
 
-def createIsAssignedToTable():
+def createInvolvesTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     with conn:
         try:
-            c.execute('''CREATE TABLE CONSISTS_OF 
-                        (Supply_ID  INTEGER     NOT NULL,
-                        Prod_ID     INTEGER     NOT NULL,
-                        Cost        REAL        NOT NULL,
+            c.execute('''CREATE TABLE INVOLVES 
+                        (Prod_ID    INTEGER     NOT NULL,
+                        Pur_ID      INTEGER     NOT NULL,
                         Quantity    REAL        NOT NULL,
-                        PRIMARY KEY (Supply_ID, Prod_ID),
-                        FOREIGN KEY (Supply_Id) REFERENCES SUPPLY(Id) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (Supply_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE
+                        PRIMARY KEY (Prod_ID, Pur_ID),
+                        FOREIGN KEY (Prod_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE,
+                        FOREIGN KEY (Pur_ID) REFERENCES PURCHASE(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
-            insertFromCsv("Datasets/consists_of.csv")
+            insertFromCsv("Datasets/involves.csv")
         except Exception as e:
             pass
     conn.close()
@@ -25,17 +24,17 @@ def insertFromCsv(fileName):
     with open(fileName, newline='') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
-            insertInto(tuple['Supply_ID'], tuple['Prod_ID'], tuple['Cost'], tuple['Quantity'], conn)
+            insertInto(tuple['Prod_ID'], tuple['Pur_ID'], tuple['Quantity'], conn)
     conn.close()
 
-def insertInto(supply_id, prod_id, cost, quantity, conn=False):
+def insertInto(prod_id, pur_id, quantity, conn=False):
     if (conn == False):
         conn = sqlite3.connect("Gas_Station.db")
         c = conn.cursor()
         with conn:
             try:
-                c.execute('''INSERT INTO IS_ASSIGNED_TO
-                            VALUES (?,?,?,?);''', (supply_id, prod_id, cost, quantity))
+                c.execute('''INSERT INTO INVOLVES
+                            VALUES (?,?,?);''', (prod_id, pur_id, quantity))
             except Exception:
                 pass # tuple already added
         conn.close()
@@ -43,15 +42,15 @@ def insertInto(supply_id, prod_id, cost, quantity, conn=False):
         c = conn.cursor()
         with conn:
             try:
-                c.execute('''INSERT INTO IS_ASSIGNED_TO
-                            VALUES (?,?,?,?);''', (supply_id, prod_id, cost, quantity))
+                c.execute('''INSERT INTO INVOLVES
+                            VALUES (?,?,?);''', (prod_id, pur_id, quantity))
             except Exception as e:
                 pass
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
-    c.execute("select * from CONSISTS_OF")
+    c.execute("select * from INVOLVES")
     data = c.fetchall()
     conn.close()
     return data

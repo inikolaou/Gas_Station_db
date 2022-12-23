@@ -8,16 +8,16 @@ def createPumpTable():
         try:
             c.execute('''CREATE TABLE PUMP
                         (Id                         INTEGER     NOT NULL,
-                        Current_State               INTEGER     NOT NULL,
+                        Tank_Id                     INTEGER     NOT NULL,
+                        T_GS_Longitude              REAL        NOT NULL,
+                        T_GS_Latitude               REAL        NOT NULL,
+                        Current_State               INTEGER     NOT NULL DEFAULT 0,
                         Last_Check_Up               TEXT        NOT NULL,
                         Nozzle_Last_Check_Up        TEXT        NOT NULL,
                         Product_Quantity            REAL        NOT NULL,
-                        Tank_Id                     INTEGER     NOT NULL,
-                        GS_Longitude                REAL        NOT NULL,
-                        GS_Latitude                 REAL        NOT NULL,
-                        PRIMARY KEY (Id, Tank_Id, GS_Longitude, GS_Latitude),
+                        PRIMARY KEY (Id, Tank_Id, T_GS_Longitude, T_GS_Latitude),
                         FOREIGN KEY (Tank_Id)      REFERENCES TANK(Id) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES TANK(GS_Longitude, GS_Latitude) ON UPDATE CASCADE ON DELETE CASCADE
+                        FOREIGN KEY (T_GS_Longitude, T_GS_Latitude) REFERENCES TANK(GS_Longitude, GS_Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
             insertFromCsv("Datasets/pump.csv")
         except Exception as e:
@@ -29,20 +29,23 @@ def insertFromCsv(fileName):
     with open(fileName, newline='') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
-            insertInto(tuple['ID'], tuple['Current_State'], tuple['Last_Check_Up'], 
-            tuple['Nozzle_Last_Check_Up'], tuple['Product_Quantity'], tuple['Tank_ID'], 
-            tuple['T_GS_Longitude'], tuple['T_GS_Latitude'], conn)
+            insertInto(tuple['ID'], tuple['Tank_ID'], tuple['T_GS_Longitude'],
+                       tuple['T_GS_Latitude'], tuple['Current_State'],
+                       tuple['Last_Check_Up'], tuple['Nozzle_Last_Check_Up'],
+                       tuple['Product_Quantity'], conn)
     conn.close()
 
-def insertInto(id, current_state, last_check_up, nozzle_check_up, quantity, tank_id, tank_longitude, tank_latitude, conn=False):
+def insertInto(id, tank_id, tank_gs_longitude, tank_gs_latitude, current_state, last_check_up, nozzle_check_up, quantity, conn=False):
     if (conn == False):
         conn = sqlite3.connect("Gas_Station.db")
         c = conn.cursor()
         with conn:
             try:
                 c.execute('''INSERT INTO PUMP
-                            VALUES (?,?,?,?,?,?,?,?);''', (id, current_state, last_check_up,
-                            nozzle_check_up, quantity, tank_id, tank_longitude, tank_latitude))
+                            VALUES (?,?,?,?,?,?,?,?);''',
+                            (id, tank_id, tank_gs_longitude, tank_gs_latitude,
+                             current_state, last_check_up, nozzle_check_up,
+                             quantity))
             except Exception:
                 pass # tuple already added
         conn.close()
@@ -51,8 +54,10 @@ def insertInto(id, current_state, last_check_up, nozzle_check_up, quantity, tank
         with conn:
             try:
                c.execute('''INSERT INTO PUMP
-                            VALUES (?,?,?,?,?,?,?,?);''', (id, current_state, last_check_up,
-                            nozzle_check_up, quantity, tank_id, tank_longitude, tank_latitude))
+                            VALUES (?,?,?,?,?,?,?,?);''',
+                            (id, tank_id, tank_gs_longitude, tank_gs_latitude,
+                             current_state, last_check_up, nozzle_check_up,
+                             quantity))
             except Exception:
                 pass
 

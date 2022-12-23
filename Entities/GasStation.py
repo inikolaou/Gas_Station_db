@@ -7,13 +7,12 @@ def createGasStationTable():
     with conn:
         try:
             c.execute('''CREATE TABLE GAS_STATION
-                        (
-                        Longitude                   REAL        NOT NULL,
+                        (Longitude                  REAL        NOT NULL,
                         Latitude                    REAL        NOT NULL,
                         Type_of_Service             TEXT        NOT NULL,
                         Start_Date                  TEXT        NOT NULL,
-                        Minimarket                  INTEGER     NOT NULL,
-                        Mgr_Ssn                     TEXT        ,
+                        Minimarket                  TEXT        NOT NULL DEFAULT false,
+                        Mgr_Ssn                     TEXT,
                         PRIMARY KEY (Longitude, Latitude),
                         FOREIGN KEY (Mgr_Ssn) REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL
                         );''')

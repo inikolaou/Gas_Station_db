@@ -7,15 +7,16 @@ def createCustomerTable():
     with conn:
         try:
             c.execute('''CREATE TABLE CUSTOMER
-                        (Email              TEXT        NOT NULL        ,
-                        Fname               TEXT        NOT NULL        ,
-                        Lname               TEXT        NOT NULL        ,
-                        Birth_Date          TEXT        NOT NULL        ,
-                        Phone_Number        INTEGER     NOT NULL        ,
-                        Longitude           REAL        NOT NULL        ,
-                        Latitude            REAL        NOT NULL        ,
-                        Remaining_Points    INTEGER     DEFAULT 0       ,
-                        PRIMARY KEY (Email)                             );''')
+                        (Email              TEXT        NOT NULL,
+                        Fname               TEXT        NOT NULL,
+                        Lname               TEXT        NOT NULL,
+                        Birth_Date          TEXT        NOT NULL,
+                        Phone_Number        INTEGER     NOT NULL,
+                        Longitude           REAL        NOT NULL,
+                        Latitude            REAL        NOT NULL,
+                        Remaining_Points    INTEGER     DEFAULT 0,
+                        PRIMARY KEY (Email)
+                        );''')
             insertFromCsv("Datasets/customer.csv")
         except Exception as e:
             pass # Database created
@@ -26,9 +27,10 @@ def insertFromCsv(fileName):
     with open(fileName, newline='') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
-            insertInto(tuple['Email'], tuple['Fname'],
-                        tuple['Lname'], tuple['Birth_Date'],tuple['Phone_Number'], tuple['Longitude'],
-                        tuple['Latitude'], tuple['Remaining_Points'], conn)
+            insertInto(tuple['Email'], tuple['Fname'], tuple['Lname'],
+                       tuple['Birth_Date'],tuple['Phone_Number'],
+                       tuple['Longitude'],tuple['Latitude'],
+                       tuple['Remaining_Points'], conn)
     conn.close()
 
 def insertInto(email, fname, lname, birth_date, phone_number, longitude, latitude, 

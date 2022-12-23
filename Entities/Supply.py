@@ -1,7 +1,7 @@
 import sqlite3
 import csv
 
-def createIsAssignedToTable():
+def createSupplyTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     with conn:
@@ -15,8 +15,7 @@ def createIsAssignedToTable():
                         GS_Latitude             REAL        NOT NULL,
                         PRIMARY KEY (Id),
                         FOREIGN KEY (Sup_Email) REFERENCES SUPPLIER(Email) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (GS_Longitude) REFERENCES GAS_STATION(Lognitude) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (GS_Latitude) REFERENCES GAS_STATION(Latitude) ON UPDATE CASCADE ON DELETE CASCADE
+                        FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
             insertFromCsv("Datasets/supply.csv")
         except Exception as e:
@@ -38,7 +37,9 @@ def insertInto(id, expected_arrival_date, real_arrival_date, sup_email, gs_longi
         with conn:
             try:
                 c.execute('''INSERT INTO SUPPLY
-                            VALUES (?,?,?,?,?,?);''', (id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude))
+                            VALUES (?,?,?,?,?,?);''',
+                            (id, expected_arrival_date, real_arrival_date,
+                             sup_email, gs_longitude, gs_latitude))
             except Exception:
                 pass # tuple already added
         conn.close()
@@ -47,7 +48,9 @@ def insertInto(id, expected_arrival_date, real_arrival_date, sup_email, gs_longi
         with conn:
             try:
                 c.execute('''INSERT INTO SUPPLY
-                            VALUES (?,?,?,?,?,?);''', (id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude))
+                            VALUES (?,?,?,?,?,?);''',
+                            (id, expected_arrival_date, real_arrival_date,
+                             sup_email, gs_longitude, gs_latitude))
             except Exception as e:
                 pass
 

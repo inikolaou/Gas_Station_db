@@ -34,7 +34,7 @@ def insertInto(supply_id, prod_id, cost, quantity, conn=False):
         c = conn.cursor()
         with conn:
             try:
-                c.execute('''INSERT INTO CONSISTS_OF
+                c.execute('''INSERT INTO IS_ASSIGNED_TO
                             VALUES (?,?,?,?);''', (supply_id, prod_id, cost, quantity))
             except Exception:
                 pass # tuple already added
@@ -43,7 +43,7 @@ def insertInto(supply_id, prod_id, cost, quantity, conn=False):
         c = conn.cursor()
         with conn:
             try:
-                c.execute('''INSERT INTO CONSISTS_OF
+                c.execute('''INSERT INTO IS_ASSIGNED_TO
                             VALUES (?,?,?,?);''', (supply_id, prod_id, cost, quantity))
             except Exception as e:
                 pass

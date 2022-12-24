@@ -1,12 +1,20 @@
 from django.shortcuts import render, redirect
-from Entities import Supplier, Employee, Contract, Signs, Service, IsAssignedTo, Product, Tank, Pump, Customer, GasStation
+from Entities import ConsistsOf, Contract, Customer, Employee, Entails, GasStation, Involves, IsAssignedTo, Offers, Product, Provides, Pump, Purchase, Service, Signs, Supplier, Supply, Tank
 
 def index(request):
     return render(request, 'index.html')
 
-def supplier(request):
-    names = Supplier.searchByName()
-    return render(request, 'supplier.html', {'names': names})
+def consistsOf(request):
+    consistsOf = ConsistsOf.retrieveAllColumns()
+    return render(request, 'consistsOf.html', {'consistsOf': consistsOf})
+
+def contract(request):
+    contracts = Contract.retrieveAllColumns()
+    return render(request, 'contract.html', {'contracts': contracts})
+
+def customer(request):
+    customers = Customer.retrieveAllColumns()
+    return render(request, 'customer.html', {'customers': customers})
 
 def employee(request):
     if request.method=="POST":
@@ -47,52 +55,79 @@ def employee_delete(request, ssn):
     Employee.delete(ssn)
     return redirect(employee)
 
-def contract(request):
-    contracts = Contract.retrieveAllColumns()
-    return render(request, 'contract.html', {'contracts': contracts})
-
-def signs(request):
-    signs = Signs.retrieveAllColumns()
-    return render(request, 'signs.html', {'signs': signs})
-
-def service(request):
-    services = Service.retrieveAllColumns()
-    return render(request, 'service.html', {'services': services})
-
-def isAssignedTo(request):
-    assignments = IsAssignedTo.retrieveAllColumns()
-    return render(request, 'isAssignedTo.html', {'assignments': assignments})
-
-def product(request):
-    products = Product.retrieveAllColumns()
-    return render(request, 'product.html', {'products': products})
-
-def tank(request):
-    tanks = Tank.retrieveAllColumns()
-    return render(request, 'tank.html', {'tanks': tanks})
-
-def pump(request):
-    pumps = Pump.retrieveAllColumns()
-    return render(request, 'pump.html', {'pumps': pumps})
-
-def customer(request):
-    customers = Customer.retrieveAllColumns()
-    return render(request, 'customer.html', {'customers': customers})
+def entails(request):
+    entails = Entails.retrieveAllColumns()
+    return render(request, 'entails.html', {'entails': entails})
 
 def gasStation(request):
     gasStations = GasStation.retrieveAllColumns()
     return render(request, 'gasStation.html', {'gasStations': gasStations})
 
+def involves(request):
+    involves = Involves.retrieveAllColumns()
+    return render(request, 'involves.html', {'involves': involves})
+
+def isAssignedTo(request):
+    assignments = IsAssignedTo.retrieveAllColumns()
+    return render(request, 'isAssignedTo.html', {'assignments': assignments})
+
+def offers(request):
+    offers = Offers.retrieveAllColumns()
+    return render(request, 'offers.html', {'offers': offers})
+
+def product(request):
+    products = Product.retrieveAllColumns()
+    return render(request, 'product.html', {'products': products})
+
+def provides(request):
+    provides = Provides.retrieveAllColumns()
+    return render(request, 'provides.html', {'provides': provides})
+
+def pump(request):
+    pumps = Pump.retrieveAllColumns()
+    return render(request, 'pump.html', {'pumps': pumps})
+
+def purchase(request):
+    purchases = Purchase.retrieveAllColumns()
+    return render(request, 'purchase.html', {'purchases': purchases})
+
+def service(request):
+    services = Service.retrieveAllColumns()
+    return render(request, 'service.html', {'services': services})
+
+def signs(request):
+    signs = Signs.retrieveAllColumns()
+    return render(request, 'signs.html', {'signs': signs})
+
+def supplier(request):
+    names = Supplier.searchByName()
+    return render(request, 'supplier.html', {'names': names})
+
+def supply(request):
+    supplies = Supply.retrieveAllColumns()
+    return render(request, 'supply.html', {'supplies': supplies})
+
+def tank(request):
+    tanks = Tank.retrieveAllColumns()
+    return render(request, 'tank.html', {'tanks': tanks})
+
 if __name__ == 'Database_Management.views':
-    Supplier.createSupplierTable()
-    Employee.createEmployeeTable()
+    ConsistsOf.createConsistsOfTable()
     Contract.createContractTable()
-    Signs.createSignsTable()
-    Service.createServiceTable()
-    IsAssignedTo.createIsAssignedToTable()
-    Product.createProductTable()
-    Tank.createTankTable()
-    Pump.createPumpTable()
     Customer.createCustomerTable()
+    Employee.createEmployeeTable()
+    Entails.createEntailsTable()
     GasStation.createGasStationTable()
+    Involves.createInvolvesTable()
+    IsAssignedTo.createIsAssignedToTable()
+    Offers.createOffersTable()
+    Product.createProductTable()
+    Provides.createProvidesTable()
+    Pump.createPumpTable()
+    Purchase.createPurchaseTable()
+    Service.createServiceTable()
+    Signs.createSignsTable()
+    Supplier.createSupplierTable()
+    Supply.createSupplyTable()
+    Tank.createTankTable()
     

@@ -13,11 +13,11 @@ def createPurchaseTable():
                         Cus_Email           TEXT        NOT NULL,
                         GS_Longitude        REAL        NOT NULL,
                         GS_Latitude         REAL        NOT NULL,
-                        Pump_ID             INTEGER     NOT NULL,
+                        Pump_Id             INTEGER     NOT NULL,
                         PRIMARY KEY (Id),
                         FOREIGN KEY (Cus_Email) REFERENCES CUSTOMER(Email) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE NO ACTION,
-                        FOREIGN KEY (Pump_ID) REFERENCES PUMP(Id) ON UPDATE CASCADE ON DELETE CASCADE
+                        FOREIGN KEY (Pump_Id) REFERENCES PUMP(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
             insertFromCsv("Datasets/purchase.csv")
         except Exception as e:

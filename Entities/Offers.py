@@ -7,11 +7,11 @@ def createOffersTable():
     with conn:
         try:
             c.execute('''CREATE TABLE OFFERS 
-                        (Prod_ID        INTEGER     NOT NULL,
+                        (Prod_Id        INTEGER     NOT NULL,
                         GS_Longitude    REAL        NOT NULL,
                         GS_Latitude     REAL        NOT NULL,
                         Quantity        REAL        NOT NULL,
-                        PRIMARY KEY (Prod_ID, GS_Longitude, GS_Latitude, Quantity),
+                        PRIMARY KEY (Prod_Id, GS_Longitude, GS_Latitude, Quantity),
                         FOREIGN KEY (Prod_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')

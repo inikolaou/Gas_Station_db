@@ -7,10 +7,10 @@ def createProvidesTable():
     with conn:
         try:
             c.execute('''CREATE TABLE PROVIDES
-                        (Serv_ID        INTEGER     NOT NULL,
+                        (Serv_Id        INTEGER     NOT NULL,
                         GS_Longitude    REAL        NOT NULL,
                         GS_Latitude     REAL        NOT NULL,
-                        PRIMARY KEY (Serv_ID, GS_Longitude, GS_Latitude),
+                        PRIMARY KEY (Serv_Id, GS_Longitude, GS_Latitude),
                         FOREIGN KEY (Serv_Id) REFERENCES SERVICE(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')

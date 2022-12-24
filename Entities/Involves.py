@@ -7,12 +7,12 @@ def createInvolvesTable():
     with conn:
         try:
             c.execute('''CREATE TABLE INVOLVES 
-                        (Prod_ID    INTEGER     NOT NULL,
-                        Pur_ID      INTEGER     NOT NULL,
+                        (Prod_Id    INTEGER     NOT NULL,
+                        Pur_Id      INTEGER     NOT NULL,
                         Quantity    REAL        NOT NULL,
-                        PRIMARY KEY (Prod_ID, Pur_ID),
+                        PRIMARY KEY (Prod_Id, Pur_Id),
                         FOREIGN KEY (Prod_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (Pur_ID) REFERENCES PURCHASE(Id) ON UPDATE CASCADE ON DELETE CASCADE
+                        FOREIGN KEY (Pur_Id) REFERENCES PURCHASE(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
             insertFromCsv("Datasets/involves.csv")
         except Exception as e:

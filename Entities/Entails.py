@@ -7,9 +7,9 @@ def createEntailsTable():
     with conn:
         try:
             c.execute('''CREATE TABLE ENTAILS 
-                        (Serv_ID    INTEGER     NOT NULL,
-                        Pur_ID      INTEGER     NOT NULL,
-                        PRIMARY KEY (Serv_ID, Pur_ID),
+                        (Serv_Id    INTEGER     NOT NULL,
+                        Pur_Id      INTEGER     NOT NULL,
+                        PRIMARY KEY (Serv_Id, Pur_Id),
                         FOREIGN KEY (Serv_Id) REFERENCES SERVICE(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Pur_Id) REFERENCES PURCHASE(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')

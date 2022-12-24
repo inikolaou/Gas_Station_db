@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+
+<body>
+    {% for assignment in assignments %}
+    <p>
+        Prod_Id: {{assignment.0}}, Pur_Id: {{assignment.1}}
+        Quantity: {{assignment.2}}
+    </p>
+    {% endfor %}
+</body>
+
+</html>

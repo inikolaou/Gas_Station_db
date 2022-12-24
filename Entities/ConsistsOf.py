@@ -7,11 +7,11 @@ def createConsistsOfTable():
     with conn:
         try:
             c.execute('''CREATE TABLE CONSISTS_OF 
-                        (Supply_ID  INTEGER     NOT NULL,
-                        Prod_ID     INTEGER     NOT NULL,
+                        (Supply_Id  INTEGER     NOT NULL,
+                        Prod_Id     INTEGER     NOT NULL,
                         Cost        REAL        NOT NULL,
                         Quantity    REAL        NOT NULL,
-                        PRIMARY KEY (Supply_ID, Prod_ID),
+                        PRIMARY KEY (Supply_Id, Prod_Id),
                         FOREIGN KEY (Supply_Id) REFERENCES SUPPLY(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Supply_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')

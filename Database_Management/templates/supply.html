@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+
+<body>
+    {% for assignment in assignments %}
+    <p>
+        Id: {{assignment.0}}, Expected_Arrival_Date: {{assignment.1}}
+        Real_Arrival_Date: {{assignment.2}}, Sup_Email: {{assignment.3}},
+        GS_Longitude: {{assignment.4}}, GS_Latitude: {{assignment.5}}
+    </p>
+    {% endfor %}
+</body>
+
+</html>

@@ -9,10 +9,10 @@
 </head>
 
 <body>
-    {% for assignment in assignments %}
+    {% for involves in involves %}
     <p>
-        Prod_Id: {{assignment.0}}, Pur_Id: {{assignment.1}}
-        Quantity: {{assignment.2}}
+        Prod_Id: {{involves.0}}, Pur_Id: {{involves.1}}
+        Quantity: {{involves.2}}
     </p>
     {% endfor %}
 </body>

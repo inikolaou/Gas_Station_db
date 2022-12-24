@@ -9,11 +9,11 @@
 </head>
 
 <body>
-    {% for assignment in assignments %}
+    {% for supply in supplies %}
     <p>
-        Id: {{assignment.0}}, Expected_Arrival_Date: {{assignment.1}}
-        Real_Arrival_Date: {{assignment.2}}, Sup_Email: {{assignment.3}},
-        GS_Longitude: {{assignment.4}}, GS_Latitude: {{assignment.5}}
+        Id: {{supply.0}}, Expected_Arrival_Date: {{supply.1}}
+        Real_Arrival_Date: {{supply.2}}, Sup_Email: {{supply.3}},
+        GS_Longitude: {{supply.4}}, GS_Latitude: {{supply.5}}
     </p>
     {% endfor %}
 </body>

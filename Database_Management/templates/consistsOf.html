@@ -9,10 +9,10 @@
 </head>
 
 <body>
-    {% for assignment in assignments %}
+    {% for consistsOf in consistsOf %}
     <p>
-        Supply_Id: {{assignment.0}}, Prod_Id: {{assignment.1}}
-        Cost: {{assignment.2}}, Quantity: {{assignment.3}}
+        Supply_Id: {{consistsOf.0}}, Prod_Id: {{consistsOf.1}}
+        Cost: {{consistsOf.2}}, Quantity: {{consistsOf.3}}
     </p>
     {% endfor %}
 </body>

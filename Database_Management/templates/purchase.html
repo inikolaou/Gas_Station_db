@@ -9,12 +9,12 @@
 </head>
 
 <body>
-    {% for assignment in assignments %}
+    {% for purchase in purchases %}
     <p>
-        Id: {{assignment.0}}, Purchase_Date: {{assignment.1}}
-        Type_of_Payment: {{assignment.2}},
-        Cus_Email: {{assignment.3}}, GS_Longitude: {{assignment.4}},
-        GS_Latitude: {{assignment.5}}, Pump_Id: {{assignment.6}}
+        Id: {{purchase.0}}, Purchase_Date: {{purchase.1}}
+        Type_of_Payment: {{purchase.2}},
+        Cus_Email: {{purchase.3}}, GS_Longitude: {{purchase.4}},
+        GS_Latitude: {{purchase.5}}, Pump_Id: {{purchase.6}}
     </p>
     {% endfor %}
 </body>

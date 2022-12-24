@@ -9,10 +9,10 @@
 </head>
 
 <body>
-    {% for assignment in assignments %}
+    {% for offers in offers %}
     <p>
-        Prod_Id: {{assignment.0}}, GS_Longitude: {{assignment.1}}
-        GS_Latitude: {{assignment.2}}, Quantity: {{assignment.3}}
+        Prod_Id: {{offers.0}}, GS_Longitude: {{offers.1}}
+        GS_Latitude: {{offers.2}}, Quantity: {{offers.3}}
     </p>
     {% endfor %}
 </body>

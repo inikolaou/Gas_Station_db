@@ -29,7 +29,7 @@ def insertFromCsv(fileName):
     with open(fileName, newline='') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
-            insertInto(tuple['Id'], tuple['Purchase_Date'],
+            insertInto(tuple['ID'], tuple['Purchase_Date'],
                        tuple['Type_of_Payment'], tuple['Cus_Email'],
                        tuple['GS_Longitude'], tuple['GS_Latitude'],
                        tuple['Pump_ID'], conn)

@@ -21,9 +21,9 @@ def employee(request):
         ssn = request.POST.get('ssn', False)
         first_name = request.POST['first-name']
         last_name = request.POST['last-name']
-        email = request.POST['email']
         birth_date = request.POST['birth-date']
         phone_number = request.POST['phone-number']
+        email = request.POST['email']
         longitude = request.POST['longitude']
         latitude = request.POST['latitude']
         role = request.POST['role']
@@ -34,8 +34,8 @@ def employee(request):
 
         if "add_employee" in request.POST:
             try:
-                Employee.insertInto(ssn, first_name, last_name, email, birth_date,
-                    phone_number, longitude, latitude, role, hours, super_ssn,
+                Employee.insertInto(ssn, first_name, last_name, birth_date, phone_number,
+                    email, longitude, latitude, role, hours, super_ssn,
                     gs_longitude, gs_latitude)
             except Exception as e:
                 print("View exception")

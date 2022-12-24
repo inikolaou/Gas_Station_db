@@ -138,7 +138,7 @@
                     <td>{{employee.11}}</td>
                     <td>{{employee.12}}</td>
                     <td>
-                        <a href="#" onclick="editEmployee('{{employee.0}}')">Edit</a> |
+                        <a href="#'{{employee.0}}'" onclick="editEmployee('{{employee.0}}')">Edit</a> |
                         <a href="{{employee.0}}/">Delete</a>
                     </td>
                 </tr>
@@ -230,7 +230,7 @@
         cells[10].innerHTML = `<input type="text" name="super-ssn" value="${super_ssn}">`;
         cells[11].innerHTML = `<input type="number" name="gs-longitude" value="${gs_longitude}">`;
         cells[12].innerHTML = `<input type="number" name="gs-latitude" value="${gs_latitude}">`;
-        cells[13].innerHTML = `<a href="#" onclick="saveEmployee('${id}')">Save</a>`;
+        cells[13].innerHTML = `<a href="employees/" onclick="saveEmployee('${id}')">Save</a>`;
     }
 
     function saveEmployee(id) {

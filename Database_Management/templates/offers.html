@@ -9,10 +9,9 @@
 </head>
 
 <body>
-    {% for offers in offers %}
-    <p>
-        Prod_Id: {{offers.0}}, GS_Longitude: {{offers.1}}
-        GS_Latitude: {{offers.2}}, Quantity: {{offers.3}}
+    {% for tuple in offers %}
+    <p>Prod_Id: {{tuple.0}}, GS_Longitude: {{tuple.1}}
+        GS_Latitude: {{tuple.2}}, Quantity: {{tuple.3}}
     </p>
     {% endfor %}
 </body>

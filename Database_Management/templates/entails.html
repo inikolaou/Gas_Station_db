@@ -9,9 +9,8 @@
 </head>
 
 <body>
-    {% for entails in entails %}
-    <p>
-        Serv_Id: {{entails.0}}, Pur_Id: {{entails.1}}
+    {% for tuple in entails %}
+    <p>Serv_Id: {{tuple.0}}, Pur_Id: {{tuple.1}}
     </p>
     {% endfor %}
 </body>

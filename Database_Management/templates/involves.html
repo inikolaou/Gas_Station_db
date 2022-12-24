@@ -9,10 +9,9 @@
 </head>
 
 <body>
-    {% for involves in involves %}
-    <p>
-        Prod_Id: {{involves.0}}, Pur_Id: {{involves.1}}
-        Quantity: {{involves.2}}
+    {% for tuple in involves %}
+    <p>Prod_Id: {{tuple.0}}, Pur_Id: {{tuple.1}}
+        Quantity: {{tuple.2}}
     </p>
     {% endfor %}
 </body>

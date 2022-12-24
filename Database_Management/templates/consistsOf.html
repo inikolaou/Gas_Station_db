@@ -9,10 +9,9 @@
 </head>
 
 <body>
-    {% for consistsOf in consistsOf %}
-    <p>
-        Supply_Id: {{consistsOf.0}}, Prod_Id: {{consistsOf.1}}
-        Cost: {{consistsOf.2}}, Quantity: {{consistsOf.3}}
+    {% for tuple in consistsOf %}
+    <p>Supply_Id: {{tuple.0}}, Prod_Id: {{tuple.1}}
+        Cost: {{tuple.2}}, Quantity: {{tuple.3}}
     </p>
     {% endfor %}
 </body>

@@ -9,10 +9,9 @@
 </head>
 
 <body>
-    {% for provides in provides %}
-    <p>
-        Serv_Id: {{provides.0}}, GS_Longitude: {{provides.1}}
-        GS_Latitude: {{provides.2}}
+    {% for tuple in provides %}
+    <p>Serv_Id: {{tuple.0}}, GS_Longitude: {{tuple.1}}
+        GS_Latitude: {{tuple.2}}
     </p>
     {% endfor %}
 </body>

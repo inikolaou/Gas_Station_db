@@ -1,4 +1,4 @@
-Prod_ID,Longitude,Latitude,Quantity
+Prod_ID,GS_Longitude,GS_Latitude,Quantity
 7,38.262807,22.778594,50
 7,37.942487,21.152171,33
 7,37.988127,22.115035,27

@@ -22,7 +22,7 @@ def createSupplierTable():
 
 def insertFromCsv(fileName):
     conn = sqlite3.connect("Gas_Station.db")
-    with open(fileName, newline='') as csvfile:
+    with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
             insertInto(tuple['Email'], tuple['Fname'], tuple['Lname'],

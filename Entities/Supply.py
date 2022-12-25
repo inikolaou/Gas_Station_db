@@ -27,7 +27,8 @@ def insertFromCsv(fileName):
     with open(fileName, newline='') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
-            insertInto(tuple['ID'], tuple['Expected_Arrival_Date'], tuple['Real_Arrival_Date'], tuple['Sup_Email'], tuple['GS_Longitude'], tuple['GS_Latitude'], conn)
+            insertInto(tuple['ID'], tuple['Expected_Arrival_Date'], tuple['Real_Arrival_Date'], tuple['Sup_Email'],
+                       tuple['GS_Longitude'], tuple['GS_Latitude'], conn)
     conn.close()
 
 def insertInto(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude, conn=False):

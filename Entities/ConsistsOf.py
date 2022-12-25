@@ -13,7 +13,7 @@ def createConsistsOfTable():
                         Quantity    REAL        NOT NULL,
                         PRIMARY KEY (Supply_Id, Prod_Id),
                         FOREIGN KEY (Supply_Id) REFERENCES SUPPLY(Id) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (Supply_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE
+                        FOREIGN KEY (Prod_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
             insertFromCsv("Datasets/consists_of.csv")
         except Exception as e:

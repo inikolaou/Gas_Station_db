@@ -99,6 +99,7 @@
     <nav>
         <a href="/">Home</a>
         <a id="all_employees_nav" onclick="ShowEmployees()">Employees</a>
+        <a id="search_employee_nav" onclick="SearchEmployee()">Search Employee</a>
         <a id="add_employee_nav" onclick="AddEmployee()">Add Employee</a>
     </nav>
     <div id="all_employees" style="display: block;">
@@ -146,6 +147,21 @@
             </tbody>
         </table>
     </div>
+    <div id="search_employee" style="display: none;">
+        <p>Select fields you want to search for</p>
+        <select id="dropdown">
+            <option value="ssn">Ssn</option>
+            <option value="role">Role</option>
+            <option value="super-ssn">Super_ssn</option>
+            <option value="gs-longitude">GS_Longitude</option>
+            <option value="gs-latitude">GS_Latitude</option>
+        </select>
+        <button onclick="addInput()">Add Input</button>
+        <form id="searchForm" method="POST">
+            {% csrf_token %}
+            <input type="submit" id="submit_search_employee" name="search_employee" value="submit">
+        </form>
+    </div>
     <div id="add_employee" style="display: none;">
         <form method="POST">
             {% csrf_token %}
@@ -163,7 +179,7 @@
             <input type="email" id="email" name="email"><br>
             <label for="longitude">Longitude:</label><br>
             <input type="number" step="any" id="longitude" name="longitude"><br>
-            <label for="Latitude">Latitude:</label><br>
+            <label for="latitude">Latitude:</label><br>
             <input type="number" step="any" id="latitude" name="latitude"><br>
             <label for="role">Role:</label><br>
             <input type="text" id="role" name="role"><br>
@@ -185,15 +201,84 @@
     function ShowEmployees() {
         const all_employees = document.getElementById("all_employees");
         all_employees.style.display = "block";
+        const search_employee = document.getElementById("search_employee");
+        search_employee.style.display = "none";
         const add_employee = document.getElementById("add_employee");
         add_employee.style.display = "none";
+    }
+
+    function SearchEmployee() {
+        const all_employees = document.getElementById("all_employees");
+        all_employees.style.display = "none";
+        const search_employee = document.getElementById("search_employee");
+        search_employee.style.display = "block";
+        const add_employee = document.getElementById("add_employee");
+        add_employee.style.display = "none";
+        document.getElementById("submit_search_employee").disabled = true;
+
     }
 
     function AddEmployee() {
         const all_employees = document.getElementById("all_employees");
         all_employees.style.display = "none";
+        const search_employee = document.getElementById("search_employee");
+        search_employee.style.display = "none";
         const add_employee = document.getElementById("add_employee");
         add_employee.style.display = "block";
+    }
+
+    function addInput() {
+        document.getElementById("submit_search_employee").disabled = false;
+        // Get selected option value
+        var dropdown = document.getElementById("dropdown");
+        var selectedOption = dropdown.value;
+
+        // Set input type based on selected option
+        var type;
+        switch (selectedOption) {
+            case "ssn":
+                type = "text";
+                break;
+            case "role":
+                type = "text";
+                break;
+            case "super-ssn":
+                type = "text";
+                break;
+            case "gs-longitude":
+                type = "number";
+                step = "any";
+                break;
+            case "gs-latitude":
+                type = "number";
+                step = "any";
+                break;
+            default:
+                type = "text";
+        }
+
+        var options = dropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == selectedOption) {
+                options[i].disabled = true;
+                break;
+            }
+        }
+
+        // Add new input field to form
+        var form = document.getElementById("searchForm");
+        var input = document.createElement("input");
+        var label = document.createElement("label");
+        input.type = type;
+        if (type == "number") {
+            input.step = step;
+        }
+        input.name = selectedOption;
+        label.setAttribute("for", selectedOption);
+        label.textContent = selectedOption;
+        form.insertBefore(document.createElement("br"), form.firstChild);
+        form.insertBefore(input, form.firstChild);
+        form.insertBefore(label, form.firstChild);
     }
 
     function editEmployee(id) {

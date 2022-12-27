@@ -68,6 +68,66 @@ def insertInto(ssn, fname, lname, birth_date, phone_number, email, longitude, la
             except Exception as e:
                 pass
 
+def searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (ssn):
+            c.execute('''
+                        SELECT * 
+                        FROM EMPLOYEE
+                        WHERE Ssn = ?''',
+                        (ssn, ))
+        elif (role):
+            if (super_ssn):
+                if (gs_longitude and gs_latitude):
+                    c.execute('''
+                        SELECT * 
+                        FROM EMPLOYEE
+                        WHERE Role = ? AND Super_Ssn = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
+                        (role, super_ssn, gs_longitude, gs_latitude))
+                else:
+                    c.execute('''
+                        SELECT * 
+                        FROM EMPLOYEE
+                        WHERE Role = ? AND Super_Ssn = ?''',
+                        (role, super_ssn))
+            elif (gs_longitude and gs_latitude):
+                c.execute('''
+                        SELECT * 
+                        FROM EMPLOYEE
+                        WHERE Role = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
+                        (role, gs_longitude, gs_latitude))
+            else:
+                c.execute('''
+                        SELECT * 
+                        FROM EMPLOYEE
+                        WHERE Role = ?''',
+                        (role, ))
+        elif (super_ssn):
+            if (gs_longitude and gs_latitude):
+                    c.execute('''
+                        SELECT * 
+                        FROM EMPLOYEE
+                        WHERE Super_Ssn = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
+                        (super_ssn, gs_longitude, gs_latitude))
+            else:
+                c.execute('''
+                        SELECT * 
+                        FROM EMPLOYEE
+                        WHERE Super_Ssn = ?''',
+                        (super_ssn, ))
+        elif (gs_longitude and gs_latitude):
+            c.execute('''
+                    SELECT * 
+                    FROM EMPLOYEE
+                    WHERE GS_Longitude = ? AND GS_Latitude = ?''',
+                    (gs_longitude, gs_latitude))
+
+    data = c.fetchall()
+    conn.close()
+    return data
+
 def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitude, 
         role, hours, super_ssn, gs_longitude, gs_latitude):
     conn = sqlite3.connect("Gas_Station.db")

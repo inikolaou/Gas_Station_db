@@ -19,24 +19,31 @@ def customer(request):
 def employee(request):
     if request.method=="POST":
         ssn = request.POST.get('ssn', False)
-        first_name = request.POST['first-name']
-        last_name = request.POST['last-name']
-        birth_date = request.POST['birth-date']
-        phone_number = request.POST['phone-number']
-        email = request.POST['email']
-        longitude = request.POST['longitude']
-        latitude = request.POST['latitude']
-        role = request.POST['role']
-        hours = request.POST['hours']
-        super_ssn = request.POST['super-ssn']
-        gs_longitude = request.POST['gs-longitude']
-        gs_latitude = request.POST['gs-latitude']
+        first_name = request.POST.get('first-name', False)
+        last_name = request.POST.get('last-name', False)
+        birth_date = request.POST.get('birth-date', False)
+        phone_number = request.POST.get('phone-number', False)
+        email = request.POST.get('email', False)
+        longitude = request.POST.get('longitude', False)
+        latitude = request.POST.get('latitude', False)
+        role = request.POST.get('role', False)
+        hours = request.POST.get('hours', False)
+        super_ssn = request.POST.get('super-ssn', False)
+        gs_longitude = request.POST.get('gs-longitude', False)
+        gs_latitude = request.POST.get('gs-latitude', False)
 
         if "add_employee" in request.POST:
             try:
                 Employee.insertInto(ssn, first_name, last_name, birth_date, phone_number,
                     email, longitude, latitude, role, hours, super_ssn,
                     gs_longitude, gs_latitude)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_employee" in request.POST:
+            try:
+                employees = Employee.searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude)
+                return render(request, 'employee.html', {'employees': employees})
             except Exception as e:
                 print("View exception")
                 print(e)

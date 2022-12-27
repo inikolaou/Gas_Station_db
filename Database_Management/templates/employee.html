@@ -157,13 +157,13 @@
             <option value="gs-latitude">GS_Latitude</option>
         </select>
         <button onclick="addInput()">Add Input</button>
-        <form id="searchForm" method="POST">
+        <form id="searchEmployeeForm" method="POST">
             {% csrf_token %}
             <input type="submit" id="submit_search_employee" name="search_employee" value="submit">
         </form>
     </div>
     <div id="add_employee" style="display: none;">
-        <form method="POST">
+        <form id="searchEmployeeForm" method="POST">
             {% csrf_token %}
             <label for="ssn">Ssn:</label><br>
             <input type="text" id="ssn" name="ssn"><br>
@@ -191,7 +191,7 @@
             <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
             <label for="gs-latitude">GS_Latitude:</label><br>
             <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
-            <input type="submit" id="submit" name="add_employee" value="submit">
+            <input type="submit" id="submit-add-employee" name="add_employee" value="submit">
         </form>
     </div>
 </body>
@@ -205,6 +205,7 @@
         search_employee.style.display = "none";
         const add_employee = document.getElementById("add_employee");
         add_employee.style.display = "none";
+        window.location.href = '/employee/';
     }
 
     function SearchEmployee() {
@@ -215,7 +216,6 @@
         const add_employee = document.getElementById("add_employee");
         add_employee.style.display = "none";
         document.getElementById("submit_search_employee").disabled = true;
-
     }
 
     function AddEmployee() {
@@ -266,7 +266,7 @@
         }
 
         // Add new input field to form
-        var form = document.getElementById("searchForm");
+        var form = document.getElementById("searchEmployeeForm");
         var input = document.createElement("input");
         var label = document.createElement("label");
         input.type = type;
@@ -315,7 +315,7 @@
         cells[10].innerHTML = `<input type="text" name="super-ssn" value="${super_ssn}">`;
         cells[11].innerHTML = `<input type="number" name="gs-longitude" value="${gs_longitude}">`;
         cells[12].innerHTML = `<input type="number" name="gs-latitude" value="${gs_latitude}">`;
-        cells[13].innerHTML = `<a href="employees/" onclick="saveEmployee('${id}')">Save</a>`;
+        cells[13].innerHTML = `<a onclick="saveEmployee('${id}')">Save</a>`;
     }
 
     function saveEmployee(id) {
@@ -324,6 +324,7 @@
 
         const form = document.createElement('form');
         form.method = 'POST';
+        form.action = '/employee/'
 
         const input = document.createElement('input');
         input.type = 'hidden';

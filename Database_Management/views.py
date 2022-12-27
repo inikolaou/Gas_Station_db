@@ -37,13 +37,13 @@ def employee(request):
                 Employee.insertInto(ssn, first_name, last_name, birth_date, phone_number,
                     email, longitude, latitude, role, hours, super_ssn,
                     gs_longitude, gs_latitude)
+                return redirect(employee)
             except Exception as e:
                 print("View exception")
                 print(e)
         elif "search_employee" in request.POST:
             try:
                 employees = Employee.searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude)
-                return render(request, 'employee.html', {'employees': employees})
             except Exception as e:
                 print("View exception")
                 print(e)
@@ -52,10 +52,12 @@ def employee(request):
                 Employee.update(ssn, first_name, last_name, email, birth_date,
                 phone_number, longitude, latitude, role, hours, super_ssn,
                 gs_longitude, gs_latitude)
+                return redirect(employee)
             except Exception as e:
                 print("View exception")
                 print(e)
-    employees = Employee.retrieveAllColumns()
+    else:
+        employees = Employee.retrieveAllColumns()
     return render(request, 'employee.html', {'employees': employees})
 
 def employee_delete(request, ssn):

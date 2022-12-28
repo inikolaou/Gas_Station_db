@@ -58,6 +58,84 @@ def insertInto(email, fname, lname, birth_date, phone_number, longitude, latitud
             except Exception as e:
                 pass
 
+def searchBy(email, phone_number, longitude, latitude, rem_points):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (email):
+            c.execute('''
+                        SELECT * 
+                        FROM CUSTOMER
+                        WHERE Email = ?''',
+                        (email))
+        elif (phone_number):
+            c.execute('''
+                    SELECT * 
+                    FROM CUSTOMER
+                    WHERE Phone_Number = ?''',
+                    (phone_number))
+        elif (longitude and latitude):
+            c.execute('''
+                    SELECT * 
+                    FROM CUSTOMER
+                    WHERE Longitude = ? AND Latitude = ?''',
+                    (longitude, latitude))
+        elif (rem_points):
+            if (longitude and latitude):
+                c.execute('''
+                    SELECT * 
+                    FROM CUSTOMER
+                    WHERE Remaining_Points = ? AND Longitude = ? AND Latitude = ?''',
+                    (rem_points, longitude, latitude))
+            else:
+                c.execute('''
+                    SELECT * 
+                    FROM CUSTOMER
+                    WHERE Remaining_Points = ?''',
+                    (rem_points))
+
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def update(email, fname, lname, birth_date, phone_number, longitude, latitude, 
+        rem_points):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE CUSTOMER
+                        SET Email = ?, Fname = ?, Lname = ?, Birth_Date = ?,
+                        Phone_Number = ?, Longitude = ?, Latitude = ?,
+                        Remaining_Points = ?''', 
+                        (email, fname, lname, birth_date, phone_number, longitude,
+                        latitude, rem_points))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(email):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''
+            DELETE FROM CUSTOMER
+            WHERE Email = ?
+            ''', (email))
+        except Exception as e:
+            print(e)
+    conn.close()
+
+def searchByName():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Fname from CUSTOMER")
+    data = c.fetchall()
+    conn.close()
+    return data
+
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()

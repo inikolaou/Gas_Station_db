@@ -13,8 +13,46 @@ def contract(request):
     return render(request, 'contract.html', {'contracts': contracts})
 
 def customer(request):
-    customers = Customer.retrieveAllColumns()
+    if request.method=="POST":
+        email = request.POST.get('email', False)
+        first_name = request.POST.get('first-name', False)
+        last_name = request.POST.get('last-name', False)
+        birth_date = request.POST.get('birth-date', False)
+        phone_number = request.POST.get('phone-number', False)
+        longitude = request.POST.get('longitude', False)
+        latitude = request.POST.get('latitude', False)
+        remaining_points = request.POST.get('remaining-points', False)
+
+        if "add_customer" in request.POST:
+            try:
+                Employee.insertInto(email, first_name, last_name, birth_date,
+                phone_number, longitude, latitude, remaining_points)
+                return redirect(customer)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_customer" in request.POST:
+            try:
+                customers = Customer.searchBy(email, phone_number, longitude,
+                                            latitude, remaining_points)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Customer.update(email, first_name, last_name, birth_date, phone_number,
+                                longitude, latitude, remaining_points)
+                return redirect(customer)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        customers = Customer.retrieveAllColumns()
     return render(request, 'customer.html', {'customers': customers})
+
+def customer_delete(request, email):
+    Customer.delete(email)
+    return redirect(customer)
 
 def employee(request):
     if request.method=="POST":

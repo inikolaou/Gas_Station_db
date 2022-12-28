@@ -1,20 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
-</head>
+    <style>
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+      }
 
-<body>
-    {% for customer in customers %}
-    <p>Email: {{customer.0}}, Fname: {{customer.1}}, Lname: {{customer.2}}, 
-        Birth_Date: {{customer.3}}, Longitude: {{customer.4}},
-        Latitude: {{customer.5}}, Remaining_Points: {{customer.6}}
-    </p>
-    {% endfor %}
-</body>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+      }
+
+      a {
+        color: #0066c0;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #003399;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+      }
+
+      form label {
+        margin-top: 10px;
+        font-size: 18px;
+      }
+
+      form input,
+      form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      form #submit:hover {
+        background-color: #555;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>Customer Handling</h1>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a id="all_customers_nav" onclick="ShowCustomers()">Customers</a>
+      <a id="search_customer_nav" onclick="SearchCustomer()">Search Customer</a>
+      <a id="add_customer_nav" onclick="AddCustomer()">Add Customer</a>
+    </nav>
+    <div id="all_customers" style="display: block">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Birth Date</th>
+            <th>Phone Number</th>
+            <th>Longitude</th>
+            <th>Latitude</th>
+            <th>Remaining Points</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for customer in customers %}
+          <tr id="{{customer.0}}">
+            <td>{{customer.0}}</td>
+            <td>{{customer.1}}</td>
+            <td>{{customer.2}}</td>
+            <td>{{customer.3}}</td>
+            <td>{{customer.4}}</td>
+            <td>{{customer.5}}</td>
+            <td>{{customer.6}}</td>
+            <td>{{customer.7}}</td>
+            <td>{{customer.8}}</td>
+            <td>
+              <a
+                href="#'{{customer.0}}'"
+                onclick="editCustomer('{{customer.0}}')"
+                >Edit</a
+              >
+              |
+              <a href="{{customer.0}}/">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="search_customer" style="display: none">
+      <p>Select fields you want to search for</p>
+      <select id="dropdown">
+        <option value="email">Email</option>
+        <option value="phone-number">Phone_Number</option>
+        <option value="longitude">GS_Longitude</option>
+        <option value="latitude">GS_Latitude</option>
+        <option value="remaining-points">Super_ssn</option>
+      </select>
+      <button onclick="addInput()">Add Input</button>
+      <form id="searchCustomerForm" method="POST">
+        {% csrf_token %}
+        <input
+          type="submit"
+          id="submit_search_customer"
+          name="search_customer"
+          value="submit"
+        />
+      </form>
+    </div>
+    <div id="add_customer" style="display: none">
+      <form id="searchCustomerForm" method="POST">
+        {% csrf_token %}
+        <label for="email">Email:</label><br />
+        <input type="text" id="email" name="email" /><br />
+        <label for="first-name">First Name:</label><br />
+        <input type="text" id="first-name" name="first-name" /><br />
+        <label for="last-name">Last Name:</label><br />
+        <input type="text" id="last-name" name="last-name" /><br />
+        <label for="birth-date">Birth Date:</label><br />
+        <input type="date" id="birth-date" name="birth-date" /><br />
+        <label for="phone-number">Phone Number:</label><br />
+        <input type="number" id="phone-number" name="phone-number" /><br />
+        <label for="longitude">Longitude:</label><br />
+        <input type="number" step="any" id="longitude" name="longitude" /><br />
+        <label for="latitude">Latitude:</label><br />
+        <input type="number" step="any" id="latitude" name="latitude" /><br />
+        <label for="remaining-points">Remaining Points:</label><br />
+        <input
+          type="number"
+          id="remaining-points"
+          name="remaining-points"
+        /><br />
+        <input
+          type="submit"
+          id="submit-add-customer"
+          name="add_customer"
+          value="submit"
+        />
+      </form>
+    </div>
+  </body>
+
+  <script>
+    function ShowCustomers() {
+      const all_customers = document.getElementById("all_customers");
+      all_customers.style.display = "block";
+      const search_customer = document.getElementById("search_customer");
+      search_customer.style.display = "none";
+      const add_customer = document.getElementById("add_customer");
+      add_customer.style.display = "none";
+      window.location.href = "/customer/";
+    }
+
+    function SearchCustomer() {
+      const all_customers = document.getElementById("all_customers");
+      all_customers.style.display = "none";
+      const search_customer = document.getElementById("search_customer");
+      search_customer.style.display = "block";
+      const add_customer = document.getElementById("add_customer");
+      add_customer.style.display = "none";
+      document.getElementById("submit_search_customer").disabled = true;
+    }
+
+    function AddCustomer() {
+      const all_customers = document.getElementById("all_customers");
+      all_customers.style.display = "none";
+      const search_customer = document.getElementById("search_customer");
+      search_customer.style.display = "none";
+      const add_customer = document.getElementById("add_customer");
+      add_customer.style.display = "block";
+    }
+
+    function addInput() {
+      document.getElementById("submit_search_customer").disabled = false;
+      // Get selected option value
+      var dropdown = document.getElementById("dropdown");
+      var selectedOption = dropdown.value;
+
+      // Set input type based on selected option
+      var type;
+      switch (selectedOption) {
+        case "email":
+          type = "text";
+          break;
+        case "phone-number":
+          type = "number";
+          break;
+        case "remaining-points":
+          type = "number";
+          break;
+        case "longitude":
+          type = "number";
+          step = "any";
+          break;
+        case "latitude":
+          type = "number";
+          step = "any";
+          break;
+        default:
+          type = "text";
+      }
+
+      var options = dropdown.options;
+      for (var i = 0; i < options.length; i++) {
+        if (options[i].value == selectedOption) {
+          options[i].disabled = true;
+          break;
+        }
+      }
+
+      // Add new input field to form
+      var form = document.getElementById("searchCustomerForm");
+      var input = document.createElement("input");
+      var label = document.createElement("label");
+      input.type = type;
+      if (type == "number") {
+        input.step = step;
+      }
+      input.name = selectedOption;
+      label.setAttribute("for", selectedOption);
+      label.textContent = selectedOption;
+      form.insertBefore(document.createElement("br"), form.firstChild);
+      form.insertBefore(input, form.firstChild);
+      form.insertBefore(label, form.firstChild);
+    }
+
+    function editCustomer(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      // Get the values of the cell elements
+      const cells = row.querySelectorAll("td");
+      const email = cells[0].textContent;
+      const first_name = cells[1].textContent;
+      const last_name = cells[2].textContent;
+      const birth_date = cells[3].textContent;
+      const phone_number = cells[4].textContent;
+      const longitude = cells[5].textContent;
+      const latitude = cells[6].textContent;
+      const remaining_points = cells[7].textContent;
+
+      // Replace the cell elements with form inputs
+      cells[0].innerHTML = `<input type="email" name="email" value="${email}">`;
+      cells[1].innerHTML = `<input type="text" name="first-name" value="${first_name}">`;
+      cells[2].innerHTML = `<input type="text" name="last-name" value="${last_name}">`;
+      cells[3].innerHTML = `<input type="text" name="birth-date" value="${birth_date}">`;
+      cells[4].innerHTML = `<input type="number" name="phone-number" value="${phone_number}">`;
+      cells[5].innerHTML = `<input type="number" name="longitude" value="${longitude}">`;
+      cells[6].innerHTML = `<input type="number" name="latitude" value="${latitude}">`;
+      cells[7].innerHTML = `<input type="number" name="remaining-points" value="${remaining_points}">`;
+      cells[8].innerHTML = `<a onclick="saveCustomer('${id}')">Save</a>`;
+    }
+
+    function saveCustomer(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/customer/";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "csrfmiddlewaretoken";
+      input.value = "{{ csrf_token }}";
+
+      form.appendChild(input);
+
+      const cells = row.querySelectorAll("td");
+
+      for (let i = 0; i < cells.length; i++) {
+        form.appendChild(cells[i]);
+      }
+
+      row.parentNode.replaceChild(form, row);
+      form.submit();
+    }
+  </script>
 </html>

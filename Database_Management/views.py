@@ -25,7 +25,7 @@ def customer(request):
 
         if "add_customer" in request.POST:
             try:
-                Employee.insertInto(email, first_name, last_name, birth_date,
+                Customer.insertInto(email, first_name, last_name, birth_date,
                 phone_number, longitude, latitude, remaining_points)
                 return redirect(customer)
             except Exception as e:

@@ -127,7 +127,6 @@
             <td>{{customer.5}}</td>
             <td>{{customer.6}}</td>
             <td>{{customer.7}}</td>
-            <td>{{customer.8}}</td>
             <td>
               <a
                 href="#'{{customer.0}}'"
@@ -147,9 +146,9 @@
       <select id="dropdown">
         <option value="email">Email</option>
         <option value="phone-number">Phone_Number</option>
-        <option value="longitude">GS_Longitude</option>
-        <option value="latitude">GS_Latitude</option>
-        <option value="remaining-points">Super_ssn</option>
+        <option value="longitude">Longitude</option>
+        <option value="latitude">Latitude</option>
+        <option value="remaining-points">Remaining_Points</option>
       </select>
       <button onclick="addInput()">Add Input</button>
       <form id="searchCustomerForm" method="POST">
@@ -165,26 +164,22 @@
     <div id="add_customer" style="display: none">
       <form id="searchCustomerForm" method="POST">
         {% csrf_token %}
-        <label for="email">Email:</label><br />
-        <input type="text" id="email" name="email" /><br />
-        <label for="first-name">First Name:</label><br />
-        <input type="text" id="first-name" name="first-name" /><br />
-        <label for="last-name">Last Name:</label><br />
-        <input type="text" id="last-name" name="last-name" /><br />
-        <label for="birth-date">Birth Date:</label><br />
-        <input type="date" id="birth-date" name="birth-date" /><br />
-        <label for="phone-number">Phone Number:</label><br />
-        <input type="number" id="phone-number" name="phone-number" /><br />
-        <label for="longitude">Longitude:</label><br />
-        <input type="number" step="any" id="longitude" name="longitude" /><br />
-        <label for="latitude">Latitude:</label><br />
-        <input type="number" step="any" id="latitude" name="latitude" /><br />
-        <label for="remaining-points">Remaining Points:</label><br />
-        <input
-          type="number"
-          id="remaining-points"
-          name="remaining-points"
-        /><br />
+        <label for="email">Email:</label><br>
+        <input type="text" id="email" name="email"><br>
+        <label for="first-name">First Name:</label><br>
+        <input type="text" id="first-name" name="first-name"><br>
+        <label for="last-name">Last Name:</label><br>
+        <input type="text" id="last-name" name="last-name"><br>
+        <label for="birth-date">Birth Date:</label><br>
+        <input type="date" id="birth-date" name="birth-date"><br>
+        <label for="phone-number">Phone Number:</label><br>
+        <input type="number" id="phone-number" name="phone-number"><br>
+        <label for="longitude">Longitude:</label><br>
+        <input type="number" step="any" id="longitude" name="longitude"><br>
+        <label for="latitude">Latitude:</label><br>
+        <input type="number" step="any" id="latitude" name="latitude"><br>
+        <label for="remaining-points">Remaining Points:</label><br>
+        <input type="number" id="remaining-points" name="remaining-points"><br>
         <input
           type="submit"
           id="submit-add-customer"
@@ -295,7 +290,7 @@
       const remaining_points = cells[7].textContent;
 
       // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="email" name="email" value="${email}">`;
+      cells[0].innerHTML = `<input type="email" name="email" value="${email}" readonly="readonly">`;
       cells[1].innerHTML = `<input type="text" name="first-name" value="${first_name}">`;
       cells[2].innerHTML = `<input type="text" name="last-name" value="${last_name}">`;
       cells[3].innerHTML = `<input type="text" name="birth-date" value="${birth_date}">`;

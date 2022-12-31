@@ -9,8 +9,39 @@ def consistsOf(request):
     return render(request, 'consistsOf.html', {'consistsOf': consistsOf})
 
 def contract(request):
-    contracts = Contract.retrieveAllColumns()
+    if request.method=="POST":
+        id = request.POST.get('id', False)
+        start_date = request.POST.get('start-date', False)
+        end_date = request.POST.get('end-date', False)
+        salary = request.POST.get('salary', False)
+
+        if "add_contract" in request.POST:
+            try:
+                Contract.insertInto(id, start_date, end_date, salary)
+                return redirect(contract)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_contract" in request.POST:
+            try:
+                contracts = Contract.searchBy(int(id), start_date, end_date, float(salary))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Contract.update(int(id), start_date, end_date, float(salary))
+                return redirect(contract)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        contracts = Contract.retrieveAllColumns()
     return render(request, 'contract.html', {'contracts': contracts})
+
+def contract_delete(request, id):
+    Contract.delete(id)
+    return redirect(contract)
 
 def customer(request):
     if request.method=="POST":

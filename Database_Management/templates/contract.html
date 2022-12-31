@@ -2,16 +2,288 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0066c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #003399;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        form input,
+        form textarea {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form #submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        form #submit:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-    {% for contract in contracts %}
-    <p>Id: {{contract.0}}, Start_Date: {{contract.1}}, End_Date: {{contract.2}}, Salary: {{contract.3}}</p>
-    {% endfor %}
+    <div class="header">
+        <h1>Contract Handling</h1>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a id="all_contracts_nav" onclick="ShowContracts()">Contracts</a>
+        <a id="search_contracts_nav" onclick="SearchContract()">Search Contract</a>
+        <a id="add_contracts_nav" onclick="AddContract()">Add Contract</a>
+    </nav>
+    <div id="all_contracts" style="display: block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Salary</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contract in contracts %}
+                <tr id="{{contract.0}}">
+                    <td>{{contract.0}}</td>
+                    <td>{{contract.1}}</td>
+                    <td>{{contract.2}}</td>
+                    <td>{{contract.3}}</td>
+                    <td>
+                        <a href="#'{{contract.0}}'" onclick="editContract('{{contract.0}}')">Edit</a>
+                        |
+                        <a href="{{contract.0}}/">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="search_contract" style="display: none">
+        <p>Select fields you want to search for</p>
+        <select id="dropdown">
+            <option value="id">ID</option>
+            <option value="start-date">Start_Date</option>
+            <option value="end-date">End_Date</option>
+            <option value="salary">Salary</option>
+        </select>
+        <button onclick="addInput()">Add Input</button>
+        <form id="searchContractForm" method="POST">
+            {% csrf_token %}
+            <input type="submit" id="submit_search_contract" name="search_contract" value="submit" />
+        </form>
+    </div>
+    <div id="add_contract" style="display: none">
+        <form id="addContractForm" method="POST">
+            {% csrf_token %}
+            <label for="id">ID:</label><br>
+            <input type="number" id="id" name="id"><br>
+            <label for="start-date">Start Date:</label><br>
+            <input type="date" id="start-date" name="start-date"><br>
+            <label for="end-date">End Date:</label><br>
+            <input type="date" id="end-date" name="end-date"><br>
+            <label for="salary">Salary:</label><br>
+            <input type="number" step="any" id="salary" name="salary"><br>
+            <input type="submit" id="submit-add-contract" name="add_contract" value="submit" />
+        </form>
+    </div>
 </body>
+
+<script>
+    function ShowContracts() {
+        const all_contracts = document.getElementById("all_contracts");
+        all_contracts.style.display = "block";
+        const search_contract = document.getElementById("search_contract");
+        search_contract.style.display = "none";
+        const add_contract = document.getElementById("add_contract");
+        add_contract.style.display = "none";
+        window.location.href = "/contract/";
+    }
+
+    function SearchContract() {
+        const all_contracts = document.getElementById("all_contracts");
+        all_contracts.style.display = "none";
+        const search_contract = document.getElementById("search_contract");
+        search_contract.style.display = "block";
+        const add_contract = document.getElementById("add_contract");
+        add_contract.style.display = "none";
+        document.getElementById("submit_search_contract").disabled = true;
+    }
+
+    function AddContract() {
+        const all_contracts = document.getElementById("all_contracts");
+        all_contracts.style.display = "none";
+        const search_contract = document.getElementById("search_contract");
+        search_contract.style.display = "none";
+        const add_contract = document.getElementById("add_contract");
+        add_contract.style.display = "block";
+        const id_field = document.getElementById("id");
+        id_field.value = document.getElementsByTagName("tr").length;
+    }
+
+    function addInput() {
+        document.getElementById("submit_search_contract").disabled = false;
+        // Get selected option value
+        var dropdown = document.getElementById("dropdown");
+        var selectedOption = dropdown.value;
+
+        // Set input type based on selected option
+        var type;
+        switch (selectedOption) {
+            case "id":
+                type = "number";
+                step = "1";
+                break;
+            case "start-date":
+                type = "date";
+                break;
+            case "end-date":
+                type = "date";
+                break;
+            case "salary":
+                type = "number";
+                step = "any";
+            default:
+                type = "text";
+        }
+
+        var options = dropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == selectedOption) {
+                options[i].disabled = true;
+                break;
+            }
+        }
+
+        // Add new input field to form
+        var form = document.getElementById("searchContractForm");
+        var input = document.createElement("input");
+        var label = document.createElement("label");
+        input.type = type;
+        if (type == "number") {
+            input.step = step;
+        }
+        input.name = selectedOption;
+        label.setAttribute("for", selectedOption);
+        label.textContent = selectedOption;
+        form.insertBefore(document.createElement("br"), form.firstChild);
+        form.insertBefore(input, form.firstChild);
+        form.insertBefore(label, form.firstChild);
+    }
+
+    function editContract(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        // Get the values of the cell elements
+        const cells = row.querySelectorAll("td");
+        const contract_id = cells[0].textContent;
+        const start_date = cells[1].textContent;
+        const end_date = cells[2].textContent;
+        const salary = cells[3].textContent;
+
+        // Replace the cell elements with form inputs
+        cells[0].innerHTML = `<input type="number" name="id" value="${contract_id}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="date" name="start-date" value="${start_date}">`;
+        cells[2].innerHTML = `<input type="date" name="end-date" value="${end_date}">`;
+        cells[3].innerHTML = `<input type="number" step="any" name="salary" value="${salary}">`;
+        cells[4].innerHTML = `<a onclick="saveContract('${contract_id}')">Save</a>`;
+    }
+
+    function saveContract(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/contract/";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "csrfmiddlewaretoken";
+        input.value = "{{ csrf_token }}";
+
+        form.appendChild(input);
+
+        const cells = row.querySelectorAll("td");
+
+        for (let i = 0; i < cells.length; i++) {
+            form.appendChild(cells[i]);
+        }
+
+        row.parentNode.replaceChild(form, row);
+        form.submit();
+    }
+</script>
 
 </html>

@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('consists_of/', views.consistsOf, name='consistsOf'),
     path('contract/', views.contract, name='contract'),
+    path('contract/<int:id>/', views.contract_delete),
     path('customer/', views.customer, name='customer'),
     path('customer/<str:email>/', views.customer_delete),
     path('employee/', views.employee, name='employee'),

@@ -7,7 +7,7 @@ urlpatterns = [
     path('consists_of/', views.consistsOf, name='consistsOf'),
     path('contract/', views.contract, name='contract'),
     path('customer/', views.customer, name='customer'),
-    path('customer/<str:ssn>/', views.customer_delete),
+    path('customer/<str:email>/', views.customer_delete),
     path('employee/', views.employee, name='employee'),
     path('employee/<str:ssn>/', views.employee_delete),
     path('entails/', views.entails, name='entails'),

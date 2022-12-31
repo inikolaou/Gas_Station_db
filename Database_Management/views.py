@@ -33,8 +33,7 @@ def customer(request):
                 print(e)
         elif "search_customer" in request.POST:
             try:
-                customers = Customer.searchBy(email, phone_number, longitude,
-                                            latitude, remaining_points)
+                customers = Customer.searchBy(email, phone_number, int(remaining_points))
             except Exception as e:
                 print("View exception")
                 print(e)

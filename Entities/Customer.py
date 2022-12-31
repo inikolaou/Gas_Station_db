@@ -58,7 +58,7 @@ def insertInto(email, fname, lname, birth_date, phone_number, longitude, latitud
             except Exception as e:
                 pass
 
-def searchBy(email, phone_number, longitude, latitude, rem_points):
+def searchBy(email, phone_number, rem_points):
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     with conn:
@@ -67,32 +67,26 @@ def searchBy(email, phone_number, longitude, latitude, rem_points):
                         SELECT * 
                         FROM CUSTOMER
                         WHERE Email = ?''',
-                        (email))
+                        (email, ))
         elif (phone_number):
-            c.execute('''
-                    SELECT * 
-                    FROM CUSTOMER
-                    WHERE Phone_Number = ?''',
-                    (phone_number))
-        elif (longitude and latitude):
-            c.execute('''
-                    SELECT * 
-                    FROM CUSTOMER
-                    WHERE Longitude = ? AND Latitude = ?''',
-                    (longitude, latitude))
-        elif (rem_points):
-            if (longitude and latitude):
+            if (rem_points):
                 c.execute('''
                     SELECT * 
                     FROM CUSTOMER
-                    WHERE Remaining_Points = ? AND Longitude = ? AND Latitude = ?''',
-                    (rem_points, longitude, latitude))
+                    WHERE Phone_Number = ? AND Remaining_Points = ?''',
+                    (phone_number, rem_points))
             else:
                 c.execute('''
-                    SELECT * 
-                    FROM CUSTOMER
-                    WHERE Remaining_Points = ?''',
-                    (rem_points))
+                        SELECT * 
+                        FROM CUSTOMER
+                        WHERE Phone_Number = ?''',
+                        (phone_number, ))
+        else:
+            c.execute('''
+                SELECT * 
+                FROM CUSTOMER
+                WHERE Remaining_Points = ?''',
+                (rem_points, ))
 
     data = c.fetchall()
     conn.close()
@@ -105,11 +99,11 @@ def update(email, fname, lname, birth_date, phone_number, longitude, latitude,
     with conn:
         try:
             c.execute('''UPDATE CUSTOMER
-                        SET Email = ?, Fname = ?, Lname = ?, Birth_Date = ?,
+                        SET Fname = ?, Lname = ?, Birth_Date = ?,
                         Phone_Number = ?, Longitude = ?, Latitude = ?,
-                        Remaining_Points = ?''', 
-                        (email, fname, lname, birth_date, phone_number, longitude,
-                        latitude, rem_points))
+                        Remaining_Points = ? WHERE Email = ?''', 
+                        (fname, lname, birth_date, phone_number, longitude,
+                        latitude, rem_points, email))
         except Exception as e:
             print("Update exception")
             print(e)
@@ -123,7 +117,7 @@ def delete(email):
             c.execute('''
             DELETE FROM CUSTOMER
             WHERE Email = ?
-            ''', (email))
+            ''', (email, ))
         except Exception as e:
             print(e)
     conn.close()

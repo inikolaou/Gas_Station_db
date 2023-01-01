@@ -172,9 +172,39 @@ def service(request):
     services = Service.retrieveAllColumns()
     return render(request, 'service.html', {'services': services})
 
-def signs(request):
-    signs = Signs.retrieveAllColumns()
+def sign(request):
+    if request.method=="POST":
+        essn = request.POST.get('essn', False)
+        contract_id = request.POST.get('contract-id', False)
+        previous_contract_id = request.POST.get('previous-contract-id', False)
+
+        if "add_sign" in request.POST:
+            try:
+                Signs.insertInto(essn, int(contract_id))
+                return redirect(sign)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_sign" in request.POST:
+            try:
+                signs = Signs.searchBy(essn, int(contract_id))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Signs.update(essn, int(contract_id), int(previous_contract_id))
+                return redirect(sign)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        signs = Signs.retrieveAllColumns()
     return render(request, 'signs.html', {'signs': signs})
+
+def sign_delete(request, essn_contract):
+    Signs.delete(essn_contract)
+    return redirect(sign)
 
 def supplier(request):
     names = Supplier.searchByName()

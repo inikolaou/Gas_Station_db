@@ -45,6 +45,62 @@ def insertInto(essn, contract_id, conn=False):
             except Exception:
                 pass
 
+def searchBy(essn, contract_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (essn):
+            if (contract_id):
+                c.execute('''
+                        SELECT * 
+                        FROM SIGNS
+                        WHERE Essn = ? AND Contract_Id = ?''',
+                        (essn, contract_id))
+            else:
+                c.execute('''
+                        SELECT * 
+                        FROM SIGNS
+                        WHERE Essn = ?''',
+                        (essn, ))
+        else:
+            c.execute('''
+                    SELECT * 
+                    FROM SIGNS
+                    WHERE Contract_Id = ?''',
+                    (contract_id, ))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def update(essn, contract_id, previous_contract_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE SIGNS
+                        SET Contract_Id = ?
+                        WHERE Essn = ? AND Contract_Id = ?''', 
+                        (contract_id, essn, previous_contract_id))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(essn_contract):
+    essn_contract = essn_contract.split('_')
+    essn = essn_contract[0]
+    contract_id = essn_contract[1]
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''DELETE FROM
+                        SIGNS WHERE
+                        Essn = ? AND Contract_Id = ?''', (essn, contract_id))
+        except Exception as e:
+            print(e)
+    conn.close()
+
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()

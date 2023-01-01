@@ -21,7 +21,8 @@ urlpatterns = [
     path('pumps/', views.pump, name='pump'),
     path('purchases/', views.purchase, name='purchase'),
     path('services/', views.service, name='service'),
-    path('signs/', views.signs, name='signs'),
+    path('signs/', views.sign, name='sign'),
+    path('signs/<str:essn_contract>/', views.sign_delete),
     path('supplier/', views.supplier, name='supplier'),
     path('supplies/', views.supply, name='supply'),
     path('tanks/', views.tank, name='tank')

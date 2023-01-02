@@ -16,7 +16,8 @@ urlpatterns = [
     path('involves/', views.involves, name='involves'),
     path('is_assigned_to/', views.isAssignedTo, name='isAssignedTo'),
     path('offers/', views.offers, name='offers'),
-    path('products/', views.product, name='product'),
+    path('product/', views.product, name='product'),
+    path('product/<int:id>/', views.product_delete),
     path('provides/', views.provides, name='provides'),
     path('pumps/', views.pump, name='pump'),
     path('purchases/', views.purchase, name='purchase'),
@@ -24,6 +25,7 @@ urlpatterns = [
     path('signs/', views.sign, name='sign'),
     path('signs/<str:essn_contract>/', views.sign_delete),
     path('supplier/', views.supplier, name='supplier'),
+    path('supplier/<str:email>/', views.supplier_delete),
     path('supplies/', views.supply, name='supply'),
     path('tanks/', views.tank, name='tank')
 ]

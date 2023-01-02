@@ -1,17 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
-</head>
+    <style>
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+      }
 
-<body>
-    {% for i in names %}
-    <p>Hello {{i.0}}!!</p>
-    {% endfor %}
-</body>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+      }
+
+      a {
+        color: #0066c0;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #003399;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+      }
+
+      form label {
+        margin-top: 10px;
+        font-size: 18px;
+      }
+
+      form input,
+      form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      form #submit:hover {
+        background-color: #555;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>Supplier Handling</h1>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a id="all_suppliers_nav" onclick="ShowSuppliers()">Suppliers</a>
+      <a id="search_supplier_nav" onclick="SearchSupplier()">Search Supplier</a>
+      <a id="add_supplier_nav" onclick="AddSupplier()">Add Supplier</a>
+    </nav>
+    <div id="all_suppliers" style="display: block">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Phone Number</th>
+            <th>Longitude</th>
+            <th>Latitude</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for supplier in suppliers %}
+          <tr id="{{supplier.0}}">
+            <td>{{supplier.0}}</td>
+            <td>{{supplier.1}}</td>
+            <td>{{supplier.2}}</td>
+            <td>{{supplier.3}}</td>
+            <td>{{supplier.4}}</td>
+            <td>{{supplier.5}}</td>
+            <td>
+              <a
+                href="#'{{supplier.0}}'"
+                onclick="editSupplier('{{supplier.0}}')"
+                >Edit</a
+              >
+              |
+              <a href="{{supplier.0}}/">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="search_supplier" style="display: none">
+      <p>Select fields you want to search for</p>
+      <select id="dropdown">
+        <option value="email">Email</option>
+        <option value="phone-number">Phone_Number</option>
+        <option value="longitude">Longitude</option>
+        <option value="latitude">Latitude</option>
+      </select>
+      <button onclick="addInput()">Add Input</button>
+      <form id="searchSupplierForm" method="POST">
+        {% csrf_token %}
+        <input
+          type="submit"
+          id="submit_search_supplier"
+          name="search_supplier"
+          value="submit"
+        />
+      </form>
+    </div>
+    <div id="add_supplier" style="display: none">
+      <form id="addSupplierForm" method="POST">
+        {% csrf_token %}
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br>
+        <label for="first-name">First Name:</label><br>
+        <input type="text" id="first-name" name="first-name"><br>
+        <label for="last-name">Last Name:</label><br>
+        <input type="text" id="last-name" name="last-name"><br>
+        <label for="phone-number">Phone Number:</label><br>
+        <input type="number" step="1" id="phone-number" name="phone-number"><br>
+        <label for="longitude">Longitude:</label><br>
+        <input type="number" step="any" id="longitude" name="longitude"><br>
+        <label for="latitude">Latitude:</label><br>
+        <input type="number" step="any" id="latitude" name="latitude"><br>
+        <input
+          type="submit"
+          id="submit-add-supplier"
+          name="add_supplier"
+          value="submit"
+        />
+      </form>
+    </div>
+  </body>
+
+  <script>
+    function ShowSuppliers() {
+      const all_suppliers = document.getElementById("all_suppliers");
+      all_suppliers.style.display = "block";
+      const search_supplier = document.getElementById("search_supplier");
+      search_supplier.style.display = "none";
+      const add_supplier = document.getElementById("add_supplier");
+      add_supplier.style.display = "none";
+      window.location.href = "/supplier/";
+    }
+
+    function SearchSupplier() {
+      const all_suppliers = document.getElementById("all_suppliers");
+      all_suppliers.style.display = "none";
+      const search_supplier = document.getElementById("search_supplier");
+      search_supplier.style.display = "block";
+      const add_supplier = document.getElementById("add_supplier");
+      add_supplier.style.display = "none";
+      document.getElementById("submit_search_supplier").disabled = true;
+    }
+
+    function AddSupplier() {
+      const all_suppliers = document.getElementById("all_suppliers");
+      all_suppliers.style.display = "none";
+      const search_supplier = document.getElementById("search_supplier");
+      search_supplier.style.display = "none";
+      const add_supplier = document.getElementById("add_supplier");
+      add_supplier.style.display = "block";
+    }
+
+    function addInput() {
+      document.getElementById("submit_search_supplier").disabled = false;
+      // Get selected option value
+      var dropdown = document.getElementById("dropdown");
+      var selectedOption = dropdown.value;
+
+      // Set input type based on selected option
+      var type;
+      switch (selectedOption) {
+        case "email":
+          type = "text";
+          break;
+        case "phone-number":
+          type = "number";
+          step = "1"
+          break;
+        case "longitude":
+          type = "number";
+          step = "any";
+          break;
+        case "latitude":
+          type = "number";
+          step = "any";
+          break;
+        default:
+          type = "text";
+      }
+
+      var options = dropdown.options;
+      for (var i = 0; i < options.length; i++) {
+        if (options[i].value == selectedOption) {
+          options[i].disabled = true;
+          break;
+        }
+      }
+
+      // Add new input field to form
+      var form = document.getElementById("searchSupplierForm");
+      var input = document.createElement("input");
+      var label = document.createElement("label");
+      input.type = type;
+      if (type == "number") {
+        input.step = step;
+      }
+      input.name = selectedOption;
+      label.setAttribute("for", selectedOption);
+      label.textContent = selectedOption;
+      form.insertBefore(document.createElement("br"), form.firstChild);
+      form.insertBefore(input, form.firstChild);
+      form.insertBefore(label, form.firstChild);
+    }
+
+    function editSupplier(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      // Get the values of the cell elements
+      const cells = row.querySelectorAll("td");
+      const email = cells[0].textContent;
+      const first_name = cells[1].textContent;
+      const last_name = cells[2].textContent;
+      const phone_number = cells[3].textContent;
+      const longitude = cells[4].textContent;
+      const latitude = cells[5].textContent;
+
+      // Replace the cell elements with form inputs
+      cells[0].innerHTML = `<input type="email" name="email" value="${email}" readonly="readonly">`;
+      cells[1].innerHTML = `<input type="text" name="first-name" value="${first_name}">`;
+      cells[2].innerHTML = `<input type="text" name="last-name" value="${last_name}">`;
+      cells[3].innerHTML = `<input type="number" step="1" name="phone-number" value="${phone_number}">`;
+      cells[4].innerHTML = `<input type="number" name="longitude" value="${longitude}">`;
+      cells[5].innerHTML = `<input type="number" name="latitude" value="${latitude}">`;
+      cells[6].innerHTML = `<a onclick="saveSupplier('${id}')">Save</a>`;
+    }
+
+    function saveSupplier(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/supplier/";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "csrfmiddlewaretoken";
+      input.value = "{{ csrf_token }}";
+
+      form.appendChild(input);
+
+      const cells = row.querySelectorAll("td");
+
+      for (let i = 0; i < cells.length; i++) {
+        form.appendChild(cells[i]);
+      }
+
+      row.parentNode.replaceChild(form, row);
+      form.submit();
+    }
+  </script>
 </html>

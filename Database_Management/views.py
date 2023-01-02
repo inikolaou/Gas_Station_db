@@ -153,8 +153,40 @@ def offers(request):
     return render(request, 'offers.html', {'offers': offers})
 
 def product(request):
-    products = Product.retrieveAllColumns()
+    if request.method=="POST":
+        id = request.POST.get('id', False)
+        name = request.POST.get('name', False)
+        type = request.POST.get('type', False)
+        price = request.POST.get('price', False)
+        corresponding_points = request.POST.get('corresponding-points', False)
+
+        if "add_product" in request.POST:
+            try:
+                Product.insertInto(id, name, type, price, int(corresponding_points))
+                return redirect(product)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_product" in request.POST:
+            try:
+                products = Product.searchBy(int(id), type, float(price), int(corresponding_points))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Product.update(int(id), name, type, float(price), int(corresponding_points))
+                return redirect(product)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        products = Product.retrieveAllColumns()
     return render(request, 'product.html', {'products': products})
+
+def product_delete(request, id):
+    Product.delete(id)
+    return redirect(product)
 
 def provides(request):
     provides = Provides.retrieveAllColumns()
@@ -207,8 +239,44 @@ def sign_delete(request, essn_contract):
     return redirect(sign)
 
 def supplier(request):
-    names = Supplier.searchByName()
-    return render(request, 'supplier.html', {'names': names})
+    if request.method=="POST":
+        email = request.POST.get('email', False)
+        first_name = request.POST.get('first-name', False)
+        last_name = request.POST.get('last-name', False)
+        phone_number = request.POST.get('phone-number', False)
+        longitude = request.POST.get('longitude', False)
+        latitude = request.POST.get('latitude', False)
+
+        if "add_supplier" in request.POST:
+            try:
+                Supplier.insertInto(email, first_name, last_name,
+                phone_number, longitude, latitude)
+                return redirect(supplier)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_supplier" in request.POST:
+            try:
+                suppliers = Supplier.searchBy(
+                    email, phone_number, longitude, latitude)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Supplier.update(email, first_name, last_name, phone_number,
+                                longitude, latitude)
+                return redirect(supplier)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        suppliers = Supplier.retrieveAllColumns()
+    return render(request, 'supplier.html', {'suppliers': suppliers})
+
+def supplier_delete(request, email):
+    Supplier.delete(email)
+    return redirect(supplier)
 
 def supply(request):
     supplies = Supply.retrieveAllColumns()

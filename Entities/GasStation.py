@@ -11,7 +11,7 @@ def createGasStationTable():
                         Latitude                    REAL        NOT NULL,
                         Type_of_Service             TEXT        NOT NULL,
                         Start_Date                  TEXT        NOT NULL,
-                        Minimarket                  TEXT        NOT NULL DEFAULT false,
+                        Minimarket                  INTEGER     NOT NULL DEFAULT 0,
                         Mgr_Ssn                     TEXT,
                         PRIMARY KEY (Longitude, Latitude),
                         FOREIGN KEY (Mgr_Ssn) REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL
@@ -51,6 +51,95 @@ def insertInto(longitude, latitude, type_of_service, start_date, minimarket, mgr
                             start_date, minimarket, mgr_ssn))
             except Exception:
                 pass
+
+def searchBy(longitude, latitude, type_of_service, minimarket, mgr_ssn):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (longitude and latitude):
+            c.execute('''
+                    SELECT * 
+                    FROM GAS_STATION
+                    WHERE Longitude = ? AND Latitude = ?''',
+                    (longitude, latitude))
+        elif (type_of_service):
+            if (minimarket):
+                if (mgr_ssn):
+                    c.execute('''
+                    SELECT * 
+                    FROM GAS_STATION
+                    WHERE Type_of_Service = ? AND Minimarket = ? AND Mgr_Ssn = ?''',
+                    (type_of_service, minimarket, mgr_ssn))
+                else:
+                    c.execute('''
+                    SELECT * 
+                    FROM GAS_STATION
+                    WHERE Type_of_Service = ? AND Minimarket = ?''',
+                    (type_of_service, minimarket))
+            elif (mgr_ssn):
+                c.execute('''
+                    SELECT * 
+                    FROM GAS_STATION
+                    WHERE Type_of_Service = ? AND Mgr_Ssn = ?''',
+                    (type_of_service, mgr_ssn))
+            else:
+                c.execute('''
+                    SELECT * 
+                    FROM GAS_STATION
+                    WHERE Type_of_Service = ?''',
+                    (type_of_service, ))
+        elif (minimarket):
+            if (mgr_ssn):
+                c.execute('''
+                    SELECT * 
+                    FROM GAS_STATION
+                    WHERE Minimarket = ? AND Mgr_Ssn = ?''',
+                    (minimarket, mgr_ssn))
+            else:
+                c.execute('''
+                    SELECT * 
+                    FROM GAS_STATION
+                    WHERE Minimarket = ?''',
+                    (minimarket, ))
+        else:
+            c.execute('''
+                    SELECT * 
+                    FROM GAS_STATION
+                    WHERE Mgr_Ssn = ?''',
+                    (mgr_ssn, ))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def update(longitude, latitude, type_of_service, start_date, minimarket, mgr_ssn):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE GAS_STATION
+                        SET Type_of_Service = ?, Start_Date = ?, 
+                            Minimarket = ?, Mgr_Ssn = ?
+                        WHERE Longitude = ? AND Latitude = ?''', 
+                        (type_of_service, start_date, minimarket, mgr_ssn, longitude, latitude))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(longitude_latitude):
+    longitude_latitude = longitude_latitude.split('_')
+    longitude = longitude_latitude[0]
+    latitude = longitude_latitude[1]
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''DELETE FROM
+                        GAS_STATION WHERE
+                        Longitude = ? AND Latitude = ?''', (longitude, latitude))
+        except Exception as e:
+            print(e)
+    conn.close()
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

@@ -13,6 +13,7 @@ urlpatterns = [
     path('employee/<str:ssn>/', views.employee_delete),
     path('entails/', views.entails, name='entails'),
     path('gas_stations/', views.gasStation, name='gasStation'),
+    path('gas_stations/<str:longitude_latitude>/', views.gasStation_delete),
     path('involves/', views.involves, name='involves'),
     path('is_assigned_to/', views.isAssignedTo, name='isAssignedTo'),
     path('offers/', views.offers, name='offers'),

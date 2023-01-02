@@ -137,8 +137,44 @@ def entails(request):
     return render(request, 'entails.html', {'entails': entails})
 
 def gasStation(request):
-    gasStations = GasStation.retrieveAllColumns()
+    if request.method=="POST":
+        longitude = request.POST.get('longitude', False)
+        latitude = request.POST.get('latitude', False)
+        type_of_service = request.POST.get('type-of-service', False)
+        start_date = request.POST.get('start-date', False)
+        minimarket = request.POST.get('minimarket', False)
+        mgr_ssn = request.POST.get('mgr-ssn', False)
+
+        if "add_gas_station" in request.POST:
+            try:
+                GasStation.insertInto(longitude, latitude, type_of_service, start_date,
+                                      minimarket, mgr_ssn)
+                return redirect(gasStation)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_gas_station" in request.POST:
+            try:
+                gasStations = GasStation.searchBy(longitude, latitude, type_of_service,
+                                      minimarket, mgr_ssn)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                GasStation.update(longitude, latitude, type_of_service, start_date,
+                                minimarket, mgr_ssn)
+                return redirect(gasStation)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        gasStations = GasStation.retrieveAllColumns()
     return render(request, 'gasStation.html', {'gasStations': gasStations})
+
+def gasStation_delete(request, longitude_latitude):
+    GasStation.delete(longitude_latitude)
+    return redirect(gasStation)
 
 def involves(request):
     involves = Involves.retrieveAllColumns()

@@ -2,16 +2,310 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0066c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #003399;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        form input,
+        form textarea {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form #submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        form #submit:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-    {% for station in gasStations %}
-    <p>Longitude: {{station.0}}, Latitude: {{station.1}}, Type_of_Service: {{station.2}}, Start_Date: {{station.3}}, Minimarket: {{station.4}}, Mgr_Ssn: {{station.5}}</p>
-    {% endfor %}
+    <div class="header">
+        <h1>Contract Handling</h1>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a id="all_gas_station_nav" onclick="ShowGasStation()">Gas Stations</a>
+        <a id="search_gas_station_nav" onclick="SearchGasStation()">Search Gas Stations</a>
+        <a id="add_gas_station_nav" onclick="AddGasStation()">Add Gas Station</a>
+    </nav>
+    <div id="all_gas_stations" style="display: block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Longitude</th>
+                    <th>Latitude</th>
+                    <th>Type of Service</th>
+                    <th>Start Date</th>
+                    <th>Minimarket</th>
+                    <th>Mgr Ssn</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for gasStation in gasStations %}
+                <tr id="{{gasStation.0}}_{{gasStation.1}}">
+                    <td>{{gasStation.0}}</td>
+                    <td>{{gasStation.1}}</td>
+                    <td>{{gasStation.2}}</td>
+                    <td>{{gasStation.3}}</td>
+                    <td>{{gasStation.4}}</td>
+                    <td>{{gasStation.5}}</td>
+                    <td>
+                        <a href="#'{{gasStation.0}}_{{gasStation.1}}'"
+                            onclick="editGasStation('{{gasStation.0}}_{{gasStation.1}}')">Edit</a>
+                        |
+                        <a href="{{gasStation.0}}_{{gasStation.1}}/">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="search_gas_station" style="display: none">
+        <p>Select fields you want to search for</p>
+        <select id="dropdown">
+            <option value="longitude">Longitude</option>
+            <option value="latitude">Latitude</option>
+            <option value="type-of-service">Type_of_Service</option>
+            <option value="minimarket">Minimarket</option>
+            <option value="mgr-ssn">Mgr_Ssn</option>
+        </select>
+        <button onclick="addInput()">Add Input</button>
+        <form id="searchGasStationForm" method="POST">
+            {% csrf_token %}
+            <input type="submit" id="submit_search_gas_station" name="search_gas_station" value="submit" />
+        </form>
+    </div>
+    <div id="add_gas_station" style="display: none">
+        <form id="addGasStationForm" method="POST">
+            {% csrf_token %}
+            <label for="longitude">Longitude:</label><br>
+            <input type="number" step="any" id="longitude" name="longitude"><br>
+            <label for="latitude">Latitude:</label><br>
+            <input type="number" step="any" id="latitude" name="latitude"><br>
+            <label for="type-of-service">Type of Service:</label><br>
+            <input type="text" id="type-of-service" name="type-of-service"><br>
+            <label for="start-date">Start Date:</label><br>
+            <input type="date" id="start-date" name="start-date"><br>
+            <label for="minimarket">Minimarket:</label><br>
+            <input type="number" min="0" max="1" id="minimarket" name="minimarket"><br>
+            <label for="mgr-ssn">Manager Ssn:</label><br>
+            <input type="text" id="mgr-ssn" name="mgr-ssn"><br>
+            <input type="submit" id="submit-add-gas-station" name="add_gas_station" value="submit" />
+        </form>
+    </div>
 </body>
+
+<script>
+    function ShowGasStation() {
+        const all_gas_stations = document.getElementById("all_gas_stations");
+        all_gas_stations.style.display = "block";
+        const search_gas_station = document.getElementById("search_gas_station");
+        search_gas_station.style.display = "none";
+        const add_gas_station = document.getElementById("add_gas_station");
+        add_gas_station.style.display = "none";
+        window.location.href = "/gas_stations/";
+    }
+
+    function SearchGasStation() {
+        const all_gas_stations = document.getElementById("all_gas_stations");
+        all_gas_stations.style.display = "none";
+        const search_gas_station = document.getElementById("search_gas_station");
+        search_gas_station.style.display = "block";
+        const add_gas_station = document.getElementById("add_gas_station");
+        add_gas_station.style.display = "none";
+        document.getElementById("submit_search_gas_station").disabled = true;
+    }
+
+    function AddGasStation() {
+        const all_gas_stations = document.getElementById("all_gas_stations");
+        all_gas_stations.style.display = "none";
+        const search_gas_station = document.getElementById("search_gas_station");
+        search_gas_station.style.display = "none";
+        const add_gas_station = document.getElementById("add_gas_station");
+        add_gas_station.style.display = "block";
+    }
+
+    function addInput() {
+        document.getElementById("submit_search_gas_station").disabled = false;
+        // Get selected option value
+        var dropdown = document.getElementById("dropdown");
+        var selectedOption = dropdown.value;
+
+        // Set input type based on selected option
+        var type;
+        switch (selectedOption) {
+            case "longitude":
+                type = "number";
+                step = "any";
+                break;
+            case "latitude":
+                type = "number";
+                step = "any";
+                break;
+            case "type-of-service":
+                type = "text";
+                break;
+            case "minimarket":
+                type = "number";
+                step = "1";
+                min = "0";
+                max = "1";
+                break;
+            case "mgr-ssn":
+                type = "text";
+            default:
+                type = "text";
+        }
+
+        var options = dropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == selectedOption) {
+                options[i].disabled = true;
+                break;
+            }
+        }
+
+        // Add new input field to form
+        var form = document.getElementById("searchGasStationForm");
+        var input = document.createElement("input");
+        var label = document.createElement("label");
+        input.type = type;
+        if (type == "number") {
+            input.step = step;
+            if (selectedOption == "minimarket") {
+                input.max = max;
+                input.min = min;
+            }
+        }
+        input.name = selectedOption;
+        label.setAttribute("for", selectedOption);
+        label.textContent = selectedOption;
+        form.insertBefore(document.createElement("br"), form.firstChild);
+        form.insertBefore(input, form.firstChild);
+        form.insertBefore(label, form.firstChild);
+    }
+
+    function editGasStation(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        // Get the values of the cell elements
+        const cells = row.querySelectorAll("td");
+        const longitude = cells[0].textContent;
+        const latitude = cells[1].textContent;
+        const type_of_service = cells[2].textContent;
+        const start_date = cells[3].textContent;
+        const minimarket = cells[4].textContent;
+        const mgr_ssn = cells[5].textContent;
+
+        // Replace the cell elements with form inputs
+        cells[0].innerHTML = `<input type="number" name="longitude" value="${longitude}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="number" name="latitude" value="${latitude}" readonly="readonly">`;
+        cells[2].innerHTML = `<input type="text" name="type-of-service" value="${type_of_service}">`;
+        cells[3].innerHTML = `<input type="date" name="start-date" value="${start_date}">`;
+        cells[4].innerHTML = `<input type="number" min="0" max="1" name="minimarket" value="${minimarket}">`;
+        cells[5].innerHTML = `<input type="text" name="mgr-ssn" value="${mgr_ssn}">`;
+        cells[6].innerHTML = `<a onclick="saveGasStation('${id}')">Save</a>`;
+    }
+
+    function saveGasStation(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/gas_stations/";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "csrfmiddlewaretoken";
+        input.value = "{{ csrf_token }}";
+
+        form.appendChild(input);
+
+        const cells = row.querySelectorAll("td");
+
+        for (let i = 0; i < cells.length; i++) {
+            form.appendChild(cells[i]);
+        }
+
+        row.parentNode.replaceChild(form, row);
+        form.submit();
+    }
+</script>
 
 </html>

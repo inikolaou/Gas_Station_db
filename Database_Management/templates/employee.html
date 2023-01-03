@@ -305,16 +305,16 @@
         cells[0].innerHTML = `<input type="text" name="ssn" value="${ssn}" readonly="readonly">`;
         cells[1].innerHTML = `<input type="text" name="first-name" value="${first_name}">`;
         cells[2].innerHTML = `<input type="text" name="last-name" value="${last_name}">`;
-        cells[3].innerHTML = `<input type="text" name="birth-date" value="${birth_date}">`;
-        cells[4].innerHTML = `<input type="number" name="phone-number" value="${phone_number}">`
+        cells[3].innerHTML = `<input type="date" name="birth-date" value="${birth_date}">`;
+        cells[4].innerHTML = `<input type="number" step="1" name="phone-number" value="${phone_number}">`
         cells[5].innerHTML = `<input type="email" name="email" value="${email}">`;
-        cells[6].innerHTML = `<input type="number" name="longitude" value="${longitude}">`;
-        cells[7].innerHTML = `<input type="number" name="latitude" value="${latitude}">`;
+        cells[6].innerHTML = `<input type="number" step="any" name="longitude" value="${longitude}">`;
+        cells[7].innerHTML = `<input type="number" step="any" name="latitude" value="${latitude}">`;
         cells[8].innerHTML = `<input type="text" name="role" value="${role}">`;
         cells[9].innerHTML = `<input type="number" name="hours" value="${hours}">`;
         cells[10].innerHTML = `<input type="text" name="super-ssn" value="${super_ssn}">`;
-        cells[11].innerHTML = `<input type="number" name="gs-longitude" value="${gs_longitude}">`;
-        cells[12].innerHTML = `<input type="number" name="gs-latitude" value="${gs_latitude}">`;
+        cells[11].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}">`;
+        cells[12].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}">`;
         cells[13].innerHTML = `<a onclick="saveEmployee('${id}')">Save</a>`;
     }
 

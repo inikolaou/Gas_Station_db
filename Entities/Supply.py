@@ -55,6 +55,84 @@ def insertInto(id, expected_arrival_date, real_arrival_date, sup_email, gs_longi
             except Exception as e:
                 pass
 
+def searchBy(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (id):
+            c.execute('''
+                SELECT * 
+                FROM SUPPLY
+                WHERE Id = ?''',
+                (id, ))
+        elif (expected_arrival_date):
+            if (gs_longitude and gs_latitude):
+                c.execute('''
+                    SELECT * 
+                    FROM SUPPLY
+                    WHERE Expected_Arrival_Date = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
+                    (expected_arrival_date, gs_longitude, gs_latitude))
+            else:
+                c.execute('''
+                    SELECT * 
+                    FROM SUPPLY
+                    WHERE Expected_Arrival_Date = ?''',
+                    (expected_arrival_date, ))
+        elif (real_arrival_date):
+            if (gs_longitude and gs_latitude):
+                c.execute('''
+                    SELECT * 
+                    FROM SUPPLY
+                    WHERE Real_Arrival_Date = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
+                    (real_arrival_date, gs_longitude, gs_latitude))
+            else:
+                c.execute('''
+                    SELECT * 
+                    FROM SUPPLY
+                    WHERE Real_Arrival_Date = ?''',
+                    (real_arrival_date, ))
+        elif (sup_email):
+            c.execute('''
+                SELECT * 
+                FROM SUPPLY
+                WHERE Sup_Email = ?''',
+                (sup_email, ))
+        elif (gs_longitude and gs_latitude):
+            c.execute('''
+                SELECT * 
+                FROM SUPPLY
+                WHERE GS_Longitude = ? AND GS_Latitude = ?''',
+                (gs_longitude, gs_latitude))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def update(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE SUPPLY
+                        SET Expected_Arrival_Date = ?, Real_Arrival_Date = ?, Sup_Email = ?,
+                        GS_Longitude = ?, GS_Latitude = ? WHERE Id = ?''', 
+                        (expected_arrival_date, real_arrival_date,
+                        sup_email, gs_longitude, gs_latitude, id))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''DELETE FROM SUPPLY
+                        WHERE Id = ?''', (id, ))
+        except Exception as e:
+            print(e)
+    conn.close()
+
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()

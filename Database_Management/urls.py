@@ -27,6 +27,7 @@ urlpatterns = [
     path('signs/<str:essn_contract>/', views.sign_delete),
     path('supplier/', views.supplier, name='supplier'),
     path('supplier/<str:email>/', views.supplier_delete),
-    path('supplies/', views.supply, name='supply'),
+    path('supply/', views.supply, name='supply'),
+    path('supply/<int:id>/', views.supply_delete),
     path('tanks/', views.tank, name='tank')
 ]

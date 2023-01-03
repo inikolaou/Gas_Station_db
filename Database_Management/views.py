@@ -315,8 +315,41 @@ def supplier_delete(request, email):
     return redirect(supplier)
 
 def supply(request):
-    supplies = Supply.retrieveAllColumns()
+    if request.method=="POST":
+        id = request.POST.get('id', False)
+        expected_arrival_date = request.POST.get('expected-arrival-date', False)
+        real_arrival_date = request.POST.get('real-arrival-date', False)
+        sup_email = request.POST.get('sup-email', False)
+        gs_longitude = request.POST.get('gs-longitude', False)
+        gs_latitude = request.POST.get('gs-latitude', False)
+
+        if "add_supply" in request.POST:
+            try:
+                Supply.insertInto(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                return redirect(supply)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_supply" in request.POST:
+            try:
+                supplies = Supply.searchBy(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Supply.update(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                return redirect(supply)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        supplies = Supply.retrieveAllColumns()
     return render(request, 'supply.html', {'supplies': supplies})
+
+def supply_delete(request, id):
+    Supply.delete(id)
+    return redirect(supply)
 
 def tank(request):
     tanks = Tank.retrieveAllColumns()

@@ -46,6 +46,57 @@ def insertInto(serv_id, pur_id, conn=False):
             except Exception as e:
                 pass
 
+def searchBy(serv_id, pur_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (pur_id):
+            c.execute('''
+                SELECT * 
+                FROM ENTAILS
+                WHERE Pur_Id = ?''',
+                (pur_id, ))
+        elif (serv_id):
+            c.execute('''
+                SELECT * 
+                FROM ENTAILS
+                WHERE Serv_Id = ?''',
+                (serv_id, ))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def update(serv_id, pur_id, previous_serv_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE ENTAILS
+                        SET Serv_Id = ?
+                        WHERE Pur_Id = ? AND Serv_Id = ?''', 
+                        (serv_id, pur_id, previous_serv_id))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(serv_pur):
+    serv_pur = serv_pur.split('_')
+    serv_id = serv_pur[0]
+    pur_id = serv_pur[1]
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''DELETE FROM ENTAILS
+                        WHERE Serv_Id = ? AND Pur_Id = ?''',
+                        (serv_id, pur_id))
+        except Exception as e:
+            print(e)
+    conn.close()
+
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()

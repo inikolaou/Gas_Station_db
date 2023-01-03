@@ -47,6 +47,70 @@ def insertInto(prod_id, pur_id, quantity, conn=False):
             except Exception as e:
                 pass
 
+def searchBy(prod_id, pur_id, quantity):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (pur_id):
+            c.execute('''
+                SELECT * 
+                FROM INVOLVES
+                WHERE Pur_Id = ?''',
+                (pur_id, ))
+        elif (prod_id):
+            if (quantity):
+                c.execute('''
+                    SELECT * 
+                    FROM INVOLVES
+                    WHERE Prod_Id = ?, Quantity = ?''',
+                    (prod_id, quantity))
+            else:
+                c.execute('''
+                    SELECT * 
+                    FROM INVOLVES
+                    WHERE Prod_Id = ?''',
+                    (prod_id, ))
+        elif (quantity):
+            c.execute('''
+                SELECT * 
+                FROM INVOLVES
+                WHERE Quantity = ?''',
+                (quantity, ))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def update(prod_id, pur_id, quantity, previous_prod_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE INVOLVES
+                        SET Prod_Id = ?, Quantity = ?
+                        WHERE Prod_Id = ? AND Pur_Id = ?''', 
+                        (prod_id, quantity, previous_prod_id, pur_id))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(prod_pur):
+    prod_pur = prod_pur.split('_')
+    prod_id = prod_pur[0]
+    pur_id = prod_pur[1]
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''DELETE FROM INVOLVES
+                        WHERE Prod_Id = ? AND Pur_Id = ?''',
+                        (prod_id, pur_id))
+        except Exception as e:
+            print(e)
+    conn.close()
+
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()

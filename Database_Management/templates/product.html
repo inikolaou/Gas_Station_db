@@ -98,7 +98,7 @@
     <nav>
       <a href="/">Home</a>
       <a id="all_products_nav" onclick="ShowProducts()">Products</a>
-      <a id="search_product_nav" onclick="SearchProduct()">Search product</a>
+      <a id="search_product_nav" onclick="SearchProduct()">Search Product</a>
       <a id="add_product_nav" onclick="AddProduct()">Add Product</a>
     </nav>
     <div id="all_products" style="display: block">
@@ -277,7 +277,7 @@
       cells[0].innerHTML = `<input type="number" name="id" value="${product_id}" readonly="readonly">`;
       cells[1].innerHTML = `<input type="text" name="name" value="${name}">`;
       cells[2].innerHTML = `<input type="text" name="type" value="${type}">`;
-      cells[3].innerHTML = `<input type="number" name="price" value="${price}">`;
+      cells[3].innerHTML = `<input type="number" step="any" name="price" value="${price}">`;
       cells[4].innerHTML = `<input type="number" step="10" name="corresponding-points" value="${corresponding_points}">`;
       cells[5].innerHTML = `<a onclick="saveProduct('${product_id}')">Save</a>`;
     }

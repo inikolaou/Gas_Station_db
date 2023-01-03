@@ -1,18 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
-</head>
+    <style>
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+      }
 
-<body>
-    {% for tuple in entails %}
-    <p>Serv_Id: {{tuple.0}}, Pur_Id: {{tuple.1}}
-    </p>
-    {% endfor %}
-</body>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+      }
+
+      a {
+        color: #0066c0;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #003399;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+      }
+
+      form label {
+        margin-top: 10px;
+        font-size: 18px;
+      }
+
+      form input,
+      form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      form #submit:hover {
+        background-color: #555;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>Entails Handling</h1>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a id="all_entails_nav" onclick="ShowEntails()">Entails</a>
+      <a id="search_entails_nav" onclick="SearchEntails()">Search Entails</a>
+      <a id="add_entails_nav" onclick="AddEntails()">Add Entails</a>
+    </nav>
+    <div id="all_entails" style="display: block">
+      <table>
+        <thead>
+          <tr>
+            <th>Service ID</th>
+            <th>Purchase ID</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tuple in entails %}
+          <tr id="{{tuple.0}}_{{tuple.1}}">
+            <td>{{tuple.0}}</td>
+            <td>{{tuple.1}}</td>
+            <td>
+              <a
+                href="#'{{tuple.0}}_{{tuple.1}}'"
+                onclick="editEntails('{{tuple.0}}_{{tuple.1}}')"
+                >Edit</a
+              >
+              |
+              <a href="{{tuple.0}}_{{tuple.1}}/">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="search_entails" style="display: none">
+      <p>Select fields you want to search for</p>
+      <select id="dropdown">
+        <option value="serv-id">Serv_Id</option>
+        <option value="pur-id">Pur_Id</option>
+      </select>
+      <button onclick="addInput()">Add Input</button>
+      <form id="searchEntailsForm" method="POST">
+        {% csrf_token %}
+        <input
+          type="submit"
+          id="submit-search-entails"
+          name="search_entails"
+          value="submit"
+        />
+      </form>
+    </div>
+    <div id="add_entails" style="display: none">
+      <form id="addEntailsForm" method="POST">
+        {% csrf_token %}
+        <label for="serv-id">Service ID:</label><br>
+        <input type="number" id="serv-id" name="serv-id"><br>
+        <label for="pur-id">Purchase Id:</label><br>
+        <input type="number" id="pur-id" name="pur-id"><br>
+        <input
+          type="submit"
+          id="submit-add-entails"
+          name="add_entails"
+          value="submit"
+        />
+      </form>
+    </div>
+  </body>
+
+  <script>
+    function ShowEntails() {
+      const all_entails = document.getElementById("all_entails");
+      all_entails.style.display = "block";
+      const search_entails = document.getElementById("search_entails");
+      search_entails.style.display = "none";
+      const add_entails = document.getElementById("add_entails");
+      add_entails.style.display = "none";
+      window.location.href = "/entails/";
+    }
+
+    function SearchEntails() {
+      const all_entails = document.getElementById("all_entails");
+      all_entails.style.display = "none";
+      const search_entails = document.getElementById("search_entails");
+      search_entails.style.display = "block";
+      const add_entails = document.getElementById("add_entails");
+      add_entails.style.display = "none";
+      document.getElementById("submit_search_entails").disabled = true;
+    }
+
+    function AddEntails() {
+      const all_entails = document.getElementById("all_entails");
+      all_entails.style.display = "none";
+      const search_entails = document.getElementById("search_entails");
+      search_entails.style.display = "none";
+      const add_entails = document.getElementById("add_entails");
+      add_entails.style.display = "block";
+    }
+
+    function addInput() {
+      document.getElementById("submit_search_entails").disabled = false;
+      // Get selected option value
+      var dropdown = document.getElementById("dropdown");
+      var selectedOption = dropdown.value;
+
+      // Set input type based on selected option
+      var type;
+      switch (selectedOption) {
+        case "serv-id":
+          type = "number";
+          step = "1";
+          break;
+        case "pur-id":
+          type = "number";
+          step = "1";
+          break;
+        default:
+          type = "text";
+      }
+
+      var options = dropdown.options;
+      for (var i = 0; i < options.length; i++) {
+        if (options[i].value == selectedOption) {
+          options[i].disabled = true;
+          break;
+        }
+      }
+
+      // Add new input field to form
+      var form = document.getElementById("searchEntailsForm");
+      var input = document.createElement("input");
+      var label = document.createElement("label");
+      input.type = type;
+      if (type == "number") {
+        input.step = step;
+      }
+      input.name = selectedOption;
+      label.setAttribute("for", selectedOption);
+      label.textContent = selectedOption;
+      form.insertBefore(document.createElement("br"), form.firstChild);
+      form.insertBefore(input, form.firstChild);
+      form.insertBefore(label, form.firstChild);
+    }
+
+    function editEntails(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      // Get the values of the cell elements
+      const cells = row.querySelectorAll("td");
+      const serv_id = cells[0].textContent;
+      const pur_id = cells[1].textContent;
+
+      // Replace the cell elements with form inputs
+      cells[0].innerHTML = `<input type="number" name="serv-id" value="${serv_id}">
+                            <input type="hidden" name="previous-serv-id" value="${serv_id}">`;
+      cells[1].innerHTML = `<input type="number" name="pur-id" value="${pur_id}" readonly="readonly">`;
+      cells[2].innerHTML = `<a onclick="saveEntails('${id}')">Save</a>`;
+    }
+
+    function saveEntails(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/entails/";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "csrfmiddlewaretoken";
+      input.value = "{{ csrf_token }}";
+
+      form.appendChild(input);
+
+      const cells = row.querySelectorAll("td");
+
+      for (let i = 0; i < cells.length; i++) {
+        form.appendChild(cells[i]);
+      }
+
+      row.parentNode.replaceChild(form, row);
+      form.submit();
+    }
+  </script>
 </html>

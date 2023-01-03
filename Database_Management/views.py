@@ -165,8 +165,38 @@ def employee_delete(request, ssn):
     return redirect(employee)
 
 def entails(request):
-    entails = Entails.retrieveAllColumns()
+    if request.method=="POST":
+        serv_id = request.POST.get('serv-id', False)
+        pur_id = request.POST.get('pur-id', False)
+        previous_serv_id = request.POST.get('previous-serv-id', False)
+
+        if "add_entails" in request.POST:
+            try:
+                Entails.insertInto(int(serv_id), int(pur_id))
+                return redirect(entails)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_entails" in request.POST:
+            try:
+                entails = Entails.searchBy(int(serv_id), int(pur_id))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Entails.update(int(serv_id), int(pur_id), int(previous_serv_id))
+                return redirect(entails)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        entails = Entails.retrieveAllColumns()
     return render(request, 'entails.html', {'entails': entails})
+
+def entails_delete(request, serv_pur):
+    Entails.delete(serv_pur)
+    return redirect(entails)
 
 def gasStation(request):
     if request.method=="POST":
@@ -209,8 +239,38 @@ def gasStation_delete(request, longitude_latitude):
     return redirect(gasStation)
 
 def involves(request):
-    involves = Involves.retrieveAllColumns()
+    if request.method=="POST":
+        prod_id = request.POST.get('prod-id', False)
+        pur_id = request.POST.get('pur-id', False)
+        previous_prod_id = request.POST.get('previous-prod-id', False)
+
+        if "add_involves" in request.POST:
+            try:
+                Involves.insertInto(int(prod_id), int(pur_id))
+                return redirect(involves)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_involves" in request.POST:
+            try:
+                involves = Involves.searchBy(int(prod_id), int(pur_id))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Involves.update(int(prod_id), int(pur_id), int(previous_prod_id))
+                return redirect(involves)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        involves = Involves.retrieveAllColumns()
     return render(request, 'involves.html', {'involves': involves})
+
+def involves_delete(request, prod_pur):
+    Involves.delete(prod_pur)
+    return redirect(involves)
 
 def isAssignedTo(request):
     assignments = IsAssignedTo.retrieveAllColumns()
@@ -257,8 +317,39 @@ def product_delete(request, id):
     return redirect(product)
 
 def provides(request):
-    provides = Provides.retrieveAllColumns()
+    if request.method=="POST":
+        serv_id = request.POST.get('serv-id', False)
+        gs_longitude = request.POST.get('gs-longitude', False)
+        gs_latitude = request.POST.get('gs-latitude', False)
+        previous_serv_id = request.POST.get('previous-serv-id', False)
+
+        if "add_provides" in request.POST:
+            try:
+                Provides.insertInto(int(serv_id), gs_longitude, gs_latitude)
+                return redirect(provides)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_provides" in request.POST:
+            try:
+                provides = Provides.searchBy(int(serv_id), gs_longitude, gs_latitude)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Provides.update(int(serv_id), gs_longitude, gs_latitude, int(previous_serv_id))
+                return redirect(provides)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        provides = Provides.retrieveAllColumns()
     return render(request, 'provides.html', {'provides': provides})
+
+def provides_delete(request, serv_gslong_lat):
+    Provides.delete(serv_gslong_lat)
+    return redirect(provides)
 
 def pump(request):
     pumps = Pump.retrieveAllColumns()
@@ -269,8 +360,39 @@ def purchase(request):
     return render(request, 'purchase.html', {'purchases': purchases})
 
 def service(request):
-    services = Service.retrieveAllColumns()
+    if request.method=="POST":
+        id = request.POST.get('id', False)
+        name = request.POST.get('name', False)
+        price = request.POST.get('price', False)
+        corresponding_points = request.POST.get('corresponding-points', False)
+
+        if "add_service" in request.POST:
+            try:
+                Service.insertInto(id, name, price, int(corresponding_points))
+                return redirect(service)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_service" in request.POST:
+            try:
+                services = Service.searchBy(int(id), float(price), int(corresponding_points))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Service.update(int(id), name, float(price), int(corresponding_points))
+                return redirect(service)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        services = Service.retrieveAllColumns()
     return render(request, 'service.html', {'services': services})
+
+def service_delete(request, id):
+    Product.delete(id)
+    return redirect(service)
 
 def sign(request):
     if request.method=="POST":

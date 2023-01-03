@@ -1,19 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
-</head>
+    <style>
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+      }
 
-<body>
-    {% for tuple in provides %}
-    <p>Serv_Id: {{tuple.0}}, GS_Longitude: {{tuple.1}}
-        GS_Latitude: {{tuple.2}}
-    </p>
-    {% endfor %}
-</body>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+      }
+
+      a {
+        color: #0066c0;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #003399;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+      }
+
+      form label {
+        margin-top: 10px;
+        font-size: 18px;
+      }
+
+      form input,
+      form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      form #submit:hover {
+        background-color: #555;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>Provides Handling</h1>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a id="all_provides_nav" onclick="ShowProvides()">Provides</a>
+      <a id="search_provides_nav" onclick="SearchProvides()">Search Provides</a>
+      <a id="add_provides_nav" onclick="AddProvides()">Add Provides</a>
+    </nav>
+    <div id="all_provides" style="display: block">
+      <table>
+        <thead>
+          <tr>
+            <th>Service ID</th>
+            <th>GS Longitude</th>
+            <th>GS Latitude</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tuple in provides %}
+          <tr id="{{tuple.0}}_{{tuple.1}}_{{tuple.2}}">
+            <td>{{tuple.0}}</td>
+            <td>{{tuple.1}}</td>
+            <td>{{tuple.2}}</td>
+            <td>
+              <a
+                href="#'{{tuple.0}}_{{tuple.1}}_{{tuple.2}}'"
+                onclick="editProvides('{{tuple.0}}_{{tuple.1}}_{{tuple.2}}')"
+                >Edit</a
+              >
+              |
+              <a href="{{tuple.0}}_{{tuple.1}}_{{tuple.2}}/">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="search_provides" style="display: none">
+      <p>Select fields you want to search for</p>
+      <select id="dropdown">
+        <option value="serv-id">Service ID</option>
+        <option value="gs-longitude">GS_Longitude</option>
+        <option value="gs-latitude">GS_Latitude</option>
+      </select>
+      <button onclick="addInput()">Add Input</button>
+      <form id="searchProvidesForm" method="POST">
+        {% csrf_token %}
+        <input
+          type="submit"
+          id="submit-search-provides"
+          name="search_provides"
+          value="submit"
+        />
+      </form>
+    </div>
+    <div id="add_provides" style="display: none">
+      <form id="addProvidesForm" method="POST">
+        {% csrf_token %}
+        <label for="serv-id">Service ID:</label><br>
+        <input type="number" id="serv-id" name="serv-id"><br>
+        <label for="gs-longitude">GS_Longitude:</label><br>
+        <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
+        <label for="gs-latitude">GS_Latitude:</label><br>
+        <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+        <input
+          type="submit"
+          id="submit-add-provides"
+          name="add_provides"
+          value="submit"
+        />
+      </form>
+    </div>
+  </body>
+
+  <script>
+    function ShowProvides() {
+      const all_provides = document.getElementById("all_provides");
+      all_provides.style.display = "block";
+      const search_provides = document.getElementById("search_provides");
+      search_provides.style.display = "none";
+      const add_provides = document.getElementById("add_provides");
+      add_provides.style.display = "none";
+      window.location.href = "/provides/";
+    }
+
+    function SearchProvides() {
+      const all_provides = document.getElementById("all_provides");
+      all_provides.style.display = "none";
+      const search_provides = document.getElementById("search_provides");
+      search_provides.style.display = "block";
+      const add_provides = document.getElementById("add_provides");
+      add_provides.style.display = "none";
+      document.getElementById("submit_search_provides").disabled = true;
+    }
+
+    function AddProvides() {
+      const all_provides = document.getElementById("all_provides");
+      all_provides.style.display = "none";
+      const search_provides = document.getElementById("search_provides");
+      search_provides.style.display = "none";
+      const add_provides = document.getElementById("add_provides");
+      add_provides.style.display = "block";
+    }
+
+    function addInput() {
+      document.getElementById("submit_search_provides").disabled = false;
+      // Get selected option value
+      var dropdown = document.getElementById("dropdown");
+      var selectedOption = dropdown.value;
+
+      // Set input type based on selected option
+      var type;
+      switch (selectedOption) {
+        case "serv-id":
+            type = "number";
+            step = "1";
+            break;
+        case "gs-longitude":
+            type = "number";
+            step = "any";
+            break;
+        case "gs-latitude":
+            type = "number";
+            step = "any";
+            break;
+        default:
+          type = "text";
+      }
+
+      var options = dropdown.options;
+      for (var i = 0; i < options.length; i++) {
+        if (options[i].value == selectedOption) {
+          options[i].disabled = true;
+          break;
+        }
+      }
+
+      // Add new input field to form
+      var form = document.getElementById("searchProvidesForm");
+      var input = document.createElement("input");
+      var label = document.createElement("label");
+      input.type = type;
+      if (type == "number") {
+        input.step = step;
+      }
+      input.name = selectedOption;
+      label.setAttribute("for", selectedOption);
+      label.textContent = selectedOption;
+      form.insertBefore(document.createElement("br"), form.firstChild);
+      form.insertBefore(input, form.firstChild);
+      form.insertBefore(label, form.firstChild);
+    }
+
+    function editProvides(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      // Get the values of the cell elements
+      const cells = row.querySelectorAll("td");
+      const serv_id = cells[0].textContent;
+      const gs_longitude = cells[1].textContent;
+      const gs_latitude = cells[2].textContent;
+
+      // Replace the cell elements with form inputs
+      cells[0].innerHTML = `<input type="number" name="serv-id" value="${serv_id}">
+                            <input type="hidden" name="previous-serv-id" value="${serv_id}">`;
+      cells[1].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
+      cells[2].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
+      cells[3].innerHTML = `<a onclick="saveProvides('${id}')">Save</a>`;
+    }
+
+    function saveProvides(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/provides/";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "csrfmiddlewaretoken";
+      input.value = "{{ csrf_token }}";
+
+      form.appendChild(input);
+
+      const cells = row.querySelectorAll("td");
+
+      for (let i = 0; i < cells.length; i++) {
+        form.appendChild(cells[i]);
+      }
+
+      row.parentNode.replaceChild(form, row);
+      form.submit();
+    }
+  </script>
 </html>

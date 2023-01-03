@@ -49,6 +49,75 @@ def insertInto(id, name, price, points, conn=False):
             except Exception:
                 pass
 
+def searchBy(id, price, points):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (id):
+            c.execute('''
+                SELECT * 
+                FROM SERVICE
+                WHERE Id = ?''',
+                (id, ))
+        elif (price):
+            if (points):
+                c.execute('''
+                    SELECT * 
+                    FROM SERVICE
+                    WHERE Price = ? AND Corresponding_Points = ?''',
+                    (price, points))
+            else:
+                c.execute('''
+                    SELECT * 
+                    FROM SERVICE
+                    WHERE Price = ?''',
+                    (price))
+        elif (points):
+            c.execute('''
+                SELECT * 
+                FROM SERVICE
+                WHERE Corresponding_Points = ?''',
+                (points, ))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def update(id, name, price, points):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE SERVICE
+                        SET Name = ?, Price = ?, Corresponding_Points = ?
+                        WHERE Id = ?''',
+                        (name, price, points, id))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(id):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''
+            DELETE FROM SERVICE
+            WHERE Id = ?''', (id, ))
+        except Exception as e:
+            print(e)
+    conn.close()
+
+def searchByName():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Name from SERVICE")
+    data = c.fetchall()
+    conn.close()
+    return data
+
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()

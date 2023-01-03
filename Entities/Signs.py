@@ -96,9 +96,9 @@ def delete(essn_contract):
     c = conn.cursor()
     with conn:
         try:
-            c.execute('''DELETE FROM
-                        SIGNS WHERE
-                        Essn = ? AND Contract_Id = ?''', (essn, contract_id))
+            c.execute('''DELETE FROM SIGNS
+                        WHERE Essn = ? AND Contract_Id = ?''',
+                        (essn, contract_id))
         except Exception as e:
             print(e)
     conn.close()

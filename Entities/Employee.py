@@ -131,6 +131,7 @@ def searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude):
 def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitude, 
         role, hours, super_ssn, gs_longitude, gs_latitude):
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:
@@ -149,6 +150,7 @@ def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitu
 
 def delete(ssn):
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:

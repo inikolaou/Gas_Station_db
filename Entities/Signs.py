@@ -74,6 +74,7 @@ def searchBy(essn, contract_id):
 
 def update(essn, contract_id, previous_contract_id):
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:
@@ -91,6 +92,7 @@ def delete(essn_contract):
     essn = essn_contract[0]
     contract_id = essn_contract[1]
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:

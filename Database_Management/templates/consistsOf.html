@@ -1,19 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
-</head>
+    <style>
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+      }
 
-<body>
-    {% for tuple in consistsOf %}
-    <p>Supply_Id: {{tuple.0}}, Prod_Id: {{tuple.1}}
-        Cost: {{tuple.2}}, Quantity: {{tuple.3}}
-    </p>
-    {% endfor %}
-</body>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+      }
+
+      a {
+        color: #0066c0;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #003399;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+      }
+
+      form label {
+        margin-top: 10px;
+        font-size: 18px;
+      }
+
+      form input,
+      form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      form #submit:hover {
+        background-color: #555;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>Consists Of Handling</h1>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a id="all_consists_of_nav" onclick="ShowConsistsOf()">Consists Of</a>
+      <a id="search_consists_of_nav" onclick="SearchConsistsOf()">Search Consists Of</a>
+      <a id="add_consists_of_nav" onclick="AddConsistsOf()">Add Consists Of</a>
+    </nav>
+    <div id="all_consists_of" style="display: block">
+      <table>
+        <thead>
+          <tr>
+            <th>Supply_Id</th>
+            <th>Prod_Id</th>
+            <th>Cost</th>
+            <th>Quantity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tuple in consistsOf %}
+          <tr id="{{tuple.0}}_{{tuple.1}}">
+            <td>{{tuple.0}}</td>
+            <td>{{tuple.1}}</td>
+            <td>{{tuple.2}}</td>
+            <td>{{tuple.3}}</td>
+            <td>
+              <a href="#'{{tuple.0}}_{{tuple.1}}'" onclick="editConsistsOf('{{tuple.0}}')">Edit<a>
+              |
+              <a href="{{tuple.0}}_{{tuple.1}}/">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="search_consists_of" style="display: none">
+      <p>Select fields you want to search for</p>
+      <select id="dropdown">
+        <option value="supply-id">Supply ID</option>
+        <option value="prod-id">Product ID</option>
+        <option value="cost">Cost</option>
+        <option value="quantity">Quantity</option>
+      </select>
+      <button onclick="addInput()">Add Input</button>
+      <form id="searchConsistsOfForm" method="POST">
+        {% csrf_token %}
+        <input type="submit" id="submit-search-consists-of" name="search_consists_of" value="submit">
+      </form>
+    </div>
+    <div id="add_consists_of" style="display: none">
+      <form id="addConsistsOfForm" method="POST">
+        {% csrf_token %}
+        <label for="supply-id">Supply ID:</label><br>
+        <input type="number" id="supply-id" name="supply-id"><br>
+        <label for="prod-id">Product ID:</label><br>
+        <input type="number" id="prod-id" name="prod-id"><br>
+        <label for="cost">Cost:</label><br>
+        <input type="number" step="any" id="cost" name="cost"><br>
+        <label for="quantity">Quantity:</label><br>
+        <input type="number" step="any" id="quantity" name="quantity"><br>
+        <input type="submit" id="submit-add-consists-of" name="add_consists_of" value="submit">
+      </form>
+    </div>
+  </body>
+
+  <script>
+    function ShowConsistsOf() {
+      const all_consists_of = document.getElementById("all_consists_of");
+      all_consists_of.style.display = "block";
+      const search_consists_of = document.getElementById("search_consists_of");
+      search_consists_of.style.display = "none";
+      const add_consists_of = document.getElementById("add_consists_of");
+      add_consists_of.style.display = "none";
+      window.location.href = "/consists_of/";
+    }
+
+    function SearchConsistsOf() {
+      const all_consists_of = document.getElementById("all_consists_of");
+      all_consists_of.style.display = "none";
+      const search_consists_of = document.getElementById("search_consists_of");
+      search_consists_of.style.display = "block";
+      const add_consists_of = document.getElementById("add_consists_of");
+      add_consists_of.style.display = "none";
+      document.getElementById("submit_search_consists_of").disabled = true;
+    }
+
+    function AddConsistsOf() {
+      const all_consists_of = document.getElementById("all_consists_of");
+      all_consists_of.style.display = "none";
+      const search_consists_of = document.getElementById("search_consists_of");
+      search_consists_of.style.display = "none";
+      const add_consists_of = document.getElementById("add_consists_of");
+      add_consists_of.style.display = "block";
+    }
+
+    function addInput() {
+      document.getElementById("submit_search_consists_of").disabled = false;
+      // Get selected option value
+      var dropdown = document.getElementById("dropdown");
+      var selectedOption = dropdown.value;
+
+      // Set input type based on selected option
+      var type;
+      switch (selectedOption) {
+        case "supply-id":
+          type = "number";
+          step = "1";
+          break;
+        case "prod-id":
+          type = "date";
+          break;
+        case "cost":
+          type = "number";
+          step = "any";
+          break;
+        case "quantity":
+          type = "number";
+          step = "any";
+          break;
+        default:
+          type = "text";
+      }
+
+      var options = dropdown.options;
+      for (var i = 0; i < options.length; i++) {
+        if (options[i].value == selectedOption) {
+          options[i].disabled = true;
+          break;
+        }
+      }
+
+      // Add new input field to form
+      var form = document.getElementById("searchConsistsOfForm");
+      var input = document.createElement("input");
+      var label = document.createElement("label");
+      input.type = type;
+      if (type == "number") {
+        input.step = step;
+      }
+      input.name = selectedOption;
+      label.setAttribute("for", selectedOption);
+      label.textContent = selectedOption;
+      form.insertBefore(document.createElement("br"), form.firstChild);
+      form.insertBefore(input, form.firstChild);
+      form.insertBefore(label, form.firstChild);
+    }
+
+    function editConsistsOf(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      // Get the values of the cell elements
+      const cells = row.querySelectorAll("td");
+      const supply_id = cells[0].textContent;
+      const prod_id = cells[1].textContent;
+      const cost = cells[2].textContent;
+      const quantity = cells[3].textContent;
+
+      // Replace the cell elements with form inputs
+      cells[0].innerHTML = `<input type="number" name="supply-id" value="${supply_id}" readonly="readonly">`;
+      cells[1].innerHTML = `<input type="number" name="prod-id" value="${prod_id}">
+                            <input type="hidden" name="previous-prod-id" value="${prod_id}">`;
+      cells[2].innerHTML = `<input type="number" step="any" name="cost" value="${cost}">`;
+      cells[3].innerHTML = `<input type="number" step="any" name="quantity" value="${quantity}">`;
+      cells[4].innerHTML = `<a onclick="saveConsistsOf('${id}')">Save</a>`;
+    }
+
+    function saveConsistsOf(id) {
+      // Get a reference to the table row
+      const row = document.querySelector(`tr[id="${id}"]`);
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/consists_of/";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "csrfmiddlewaretoken";
+      input.value = "{{ csrf_token }}";
+
+      form.appendChild(input);
+
+      const cells = row.querySelectorAll("td");
+
+      for (let i = 0; i < cells.length; i++) {
+        form.appendChild(cells[i]);
+      }
+
+      row.parentNode.replaceChild(form, row);
+      form.submit();
+    }
+  </script>
 </html>

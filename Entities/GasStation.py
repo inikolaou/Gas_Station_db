@@ -113,6 +113,7 @@ def searchBy(longitude, latitude, type_of_service, minimarket, mgr_ssn):
 
 def update(longitude, latitude, type_of_service, start_date, minimarket, mgr_ssn):
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:
@@ -131,6 +132,7 @@ def delete(longitude_latitude):
     longitude = longitude_latitude[0]
     latitude = longitude_latitude[1]
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:

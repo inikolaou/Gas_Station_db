@@ -5,8 +5,40 @@ def index(request):
     return render(request, 'index.html')
 
 def consistsOf(request):
-    consistsOf = ConsistsOf.retrieveAllColumns()
+    if request.method=="POST":
+        supply_id = request.POST.get('supply-id', False)
+        prod_id = request.POST.get('prod-id', False)
+        cost = request.POST.get('cost', False)
+        quantity = request.POST.get('quantity', False)
+        previous_prod_id = request.POST.get('previous-prod-id', False)
+
+        if "add_consists_of" in request.POST:
+            try:
+                ConsistsOf.insertInto(int(supply_id), int(prod_id), float(cost), float(quantity))
+                return redirect(consistsOf)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_consists_of" in request.POST:
+            try:
+                consistsOf = ConsistsOf.searchBy(int(supply_id), int(prod_id), float(cost), float(quantity))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                ConsistsOf.update(int(supply_id), int(prod_id), float(cost), float(quantity), int(previous_prod_id))
+                return redirect(consistsOf)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        consistsOf = ConsistsOf.retrieveAllColumns()
     return render(request, 'consistsOf.html', {'consistsOf': consistsOf})
+
+def consistsOf_delete(request, supply_prod):
+    ConsistsOf.delete(supply_prod)
+    return redirect(consistsOf)
 
 def contract(request):
     if request.method=="POST":

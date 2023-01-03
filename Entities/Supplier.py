@@ -82,6 +82,7 @@ def searchBy(email, phone_number, longitude, latitude):
 
 def update(email, fname, lname, phone_number, longitude, latitude):
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:
@@ -97,6 +98,7 @@ def update(email, fname, lname, phone_number, longitude, latitude):
 
 def delete(email):
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:

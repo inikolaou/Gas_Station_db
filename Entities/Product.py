@@ -98,6 +98,7 @@ def searchBy(id, type, price, points):
 
 def update(id, name, type, price, points):
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:
@@ -113,6 +114,7 @@ def update(id, name, type, price, points):
 
 def delete(id):
     conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:

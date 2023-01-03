@@ -108,9 +108,10 @@
             <th>Id</th>
             <th>Expected Arrival Date</th>
             <th>Real Arrival Date</th>
-            <th>Sup Email</th>
+            <th>Supplier Email</th>
             <th>GS Longitude</th>
             <th>GS Latitude</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -136,9 +137,9 @@
       <p>Select fields you want to search for</p>
       <select id="dropdown">
         <option value="id">ID</option>
-        <option value="expected-arrival-date">Expected_Arrival_Date</option>
-        <option value="real-arrival-date">Real_Arrival_Date</option>
-        <option value="sup-email">Sup_Email</option>
+        <option value="expected-arrival-date">Expected Arrival Date</option>
+        <option value="real-arrival-date">Real Arrival Date</option>
+        <option value="sup-email">Supplier Email</option>
         <option value="gs-longitude">GS_Longitude</option>
         <option value="gs-latitude">GS_Latitude</option>
       </select>
@@ -157,7 +158,7 @@
         <input type="date" id="expected-arrival-date" name="expected-arrival-date"><br>
         <label for="real-arrival-date">Real Arrival Date:</label><br>
         <input type="date" id="real-arrival-date" name="real-arrival-date"><br>
-        <label for="sup-email">Sup_Email:</label><br>
+        <label for="sup-email">Supplier Email:</label><br>
         <input type="email" id="sup-email" name="sup-email"><br>
         <label for="gs-longitude">GS_Longitude:</label><br>
         <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
@@ -176,7 +177,7 @@
       search_supply.style.display = "none";
       const add_supply = document.getElementById("add_supply");
       add_supply.style.display = "none";
-      window.location.href = "/supplies/";
+      window.location.href = "/supply/";
     }
 
     function SearchSupply() {
@@ -196,6 +197,8 @@
       search_supply.style.display = "none";
       const add_supply = document.getElementById("add_supply");
       add_supply.style.display = "block";
+      const id_field = document.getElementById("id");
+      id_field.value = document.getElementsByTagName("tr").length;
     }
 
     function addInput() {

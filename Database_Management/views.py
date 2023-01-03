@@ -325,20 +325,20 @@ def supply(request):
 
         if "add_supply" in request.POST:
             try:
-                Supply.insertInto(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                Supply.insertInto(int(id), expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
                 return redirect(supply)
             except Exception as e:
                 print("View exception")
                 print(e)
         elif "search_supply" in request.POST:
             try:
-                supplies = Supply.searchBy(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                supplies = Supply.searchBy(int(id), expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
             except Exception as e:
                 print("View exception")
                 print(e)
         else:
             try:
-                Supply.update(id, expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                Supply.update(int(id), expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
                 return redirect(supply)
             except Exception as e:
                 print("View exception")

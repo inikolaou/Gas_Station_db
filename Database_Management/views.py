@@ -4,7 +4,7 @@ from Entities import ConsistsOf, Contract, Customer, Employee, Entails, GasStati
 def index(request):
     return render(request, 'index.html')
 
-def consistsOf(request):
+def consistOf(request):
     if request.method=="POST":
         supply_id = request.POST.get('supply-id', False)
         prod_id = request.POST.get('prod-id', False)
@@ -15,7 +15,7 @@ def consistsOf(request):
         if "add_consists_of" in request.POST:
             try:
                 ConsistsOf.insertInto(int(supply_id), int(prod_id), float(cost), float(quantity))
-                return redirect(consistsOf)
+                return redirect(consistOf)
             except Exception as e:
                 print("View exception")
                 print(e)
@@ -28,7 +28,7 @@ def consistsOf(request):
         else:
             try:
                 ConsistsOf.update(int(supply_id), int(prod_id), float(cost), float(quantity), int(previous_prod_id))
-                return redirect(consistsOf)
+                return redirect(consistOf)
             except Exception as e:
                 print("View exception")
                 print(e)
@@ -38,7 +38,7 @@ def consistsOf(request):
 
 def consistsOf_delete(request, supply_prod):
     ConsistsOf.delete(supply_prod)
-    return redirect(consistsOf)
+    return redirect(consistOf)
 
 def contract(request):
     if request.method=="POST":
@@ -164,7 +164,7 @@ def employee_delete(request, ssn):
     Employee.delete(ssn)
     return redirect(employee)
 
-def entails(request):
+def entail(request):
     if request.method=="POST":
         serv_id = request.POST.get('serv-id', False)
         pur_id = request.POST.get('pur-id', False)
@@ -173,7 +173,7 @@ def entails(request):
         if "add_entails" in request.POST:
             try:
                 Entails.insertInto(int(serv_id), int(pur_id))
-                return redirect(entails)
+                return redirect(entail)
             except Exception as e:
                 print("View exception")
                 print(e)
@@ -186,7 +186,7 @@ def entails(request):
         else:
             try:
                 Entails.update(int(serv_id), int(pur_id), int(previous_serv_id))
-                return redirect(entails)
+                return redirect(entail)
             except Exception as e:
                 print("View exception")
                 print(e)
@@ -196,7 +196,7 @@ def entails(request):
 
 def entails_delete(request, serv_pur):
     Entails.delete(serv_pur)
-    return redirect(entails)
+    return redirect(entail)
 
 def gasStation(request):
     if request.method=="POST":
@@ -238,29 +238,30 @@ def gasStation_delete(request, longitude_latitude):
     GasStation.delete(longitude_latitude)
     return redirect(gasStation)
 
-def involves(request):
+def involve(request):
     if request.method=="POST":
         prod_id = request.POST.get('prod-id', False)
         pur_id = request.POST.get('pur-id', False)
+        quantity = request.POST.get('quantity', False)
         previous_prod_id = request.POST.get('previous-prod-id', False)
 
         if "add_involves" in request.POST:
             try:
-                Involves.insertInto(int(prod_id), int(pur_id))
-                return redirect(involves)
+                Involves.insertInto(int(prod_id), int(pur_id), float(quantity))
+                return redirect(involve)
             except Exception as e:
                 print("View exception")
                 print(e)
         elif "search_involves" in request.POST:
             try:
-                involves = Involves.searchBy(int(prod_id), int(pur_id))
+                involves = Involves.searchBy(int(prod_id), int(pur_id), float(quantity))
             except Exception as e:
                 print("View exception")
                 print(e)
         else:
             try:
-                Involves.update(int(prod_id), int(pur_id), int(previous_prod_id))
-                return redirect(involves)
+                Involves.update(int(prod_id), int(pur_id), float(quantity), int(previous_prod_id))
+                return redirect(involve)
             except Exception as e:
                 print("View exception")
                 print(e)
@@ -270,7 +271,7 @@ def involves(request):
 
 def involves_delete(request, prod_pur):
     Involves.delete(prod_pur)
-    return redirect(involves)
+    return redirect(involve)
 
 def isAssignedTo(request):
     assignments = IsAssignedTo.retrieveAllColumns()
@@ -316,7 +317,7 @@ def product_delete(request, id):
     Product.delete(id)
     return redirect(product)
 
-def provides(request):
+def provide(request):
     if request.method=="POST":
         serv_id = request.POST.get('serv-id', False)
         gs_longitude = request.POST.get('gs-longitude', False)
@@ -326,7 +327,7 @@ def provides(request):
         if "add_provides" in request.POST:
             try:
                 Provides.insertInto(int(serv_id), gs_longitude, gs_latitude)
-                return redirect(provides)
+                return redirect(provide)
             except Exception as e:
                 print("View exception")
                 print(e)
@@ -339,7 +340,7 @@ def provides(request):
         else:
             try:
                 Provides.update(int(serv_id), gs_longitude, gs_latitude, int(previous_serv_id))
-                return redirect(provides)
+                return redirect(provide)
             except Exception as e:
                 print("View exception")
                 print(e)
@@ -349,7 +350,7 @@ def provides(request):
 
 def provides_delete(request, serv_gslong_lat):
     Provides.delete(serv_gslong_lat)
-    return redirect(provides)
+    return redirect(provide)
 
 def pump(request):
     pumps = Pump.retrieveAllColumns()
@@ -391,7 +392,7 @@ def service(request):
     return render(request, 'service.html', {'services': services})
 
 def service_delete(request, id):
-    Product.delete(id)
+    Service.delete(id)
     return redirect(service)
 
 def sign(request):

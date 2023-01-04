@@ -81,7 +81,7 @@ def update(serv_id, gs_longitude, gs_latitude, previous_serv_id):
     c = conn.cursor()
     with conn:
         try:
-            c.execute('''DELETE FROM PROVIDES
+            c.execute('''UPDATE PROVIDES
                         SET Serv_Id = ?
                         WHERE Serv_Id = ? AND GS_Longitude = ?
                         AND GS_Latitude = ?''',

@@ -9,6 +9,7 @@ def createSignsTable():
             c.execute('''CREATE TABLE SIGNS
                         (Essn           TEXT        NOT NULL,
                         Contract_Id     INTEGER     NOT NULL DEFAULT 3,
+                        PRIMARY KEY (Essn, Contract_Id),
                         FOREIGN KEY (Essn)  REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Contract_Id) REFERENCES CONTRACT(Id) ON UPDATE CASCADE ON DELETE SET DEFAULT
                         );''')

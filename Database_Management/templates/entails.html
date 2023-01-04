@@ -181,7 +181,7 @@
       search_entails.style.display = "block";
       const add_entails = document.getElementById("add_entails");
       add_entails.style.display = "none";
-      document.getElementById("submit_search_entails").disabled = true;
+      document.getElementById("submit-search-entails").disabled = true;
     }
 
     function AddEntails() {
@@ -194,7 +194,7 @@
     }
 
     function addInput() {
-      document.getElementById("submit_search_entails").disabled = false;
+      document.getElementById("submit-search-entails").disabled = false;
       // Get selected option value
       var dropdown = document.getElementById("dropdown");
       var selectedOption = dropdown.value;
@@ -204,11 +204,9 @@
       switch (selectedOption) {
         case "serv-id":
           type = "number";
-          step = "1";
           break;
         case "pur-id":
           type = "number";
-          step = "1";
           break;
         default:
           type = "text";

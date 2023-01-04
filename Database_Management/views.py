@@ -335,9 +335,45 @@ def isAssignedTo_delete(request, essn_servid):
     return redirect(isAssignedTo)
 
 
-def offers(request):
-    offers = Offers.retrieveAllColumns()
+def offer(request):
+    if request.method == "POST":
+        prod_id = request.POST.get('prod-id', False)
+        previous_prod_id = request.POST.get('previous-prod-id', False)
+        gs_longitude = request.POST.get('gs-longitude', False)
+        gs_latitude = request.POST.get('gs-latitude', False)
+        quantity = request.POST.get('quantity', False)
+
+        if "add_offers" in request.POST:
+            try:
+                Offers.insertInto(int(prod_id), float(
+                    gs_longitude), float(gs_latitude), float(quantity))
+                return redirect(offer)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_offers" in request.POST:
+            try:
+                offers = Offers.searchBy(int(prod_id), float(
+                    gs_longitude), float(gs_latitude), float(quantity))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Offers.update(int(prod_id), int(previous_prod_id), float(gs_longitude),
+                              float(gs_latitude), float(quantity))
+                return redirect(offer)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        offers = Offers.retrieveAllColumns()
     return render(request, 'offers.html', {'offers': offers})
+
+
+def offer_delete(request, prodid_longitude_latitude):
+    Offers.delete(prodid_longitude_latitude)
+    return redirect(offer)
 
 
 def product(request):

@@ -2,18 +2,302 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0066c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #003399;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        form input,
+        form textarea {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form #submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        form #submit:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-    {% for tuple in offers %}
-    <p>Prod_Id: {{tuple.0}}, GS_Longitude: {{tuple.1}}
-        GS_Latitude: {{tuple.2}}, Quantity: {{tuple.3}}
-    </p>
-    {% endfor %}
+    <div class="header">
+        <h1>Offers Handling</h1>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a id="all_offers_nav" onclick="ShowOffers()">Offers</a>
+        <a id="search_offers_nav" onclick="SearchOffers()">Search Offers</a>
+        <a id="add_offers_nav" onclick="AddOffers()">Add Offers</a>
+    </nav>
+    <div id="all_offers" style="display: block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Id</th>
+                    <th>GS Longitude</th>
+                    <th>GS Latitude</th>
+                    <th>Quantity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for offer in offers %}
+                <tr id="{{offer.0}}_{{offer.1}}_{{offer.2}}">
+                    <td>{{offer.0}}</td>
+                    <td>{{offer.1}}</td>
+                    <td>{{offer.2}}</td>
+                    <td>{{offer.3}}</td>
+                    <td>
+                        <a href="#'{{offer.0}}_{{offer.1}}_{{offer.2}}'"
+                            onclick="editOffers('{{offer.0}}_{{offer.1}}_{{offer.2}}')">Edit</a>
+                        |
+                        <a href="{{offer.0}}_{{offer.1}}_{{offer.2}}/">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="search_offers" style="display: none">
+        <p>Select fields you want to search for</p>
+        <select id="dropdown">
+            <option value="prod-id">Product_Id</option>
+            <option value="gs-longitude">GS_Longitude</option>
+            <option value="gs-latitude">GS_Latitude</option>
+            <option value="quantity">Quantity</option>
+        </select>
+        <button id="add-input-button" onclick="addInput()">Add Input</button>
+        <form id="searchOffersForm" method="POST">
+            {% csrf_token %}
+            <input type="submit" id="submit-search-offers" name="search_offers" value="submit" />
+        </form>
+    </div>
+    <div id="add_offers" style="display: none">
+        <form id="addOffersForm" method="POST">
+            {% csrf_token %}
+            <label for="prod-id">Id:</label><br>
+            <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
+            <label for="gs-longitude">GS Longitude:</label><br>
+            <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
+            <label for="gs-latitude">GS Latitude:</label><br>
+            <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+            <label for="quantity">Quantity:</label><br>
+            <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
+            <input type="submit" id="submit-add-offers" name="add_offers" value="submit" />
+        </form>
+    </div>
 </body>
+
+<script>
+    function ShowOffers() {
+        const all_offers = document.getElementById("all_offers");
+        all_offers.style.display = "block";
+        const search_offers = document.getElementById("search_offers");
+        search_offers.style.display = "none";
+        const add_offers = document.getElementById("add_offers");
+        add_offers.style.display = "none";
+        window.location.href = "/offers/";
+    }
+
+    function SearchOffers() {
+        const all_offers = document.getElementById("all_offers");
+        all_offers.style.display = "none";
+        const search_offers = document.getElementById("search_offers");
+        search_offers.style.display = "block";
+        const add_offers = document.getElementById("add_offers");
+        add_offers.style.display = "none";
+        document.getElementById("submit-search-offers").disabled = true;
+    }
+
+    function AddOffers() {
+        const all_offers = document.getElementById("all_offers");
+        all_offers.style.display = "none";
+        const search_offers = document.getElementById("search_offers");
+        search_offers.style.display = "none";
+        const add_offers = document.getElementById("add_offers");
+        add_offers.style.display = "block";
+    }
+
+    function addInput() {
+        document.getElementById("submit-search-offers").disabled = false;
+        // Get selected option value
+        var dropdown = document.getElementById("dropdown");
+        var selectedOption = dropdown.value;
+        dropdown.selectedIndex++;
+        if (dropdown.selectedIndex === -1) {
+            document.getElementById("add-input-button").disabled = true;
+        }
+        // Set input type based on selected option
+        var type;
+        switch (selectedOption) {
+            case "prod-id":
+                type = "number";
+                step = "1";
+                min = "1";
+                break;
+            case "gs-longitude":
+                type = "number";
+                step = "any";
+                break;
+            case "gs-latitude":
+                type = "number";
+                step = "any";
+                break;
+            case "quantity":
+                type = "number";
+                step = "any";
+                min = "0";
+                break;
+            default:
+                type = "text";
+        }
+
+        var options = dropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == selectedOption) {
+                options[i].disabled = true;
+                break;
+            }
+        }
+
+        // Add new input field to form
+        var form = document.getElementById("searchOffersForm");
+        var input = document.createElement("input");
+        var label = document.createElement("label");
+        input.type = type;
+        if (type == "number") {
+            input.step = step;
+            if (selectedOption == "prod-id" || selectedOption == "quantity") {
+                input.min = min;
+            }
+        }
+        input.name = selectedOption;
+        label.setAttribute("for", selectedOption);
+        label.textContent = selectedOption;
+        form.insertBefore(document.createElement("br"), form.firstChild);
+        form.insertBefore(input, form.firstChild);
+        form.insertBefore(label, form.firstChild);
+    }
+
+    function editOffers(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        // Get the values of the cell elements
+        const cells = row.querySelectorAll("td");
+        const prod_id = cells[0].textContent;
+        const gs_longitude = cells[1].textContent;
+        const gs_latitude = cells[2].textContent;
+        const quantity = cells[3].textContent;
+
+
+
+        // Replace the cell elements with form inputs
+        cells[0].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">
+                              <input type="hidden" name="previous-prod-id" value="${prod_id}">`;
+        cells[1].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
+        cells[2].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
+        cells[3].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
+        cells[4].innerHTML = `<a onclick="saveOffers('${id}')">Save</a>`;
+    }
+
+    function saveOffers(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/offers/";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "csrfmiddlewaretoken";
+        input.value = "{{ csrf_token }}";
+
+        form.appendChild(input);
+
+        const cells = row.querySelectorAll("td");
+
+        for (let i = 0; i < cells.length; i++) {
+            form.appendChild(cells[i]);
+        }
+
+        row.parentNode.replaceChild(form, row);
+        form.submit();
+    }
+</script>
 
 </html>

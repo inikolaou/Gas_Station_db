@@ -2,16 +2,269 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0066c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #003399;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        form input,
+        form textarea {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form #submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        form #submit:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-    {% for assignment in assignments %}
-    <p>Serv_Id: {{assignment.0}}, Essn: {{assignment.1}}</p>
-    {% endfor %}
+    <div class="header">
+        <h1>Assignments Handling</h1>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a id="all_assignments_nav" onclick="ShowAssignments()">Assignments</a>
+        <a id="search_assignments_nav" onclick="SearchAssignments()">Search Assignment</a>
+        <a id="add_assignments_nav" onclick="AddAssignments()">Add Assignment</a>
+    </nav>
+    <div id="all_assignments" style="display: block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Essn</th>
+                    <th>Service Id</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                <tr id="{{assignment.0}}_{{assignment.1}}">
+                    <td>{{assignment.0}}</td>
+                    <td>{{assignment.1}}</td>
+                    <td>
+                        <a href="#'{{assignment.0}}_{{assignment.1}}'"
+                            onclick="editAssignment('{{assignment.0}}_{{assignment.1}}')">Edit</a>
+                        |
+                        <a href="{{assignment.0}}_{{assignment.1}}/">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="search_assignment" style="display: none">
+        <p>Select fields you want to search for</p>
+        <select id="dropdown">
+            <option value="essn">Essn</option>
+            <option value="service-id">Service_Id</option>
+        </select>
+        <button onclick="addInput()">Add Input</button>
+        <form id="searchaAsignmentForm" method="POST">
+            {% csrf_token %}
+            <input type="submit" id="submit-search-assignment" name="search_assignment" value="submit" />
+        </form>
+    </div>
+    <div id="add_assignment" style="display: none">
+        <form id="addAssignmentForm" method="POST">
+            {% csrf_token %}
+            <label for="essn">Essn:</label><br>
+            <input type="text" id="essn" name="essn"><br>
+            <label for="service-id">Service Id:</label><br>
+            <input type="number" id="service-id" name="service-id"><br>
+            <input type="submit" id="submit-add-assignment" name="add_assignment" value="submit" />
+        </form>
+    </div>
 </body>
+
+<script>
+    function ShowAssignments() {
+        const all_assignments = document.getElementById("all_assignments");
+        all_assignments.style.display = "block";
+        const search_assignment = document.getElementById("search_assignment");
+        search_assignment.style.display = "none";
+        const add_assignment = document.getElementById("add_assignment");
+        add_assignment.style.display = "none";
+        window.location.href = "/is_assigned_to/";
+    }
+
+    function SearchAssignments() {
+        const all_assignments = document.getElementById("all_assignments");
+        all_assignments.style.display = "none";
+        const search_assignment = document.getElementById("search_assignment");
+        search_assignment.style.display = "block";
+        const add_assignment = document.getElementById("add_assignment");
+        add_assignment.style.display = "none";
+        document.getElementById("submit-search-assignment").disabled = true;
+    }
+
+    function AddAssignments() {
+        const all_assignments = document.getElementById("all_assignments");
+        all_assignments.style.display = "none";
+        const search_assignment = document.getElementById("search_assignment");
+        search_assignment.style.display = "none";
+        const add_assignment = document.getElementById("add_assignment");
+        add_assignment.style.display = "block";
+    }
+
+    function addInput() {
+        document.getElementById("submit-search-assignment").disabled = false;
+        // Get selected option value
+        var dropdown = document.getElementById("dropdown");
+        var selectedOption = dropdown.value;
+
+        // Set input type based on selected option
+        var type;
+        switch (selectedOption) {
+            case "essn":
+                type = "text";
+                break;
+            case "service-id":
+                type = "number";
+                step = "1";
+                break;
+            default:
+                type = "text";
+        }
+
+        var options = dropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == selectedOption) {
+                options[i].disabled = true;
+                break;
+            }
+        }
+
+        // Add new input field to form
+        var form = document.getElementById("searchaAsignmentForm");
+        var input = document.createElement("input");
+        var label = document.createElement("label");
+        input.type = type;
+        if (type == "number") {
+            input.step = step;
+        }
+        input.name = selectedOption;
+        label.setAttribute("for", selectedOption);
+        label.textContent = selectedOption;
+        form.insertBefore(document.createElement("br"), form.firstChild);
+        form.insertBefore(input, form.firstChild);
+        form.insertBefore(label, form.firstChild);
+    }
+
+    function editAssignment(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        // Get the values of the cell elements
+        const cells = row.querySelectorAll("td");
+        const essn = cells[0].textContent;
+        const service_id = cells[1].textContent;
+
+        // Replace the cell elements with form inputs
+        cells[0].innerHTML = `<input type="text" name="essn" value="${essn}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="number" name="service-id" value="${service_id}">
+                              <input type="hidden" name="previous-service-id" value="${service_id}">`;
+        cells[2].innerHTML = `<a onclick="saveAssignment('${id}')">Save</a>`;
+    }
+
+    function saveAssignment(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/is_assigned_to/";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "csrfmiddlewaretoken";
+        input.value = "{{ csrf_token }}";
+
+        form.appendChild(input);
+
+        const cells = row.querySelectorAll("td");
+
+        for (let i = 0; i < cells.length; i++) {
+            form.appendChild(cells[i]);
+        }
+
+        row.parentNode.replaceChild(form, row);
+        form.submit();
+    }
+</script>
 
 </html>

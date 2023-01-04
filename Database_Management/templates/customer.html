@@ -234,10 +234,13 @@
         case "phone-number":
           type = "number";
           step = "1";
+          min = "6900000000";
+          max = "6999999999";
           break;
         case "remaining-points":
           type = "number";
           step = "10";
+          min = "0";
           break;
         default:
           type = "text";

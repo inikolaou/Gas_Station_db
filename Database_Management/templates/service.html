@@ -216,6 +216,7 @@
         case "id":
           type = "number";
           step = "1";
+          min = "1";
           break;
         case "name":
           type = "text";
@@ -223,10 +224,12 @@
         case "price":
           type = "number";
           step = "any";
+          min = "0";
           break;
         case "corresponding-points":
           type = "number";
           step = "10";
+          min = "0";
           break;
         default:
           type = "text";

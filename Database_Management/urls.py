@@ -26,6 +26,7 @@ urlpatterns = [
     path('provides/', views.provide, name='provides'),
     path('provides/<str:serv_gslong_lat>/', views.provides_delete),
     path('pump/', views.pump, name='pump'),
+    path('pump/<str:id_tankId_tankLongitude_tankLatitude>/', views.pump_delete),
     path('purchases/', views.purchase, name='purchase'),
     path('service/', views.service, name='service'),
     path('service/<int:id>/', views.service_delete),

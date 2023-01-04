@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createTankTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -20,8 +21,9 @@ def createTankTable():
                         );''')
             insertFromCsv("Datasets/tank.csv")
         except Exception as e:
-            pass # Database created
+            pass  # Database created
     conn.close()
+
 
 def insertFromCsv(fileName):
     conn = sqlite3.connect("Gas_Station.db")
@@ -29,9 +31,10 @@ def insertFromCsv(fileName):
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
             insertInto(tuple['ID'], tuple['Last_Check_Up'], tuple['Capacity'],
-                        tuple['Quantity'], tuple['Prod_ID'], tuple['GS_Longitude'], 
-                        tuple['GS_Latitude'], conn)
+                       tuple['Quantity'], tuple['Prod_ID'], tuple['GS_Longitude'],
+                       tuple['GS_Latitude'], conn)
     conn.close()
+
 
 def insertInto(id, last_check, capacity, quantity, product_id, longitude, latitude, conn=False):
     if (conn == False):
@@ -41,9 +44,9 @@ def insertInto(id, last_check, capacity, quantity, product_id, longitude, latitu
             try:
                 c.execute('''INSERT INTO TANK
                             VALUES (?,?,?,?,?,?,?);''', (id, last_check, capacity,
-                            quantity, product_id, longitude, latitude))
+                                                         quantity, product_id, longitude, latitude))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -51,9 +54,10 @@ def insertInto(id, last_check, capacity, quantity, product_id, longitude, latitu
             try:
                 c.execute('''INSERT INTO TANK
                             VALUES (?,?,?,?,?,?,?);''', (id, last_check, capacity,
-                            quantity, product_id, longitude, latitude))
+                                                         quantity, product_id, longitude, latitude))
             except Exception:
                 pass
+
 
 def searchBy(id, last_check, capacity, quantity, product_id, longitude, latitude):
     conn = sqlite3.connect("Gas_Station.db")
@@ -65,19 +69,19 @@ def searchBy(id, last_check, capacity, quantity, product_id, longitude, latitude
                         SELECT * 
                         FROM TANK
                         WHERE Id = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
-                        (id, longitude, latitude))
+                          (id, longitude, latitude))
             else:
                 c.execute('''
                         SELECT * 
                         FROM TANK
                         WHERE Id = ?''',
-                        (id, ))
+                          (id, ))
         elif (longitude and latitude):
             c.execute('''
                     SELECT * 
                     FROM TANK
                     WHERE GS_Longitude = ? AND GS_Latitude = ?''',
-                    (longitude, latitude))
+                      (longitude, latitude))
         elif (last_check):
             if (capacity):
                 if (quantity):
@@ -85,47 +89,47 @@ def searchBy(id, last_check, capacity, quantity, product_id, longitude, latitude
                         c.execute('''
                                 SELECT * 
                                 FROM TANK
-                                WHERE Last_Check_Up < ? AND Capacity = ? AND Quantity = ?
+                                WHERE Last_Check_Up = ? AND Capacity = ? AND Quantity = ?
                                 AND Prod_Id = ?''',
-                                (last_check, capacity, quantity, product_id))
+                                  (last_check, capacity, quantity, product_id))
                     else:
                         c.execute('''
                                 SELECT * 
                                 FROM TANK
-                                WHERE Last_Check_Up < ? AND Capacity = ? AND Quantity = ?''',
-                                (last_check, capacity, quantity))
+                                WHERE Last_Check_Up = ? AND Capacity = ? AND Quantity = ?''',
+                                  (last_check, capacity, quantity))
                 else:
                     c.execute('''
                                 SELECT * 
                                 FROM TANK
-                                WHERE Last_Check_Up < ? AND Capacity = ? AND Prod_Id = ?''',
-                                (last_check, capacity, product_id))
+                                WHERE Last_Check_Up = ? AND Capacity = ? AND Prod_Id = ?''',
+                              (last_check, capacity, product_id))
             elif (quantity):
-                    if (product_id):
-                        c.execute('''
+                if (product_id):
+                    c.execute('''
                                 SELECT * 
                                 FROM TANK
-                                WHERE Last_Check_Up < ? AND Quantity = ?
+                                WHERE Last_Check_Up = ? AND Quantity = ?
                                 AND Prod_Id = ?''',
-                                (last_check, quantity, product_id))
-                    else:
-                        c.execute('''
+                              (last_check, quantity, product_id))
+                else:
+                    c.execute('''
                                 SELECT * 
                                 FROM TANK
-                                WHERE Last_Check_Up < ? AND Quantity = ?''',
-                                (last_check, quantity))
+                                WHERE Last_Check_Up = ? AND Quantity = ?''',
+                              (last_check, quantity))
             elif (product_id):
                 c.execute('''
                             SELECT * 
                             FROM TANK
-                            WHERE Last_Check_Up < ? AND Prod_Id = ?''',
-                            (last_check, product_id))
+                            WHERE Last_Check_Up = ? AND Prod_Id = ?''',
+                          (last_check, product_id))
             else:
                 c.execute('''
                             SELECT * 
                             FROM TANK
-                            WHERE Last_Check_Up < ? ''',
-                            (last_check, ))
+                            WHERE Last_Check_Up = ? ''',
+                          (last_check, ))
         elif (capacity):
             if (quantity):
                 if (product_id):
@@ -134,51 +138,49 @@ def searchBy(id, last_check, capacity, quantity, product_id, longitude, latitude
                             FROM TANK
                             WHERE Capacity = ? AND Quantity = ?
                             AND Prod_Id = ?''',
-                            (capacity, quantity, product_id))
+                              (capacity, quantity, product_id))
                 else:
                     c.execute('''
                             SELECT * 
                             FROM TANK
                             WHERE Capacity = ? AND Quantity = ?''',
-                            (capacity, quantity))
+                              (capacity, quantity))
             elif (product_id):
                 c.execute('''
                         SELECT * 
                         FROM TANK
                         WHERE Capacity = ? AND Prod_Id = ?''',
-                        (capacity, product_id))
+                          (capacity, product_id))
             else:
                 c.execute('''
                         SELECT * 
                         FROM TANK
                         WHERE Capacity = ?''',
-                        (capacity, )) 
+                          (capacity, ))
         elif (quantity):
             if (product_id):
                 c.execute('''
                         SELECT * 
                         FROM TANK
                         WHERE Quantity = ? AND Prod_Id = ?''',
-                        (quantity, product_id))
+                          (quantity, product_id))
             else:
                 c.execute('''
                         SELECT * 
                         FROM TANK
                         WHERE Quantity = ?''',
-                        (quantity, ))
+                          (quantity, ))
         else:
             c.execute('''
                     SELECT * 
                     FROM TANK
                     WHERE Prod_Id = ?''',
-                    (product_id, ))
-
-        
-        
+                      (product_id, ))
 
     data = c.fetchall()
     conn.close()
     return data
+
 
 def update(id, last_check, capacity, quantity, product_id, longitude, latitude):
     conn = sqlite3.connect("Gas_Station.db")
@@ -189,12 +191,13 @@ def update(id, last_check, capacity, quantity, product_id, longitude, latitude):
             c.execute('''UPDATE TANK
                         SET Last_Check_Up = ?, Capacity = ?, Quantity = ?,
                         Prod_Id = ? 
-                        WHERE Id = ? AND GS_Longitude = ? AND GS_Latitude = ?''', 
-                        (last_check, capacity, quantity, product_id, id, longitude, latitude))
+                        WHERE Id = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
+                      (last_check, capacity, quantity, product_id, id, longitude, latitude))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(id_longitude_latitude):
     id_longitude_latitude = id_longitude_latitude.split('_')
@@ -209,10 +212,11 @@ def delete(id_longitude_latitude):
             c.execute('''DELETE FROM
                         TANK WHERE
                         Id = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
-                        (id, longitude, latitude))
+                      (id, longitude, latitude))
         except Exception as e:
             print(e)
     conn.close()
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

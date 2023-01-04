@@ -2,19 +2,340 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0066c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #003399;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        form input,
+        form textarea {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form #submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        form #submit:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-    {% for pump in pumps %}
-    <p>Id: {{pump.0}}, Current_State: {{pump.1}}, Last_Check_Up: {{pump.2}}, Nozzle_Last_Check_up: {{pump.3}},
-        Product_Quantity: {{pump.4}},
-        Tank_Id: {{pump.5}}, T_GS_longitude: {{pump.6}}, T_GS_latitude: {{pump.7}}
-    </p>
-    {% endfor %}
+    <div class="header">
+        <h1>Pump Handling</h1>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a id="all_pump_nav" onclick="ShowPump()">Pumps</a>
+        <a id="search_pump_nav" onclick="SearchPump()">Search Pump</a>
+        <a id="add_pump_nav" onclick="AddPump()">Add Pump</a>
+    </nav>
+    <div id="all_pumps" style="display: block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Tank Id</th>
+                    <th>Tank Gas Station Longitude</th>
+                    <th>Tank Gas Station Latitude</th>
+                    <th>Current State</th>
+                    <th>Last Check Up</th>
+                    <th>Nozzle Last Check Up</th>
+                    <th>Product Quantity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pump in pumps %}
+                <tr id="{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}">
+                    <td>{{pump.0}}</td>
+                    <td>{{pump.1}}</td>
+                    <td>{{pump.2}}</td>
+                    <td>{{pump.3}}</td>
+                    <td>{{pump.4}}</td>
+                    <td>{{pump.5}}</td>
+                    <td>{{pump.6}}</td>
+                    <td>{{pump.7}}</td>
+                    <td>
+                        <a href="#'{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}'"
+                            onclick="editPump('{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}')">Edit</a>
+                        |
+                        <a href="{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}/">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="search_pump" style="display: none">
+        <p>Select fields you want to search for</p>
+        <select id="dropdown">
+            <option value="pump-id">Pump_Id</option>
+            <option value="tank-id">Tank_Id</option>
+            <option value="tank-gs-longitude">Tank_Gas_Station_Longitude</option>
+            <option value="tank-gs-latitude">Tank_Gas_Station_Latitude</option>
+            <option value="current-state">Current_State</option>
+            <option value="last-check-up">Last_Check_Up</option>
+            <option value="nozzle-last-check-up">Nozzle_Last_Check_Up</option>
+            <option value="product-quantity">Product_Quantity</option>
+        </select>
+        <button onclick="addInput()">Add Input</button>
+        <form id="searchPumpForm" method="POST">
+            {% csrf_token %}
+            <input type="submit" id="submit-search-pump" name="search_pump" value="submit" />
+        </form>
+    </div>
+    <div id="add_pump" style="display: none">
+        <form id="addPumpForm" method="POST">
+            {% csrf_token %}
+            <label for="pump-id">Pump Id:</label><br>
+            <input type="number" step="1" id="pump-id" name="pump-id"><br>
+            <label for="tank-id">Tank Id:</label><br>
+            <input type="number" step="1" id="tank-id" name="tank-id"><br>
+            <label for="tank-gs-longitude">Tank GS Longitude:</label><br>
+            <input type="number" step="any" id="tank-gs-longitude" name="tank-gs-longitude"><br>
+            <label for="tank-gs-latitude">Tank GS Latitude:</label><br>
+            <input type="number" step="any" id="tank-gs-latitude" name="tank-gs-latitude"><br>
+            <label for="current-state">Current State:</label><br>
+            <input type="number" step="1" min="0" max="1" id="current-state" name="current-state"><br>
+            <label for="last-check-up">Last Check Up:</label><br>
+            <input type="text" id="last-check-up" name="last-check-up"><br>
+            <label for="nozzle-last-check-up">Nozzle Last Check Up Id:</label><br>
+            <input type="text" id="nozzle-last-check-up" name="nozzle-last-check-up"><br>
+            <label for="product-quantity">Product Quantity:</label><br>
+            <input type="number" step="any" id="product-quantity" name="product-quantity"><br>
+
+            <input type="submit" id="submit-add-pump" name="add_pump" value="submit" />
+        </form>
+    </div>
 </body>
+
+<script>
+    function ShowPump() {
+        const all_pumps = document.getElementById("all_pumps");
+        all_pumps.style.display = "block";
+        const search_pump = document.getElementById("search_pump");
+        search_pump.style.display = "none";
+        const add_pump = document.getElementById("add_pump");
+        add_pump.style.display = "none";
+        window.location.href = "/pump/";
+    }
+
+    function SearchPump() {
+        const all_pumps = document.getElementById("all_pumps");
+        all_pumps.style.display = "none";
+        const search_pump = document.getElementById("search_pump");
+        search_pump.style.display = "block";
+        const add_pump = document.getElementById("add_pump");
+        add_pump.style.display = "none";
+        document.getElementById("submit-search-pump").disabled = true;
+    }
+
+    function AddPump() {
+        const all_pumps = document.getElementById("all_pumps");
+        all_pumps.style.display = "none";
+        const search_pump = document.getElementById("search_pump");
+        search_pump.style.display = "none";
+        const add_pump = document.getElementById("add_pump");
+        add_pump.style.display = "block";
+    }
+
+    function addInput() {
+        document.getElementById("submit-search-pump").disabled = false;
+        // Get selected option value
+        var dropdown = document.getElementById("dropdown");
+        var selectedOption = dropdown.value;
+        dropdown.selectedIndex++;
+        // Set input type based on selected option
+        var type;
+        switch (selectedOption) {
+            case "pump-id":
+                type = "number";
+                step = "1";
+                break;
+            case "tank-id":
+                type = "number";
+                step = "1";
+                break;
+            case "tank-gs-longitude":
+                type = "number";
+                step = "any";
+                break;
+            case "tank-gs-latitude":
+                type = "number";
+                step = "any";
+                break;
+            case "current-state":
+                type = "number";
+                step = "1";
+                min = "0";
+                max = "1";
+                break;
+            case "last-check-up":
+                type = "text";
+                break;
+            case "nozzle-last-check-up":
+                type = "text";
+                break;
+            case "product-quantity":
+                type = "number";
+                step = "1";
+                break;
+            default:
+                type = "text";
+        }
+
+        var options = dropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == selectedOption) {
+                options[i].disabled = true;
+                break;
+            }
+        }
+
+        // Add new input field to form
+        var form = document.getElementById("searchPumpForm");
+        var input = document.createElement("input");
+        var label = document.createElement("label");
+        input.type = type;
+        if (type == "number") {
+            input.step = step;
+            if (selectedOption == "current-state") {
+                input.max = max;
+                input.min = min;
+            }
+        }
+        input.name = selectedOption;
+        label.setAttribute("for", selectedOption);
+        label.textContent = selectedOption;
+        form.insertBefore(document.createElement("br"), form.firstChild);
+        form.insertBefore(input, form.firstChild);
+        form.insertBefore(label, form.firstChild);
+    }
+
+    function editPump(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        // Get the values of the cell elements
+        const cells = row.querySelectorAll("td");
+        const pump_id = cells[0].textContent;
+        const tank_id = cells[1].textContent;
+        const tank_gs_longitude = cells[2].textContent;
+        const tank_gs_latitude = cells[3].textContent;
+        const current_state = cells[4].textContent;
+        const last_check_up = cells[5].textContent;
+        const nozzle_last_check_up = cells[6].textContent;
+        const product_quantity = cells[7].textContent;
+
+        // Replace the cell elements with form inputs
+        cells[0].innerHTML = `<input type="number" name="pump-id" value="${pump_id}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="number" name="tank-id" value="${tank_id}" readonly="readonly">`;
+        cells[2].innerHTML = `<input type="number" step="any" name="tank-gs-longitude" value="${tank_gs_longitude}" readonly="readonly">`;
+        cells[3].innerHTML = `<input type="number" step="any" name="tank-gs-latitude" value="${tank_gs_latitude}" readonly="readonly">`;
+        cells[4].innerHTML = `<input type="number" step="1" min="0" max="1" name="current-state" value="${current_state}">`;
+        cells[5].innerHTML = `<input type="text" name="last-check-up" value="${last_check_up}">`;
+        cells[6].innerHTML = `<input type="text" name="nozzle-last-check-up" value="${nozzle_last_check_up}">`;
+        cells[7].innerHTML = `<input type="number" step="any" name="product-quantity" value="${product_quantity}">`;
+        cells[8].innerHTML = `<a onclick="savePump('${id}')">Save</a>`;
+    }
+
+    function savePump(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/pump/";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "csrfmiddlewaretoken";
+        input.value = "{{ csrf_token }}";
+
+        form.appendChild(input);
+
+        const cells = row.querySelectorAll("td");
+
+        for (let i = 0; i < cells.length; i++) {
+            form.appendChild(cells[i]);
+        }
+
+        row.parentNode.replaceChild(form, row);
+        form.submit();
+    }
+</script>
 
 </html>

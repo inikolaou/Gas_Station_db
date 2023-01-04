@@ -421,8 +421,47 @@ def provides_delete(request, serv_gslong_lat):
 
 
 def pump(request):
-    pumps = Pump.retrieveAllColumns()
+    if request.method == "POST":
+        pump_id = request.POST.get('pump-id', False)
+        tank_id = request.POST.get('tank-id', False)
+        tank_gs_longitude = request.POST.get('tank-gs-longitude', False)
+        tank_gs_latitude = request.POST.get('tank-gs-latitude', False)
+        current_state = request.POST.get('current-state', False)
+        last_check_up = request.POST.get('last-check-up', False)
+        nozzle_last_check_up = request.POST.get('nozzle-last-check-up', False)
+        product_quantity = request.POST.get('product-quantity', False)
+
+        if "add_pump" in request.POST:
+            try:
+                Pump.insertInto(int(pump_id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
+                                last_check_up, nozzle_last_check_up, float(product_quantity))
+                return redirect(pump)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_pump" in request.POST:
+            try:
+                pumps = Pump.searchBy(int(pump_id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
+                                      last_check_up, nozzle_last_check_up, float(product_quantity))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Pump.update(int(pump_id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
+                            last_check_up, nozzle_last_check_up, float(product_quantity))
+                return redirect(pump)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        pumps = Pump.retrieveAllColumns()
     return render(request, 'pump.html', {'pumps': pumps})
+
+
+def pump_delete(request, id_tankId_tankLongitude_tankLatitude):
+    Pump.delete(id_tankId_tankLongitude_tankLatitude)
+    return redirect(pump)
 
 
 def purchase(request):

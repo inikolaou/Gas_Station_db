@@ -29,6 +29,7 @@ urlpatterns = [
     path('pump/', views.pump, name='pump'),
     path('pump/<str:id_tankId_tankLongitude_tankLatitude>/', views.pump_delete),
     path('purchases/', views.purchase, name='purchase'),
+    path('purchases/<int:id>/', views.purchase_delete),
     path('service/', views.service, name='service'),
     path('service/<int:id>/', views.service_delete),
     path('signs/', views.sign, name='sign'),

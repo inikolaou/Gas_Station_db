@@ -1,296 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-    <style>
-      nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #333;
-        color: #fff;
-        padding: 20px;
-      }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 8px;
-      }
-
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-
-      nav a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 16px;
-      }
-
-      nav a:hover {
-        color: #ccc;
-        cursor: pointer;
-      }
-
-      a {
-        color: #0066c0;
-        text-decoration: none;
-      }
-
-      a:hover {
-        color: #003399;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        width: 50%;
-        margin: 10px auto;
-        padding: 20px;
-        border: 2px solid #333;
-        border-radius: 5px;
-      }
-
-      form label {
-        margin-top: 10px;
-        font-size: 18px;
-      }
-
-      form input,
-      form textarea {
-        margin-top: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-      }
-
-      form #submit {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #333;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-
-      form #submit:hover {
-        background-color: #555;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="header">
-      <h1>Involves Handling</h1>
-    </div>
-    <nav>
-      <a href="/">Home</a>
-      <a id="all_involves_nav" onclick="ShowInvolves()">Involves</a>
-      <a id="search_involves_nav" onclick="SearchInvolves()">Search Involves</a>
-      <a id="add_involves_nav" onclick="AddInvolves()">Add Involves</a>
-    </nav>
-    <div id="all_involves" style="display: block">
-      <table>
-        <thead>
-          <tr>
-            <th>Product ID</th>
-            <th>Purchase ID</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for tuple in involves %}
-          <tr id="{{tuple.0}}_{{tuple.1}}">
-            <td>{{tuple.0}}</td>
-            <td>{{tuple.1}}</td>
-            <td>{{tuple.2}}</td>
-            <td>
-              <a
-                href="#'{{tuple.0}}_{{tuple.1}}'"
-                onclick="editInvolves('{{tuple.0}}_{{tuple.1}}')"
-                >Edit</a
-              >
-              |
-              <a href="{{tuple.0}}_{{tuple.1}}/">Delete</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div id="search_involves" style="display: none">
-      <p>Select fields you want to search for</p>
-      <select id="dropdown">
-        <option value="prod-id">Prod_Id</option>
-        <option value="pur-id">Pur_Id</option>
-        <option value="quantity">Quantity</option>
-      </select>
-      <button onclick="addInput()">Add Input</button>
-      <form id="searchInvolvesForm" method="POST">
-        {% csrf_token %}
-        <input
-          type="submit"
-          id="submit-search-involves"
-          name="search_involves"
-          value="submit"
-        />
-      </form>
-    </div>
-    <div id="add_involves" style="display: none">
-      <form id="addInvolvesForm" method="POST">
-        {% csrf_token %}
-        <label for="prod-id">Product ID:</label><br>
-        <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
-        <label for="pur-id">Purchase Id:</label><br>
-        <input type="number" step="1" min="1" id="pur-id" name="pur-id"><br>
-        <label for="quantity">Quantity:</label><br>
-        <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
-        <input
-          type="submit"
-          id="submit-add-involves"
-          name="add_involves"
-          value="submit"
-        />
-      </form>
-    </div>
-  </body>
-
-  <script>
-    function ShowInvolves() {
-      const all_involves = document.getElementById("all_involves");
-      all_involves.style.display = "block";
-      const search_involves = document.getElementById("search_involves");
-      search_involves.style.display = "none";
-      const add_involves = document.getElementById("add_involves");
-      add_involves.style.display = "none";
-      window.location.href = "/involves/";
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index</title>
+  <style>
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
     }
 
-    function SearchInvolves() {
-      const all_involves = document.getElementById("all_involves");
-      all_involves.style.display = "none";
-      const search_involves = document.getElementById("search_involves");
-      search_involves.style.display = "block";
-      const add_involves = document.getElementById("add_involves");
-      add_involves.style.display = "none";
-      document.getElementById("submit-search-involves").disabled = true;
+    table {
+      width: 100%;
+      border-collapse: collapse;
     }
 
-    function AddInvolves() {
-      const all_involves = document.getElementById("all_involves");
-      all_involves.style.display = "none";
-      const search_involves = document.getElementById("search_involves");
-      search_involves.style.display = "none";
-      const add_involves = document.getElementById("add_involves");
-      add_involves.style.display = "block";
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
     }
 
-    function addInput() {
-      document.getElementById("submit-search-involves").disabled = false;
-      // Get selected option value
-      var dropdown = document.getElementById("dropdown");
-      var selectedOption = dropdown.value;
-
-      // Set input type based on selected option
-      var type;
-      switch (selectedOption) {
-        case "prod-id":
-          type = "number";
-          step = "1";
-          min = "1";
-          break;
-        case "pur-id":
-          type = "number";
-          step = "1";
-          min = "1";
-          break;
-        case "quantity":
-          type = "number";
-          step = "any";
-          min = "0";
-          break;
-        default:
-          type = "text";
-      }
-
-      var options = dropdown.options;
-      for (var i = 0; i < options.length; i++) {
-        if (options[i].value == selectedOption) {
-          options[i].disabled = true;
-          break;
-        }
-      }
-
-      // Add new input field to form
-      var form = document.getElementById("searchInvolvesForm");
-      var input = document.createElement("input");
-      var label = document.createElement("label");
-      input.type = type;
-      if (type == "number") {
-        input.step = step;
-      }
-      input.name = selectedOption;
-      label.setAttribute("for", selectedOption);
-      label.textContent = selectedOption;
-      form.insertBefore(document.createElement("br"), form.firstChild);
-      form.insertBefore(input, form.firstChild);
-      form.insertBefore(label, form.firstChild);
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
     }
 
-    function editInvolves(id) {
-      // Get a reference to the table row
-      const row = document.querySelector(`tr[id="${id}"]`);
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+    }
 
-      // Get the values of the cell elements
-      const cells = row.querySelectorAll("td");
-      const prod_id = cells[0].textContent;
-      const pur_id = cells[1].textContent;
-      const quantity = cells[2].textContent;
+    nav a:hover {
+      color: #ccc;
+      cursor: pointer;
+    }
 
-      // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">
+    a {
+      color: #0066c0;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #003399;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      margin: 10px auto;
+      padding: 20px;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+
+    form label {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    form input,
+    form textarea {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    form #submit {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    form #submit:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Involves Handling</h1>
+  </div>
+  <nav>
+    <a href="/">Home</a>
+    <a id="all_involves_nav" onclick="ShowInvolves()">Involves</a>
+    <a id="search_involves_nav" onclick="SearchInvolves()">Search Involves</a>
+    <a id="add_involves_nav" onclick="AddInvolves()">Add Involves</a>
+  </nav>
+  <div id="all_involves" style="display: block">
+    <table>
+      <thead>
+        <tr>
+          <th>Product ID</th>
+          <th>Purchase ID</th>
+          <th>Quantity</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tuple in involves %}
+        <tr id="{{tuple.0}}_{{tuple.1}}">
+          <td>{{tuple.0}}</td>
+          <td>{{tuple.1}}</td>
+          <td>{{tuple.2}}</td>
+          <td>
+            <a href="#'{{tuple.0}}_{{tuple.1}}'" onclick="editInvolves('{{tuple.0}}_{{tuple.1}}')">Edit</a>
+            |
+            <a href="{{tuple.0}}_{{tuple.1}}/">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div id="search_involves" style="display: none">
+    <p>Select fields you want to search for</p>
+    <select id="dropdown">
+      <option value="prod-id">Prod_Id</option>
+      <option value="pur-id">Pur_Id</option>
+      <option value="quantity">Quantity</option>
+    </select>
+    <button onclick="addInput()">Add Input</button>
+    <form id="searchInvolvesForm" method="POST">
+      {% csrf_token %}
+      <input type="submit" id="submit-search-involves" name="search_involves" value="submit" />
+    </form>
+  </div>
+  <div id="add_involves" style="display: none">
+    <form id="addInvolvesForm" method="POST">
+      {% csrf_token %}
+      <label for="prod-id">Product ID:</label><br>
+      <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
+      <label for="pur-id">Purchase Id:</label><br>
+      <input type="number" step="1" min="1" id="pur-id" name="pur-id"><br>
+      <label for="quantity">Quantity:</label><br>
+      <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
+      <input type="submit" id="submit-add-involves" name="add_involves" value="submit" />
+    </form>
+  </div>
+</body>
+
+<script>
+  function ShowInvolves() {
+    const all_involves = document.getElementById("all_involves");
+    all_involves.style.display = "block";
+    const search_involves = document.getElementById("search_involves");
+    search_involves.style.display = "none";
+    const add_involves = document.getElementById("add_involves");
+    add_involves.style.display = "none";
+    window.location.href = "/involves/";
+  }
+
+  function SearchInvolves() {
+    const all_involves = document.getElementById("all_involves");
+    all_involves.style.display = "none";
+    const search_involves = document.getElementById("search_involves");
+    search_involves.style.display = "block";
+    const add_involves = document.getElementById("add_involves");
+    add_involves.style.display = "none";
+    document.getElementById("submit-search-involves").disabled = true;
+  }
+
+  function AddInvolves() {
+    const all_involves = document.getElementById("all_involves");
+    all_involves.style.display = "none";
+    const search_involves = document.getElementById("search_involves");
+    search_involves.style.display = "none";
+    const add_involves = document.getElementById("add_involves");
+    add_involves.style.display = "block";
+  }
+
+  function addInput() {
+    document.getElementById("submit-search-involves").disabled = false;
+    // Get selected option value
+    var dropdown = document.getElementById("dropdown");
+    var selectedOption = dropdown.value;
+    dropdown.selectedIndex++;
+    // Set input type based on selected option
+    var type;
+    switch (selectedOption) {
+      case "prod-id":
+        type = "number";
+        step = "1";
+        min = "1";
+        break;
+      case "pur-id":
+        type = "number";
+        step = "1";
+        min = "1";
+        break;
+      case "quantity":
+        type = "number";
+        step = "any";
+        min = "0";
+        break;
+      default:
+        type = "text";
+    }
+
+    var options = dropdown.options;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value == selectedOption) {
+        options[i].disabled = true;
+        break;
+      }
+    }
+
+    // Add new input field to form
+    var form = document.getElementById("searchInvolvesForm");
+    var input = document.createElement("input");
+    var label = document.createElement("label");
+    input.type = type;
+    if (type == "number") {
+      input.step = step;
+    }
+    input.name = selectedOption;
+    label.setAttribute("for", selectedOption);
+    label.textContent = selectedOption;
+    form.insertBefore(document.createElement("br"), form.firstChild);
+    form.insertBefore(input, form.firstChild);
+    form.insertBefore(label, form.firstChild);
+  }
+
+  function editInvolves(id) {
+    // Get a reference to the table row
+    const row = document.querySelector(`tr[id="${id}"]`);
+
+    // Get the values of the cell elements
+    const cells = row.querySelectorAll("td");
+    const prod_id = cells[0].textContent;
+    const pur_id = cells[1].textContent;
+    const quantity = cells[2].textContent;
+
+    // Replace the cell elements with form inputs
+    cells[0].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">
                             <input type="hidden" name="previous-prod-id" value="${prod_id}">`;
-      cells[1].innerHTML = `<input type="number" step="1" min="1" name="pur-id" value="${pur_id}" readonly="readonly">`;
-      cells[2].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
-      cells[3].innerHTML = `<a onclick="saveInvolves('${id}')">Save</a>`;
+    cells[1].innerHTML = `<input type="number" step="1" min="1" name="pur-id" value="${pur_id}" readonly="readonly">`;
+    cells[2].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
+    cells[3].innerHTML = `<a onclick="saveInvolves('${id}')">Save</a>`;
+  }
+
+  function saveInvolves(id) {
+    // Get a reference to the table row
+    const row = document.querySelector(`tr[id="${id}"]`);
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/involves/";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "csrfmiddlewaretoken";
+    input.value = "{{ csrf_token }}";
+
+    form.appendChild(input);
+
+    const cells = row.querySelectorAll("td");
+
+    for (let i = 0; i < cells.length; i++) {
+      form.appendChild(cells[i]);
     }
 
-    function saveInvolves(id) {
-      // Get a reference to the table row
-      const row = document.querySelector(`tr[id="${id}"]`);
+    row.parentNode.replaceChild(form, row);
+    form.submit();
+  }
+</script>
 
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = "/involves/";
-
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "csrfmiddlewaretoken";
-      input.value = "{{ csrf_token }}";
-
-      form.appendChild(input);
-
-      const cells = row.querySelectorAll("td");
-
-      for (let i = 0; i < cells.length; i++) {
-        form.appendChild(cells[i]);
-      }
-
-      row.parentNode.replaceChild(form, row);
-      form.submit();
-    }
-  </script>
 </html>

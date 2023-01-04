@@ -1,311 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-    <style>
-      nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #333;
-        color: #fff;
-        padding: 20px;
-      }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 8px;
-      }
-
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-
-      nav a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 16px;
-      }
-
-      nav a:hover {
-        color: #ccc;
-        cursor: pointer;
-      }
-
-      a {
-        color: #0066c0;
-        text-decoration: none;
-      }
-
-      a:hover {
-        color: #003399;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        width: 50%;
-        margin: 10px auto;
-        padding: 20px;
-        border: 2px solid #333;
-        border-radius: 5px;
-      }
-
-      form label {
-        margin-top: 10px;
-        font-size: 18px;
-      }
-
-      form input,
-      form textarea {
-        margin-top: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-      }
-
-      form #submit {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #333;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-
-      form #submit:hover {
-        background-color: #555;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="header">
-      <h1>Supply Handling</h1>
-    </div>
-    <nav>
-      <a href="/">Home</a>
-      <a id="all_supplies_nav" onclick="ShowSupplies()">Supplies</a>
-      <a id="search_supplies_nav" onclick="SearchSupply()">Search Supply</a>
-      <a id="add_supplies_nav" onclick="AddSupply()">Add Supply</a>
-    </nav>
-    <div id="all_supplies" style="display: block">
-      <table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Expected Arrival Date</th>
-            <th>Real Arrival Date</th>
-            <th>Supplier Email</th>
-            <th>GS Longitude</th>
-            <th>GS Latitude</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for supply in supplies %}
-          <tr id="{{supply.0}}">
-            <td>{{supply.0}}</td>
-            <td>{{supply.1}}</td>
-            <td>{{supply.2}}</td>
-            <td>{{supply.3}}</td>
-            <td>{{supply.4}}</td>
-            <td>{{supply.5}}</td>
-            <td>
-              <a href="#'{{supply.0}}'" onclick="editSupply('{{supply.0}}')">Edit<a>
-              |
-              <a href="{{supply.0}}/">Delete</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div id="search_supply" style="display: none">
-      <p>Select fields you want to search for</p>
-      <select id="dropdown">
-        <option value="id">ID</option>
-        <option value="expected-arrival-date">Expected Arrival Date</option>
-        <option value="real-arrival-date">Real Arrival Date</option>
-        <option value="sup-email">Supplier Email</option>
-        <option value="gs-longitude">GS_Longitude</option>
-        <option value="gs-latitude">GS_Latitude</option>
-      </select>
-      <button onclick="addInput()">Add Input</button>
-      <form id="searchSupplyForm" method="POST">
-        {% csrf_token %}
-        <input type="submit" id="submit-search-supply" name="search_supply" value="submit">
-      </form>
-    </div>
-    <div id="add_supply" style="display: none">
-      <form id="addSupplyForm" method="POST">
-        {% csrf_token %}
-        <label for="id">ID:</label><br>
-        <input type="number" step="1" min="1" id="id" name="id"><br>
-        <label for="expected-arrival-date">Expected Arrival Date:</label><br>
-        <input type="date" id="expected-arrival-date" name="expected-arrival-date"><br>
-        <label for="real-arrival-date">Real Arrival Date:</label><br>
-        <input type="date" id="real-arrival-date" name="real-arrival-date"><br>
-        <label for="sup-email">Supplier Email:</label><br>
-        <input type="email" id="sup-email" name="sup-email"><br>
-        <label for="gs-longitude">GS_Longitude:</label><br>
-        <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
-        <label for="gs-latitude">GS_Latitude:</label><br>
-        <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
-        <input type="submit" id="submit-add-supply" name="add_supply" value="submit">
-      </form>
-    </div>
-  </body>
-
-  <script>
-    function ShowSupplies() {
-      const all_supplies = document.getElementById("all_supplies");
-      all_supplies.style.display = "block";
-      const search_supply = document.getElementById("search_supply");
-      search_supply.style.display = "none";
-      const add_supply = document.getElementById("add_supply");
-      add_supply.style.display = "none";
-      window.location.href = "/supply/";
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index</title>
+  <style>
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
     }
 
-    function SearchSupply() {
-      const all_supplies = document.getElementById("all_supplies");
-      all_supplies.style.display = "none";
-      const search_supply = document.getElementById("search_supply");
-      search_supply.style.display = "block";
-      const add_supply = document.getElementById("add_supply");
-      add_supply.style.display = "none";
-      document.getElementById("submit-search-supply").disabled = true;
+    table {
+      width: 100%;
+      border-collapse: collapse;
     }
 
-    function AddSupply() {
-      const all_supplies = document.getElementById("all_supplies");
-      all_supplies.style.display = "none";
-      const search_supply = document.getElementById("search_supply");
-      search_supply.style.display = "none";
-      const add_supply = document.getElementById("add_supply");
-      add_supply.style.display = "block";
-      const id_field = document.getElementById("id");
-      id_field.value = document.getElementsByTagName("tr").length;
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
     }
 
-    function addInput() {
-      document.getElementById("submit-search-supply").disabled = false;
-      // Get selected option value
-      var dropdown = document.getElementById("dropdown");
-      var selectedOption = dropdown.value;
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
 
-      // Set input type based on selected option
-      var type;
-      switch (selectedOption) {
-        case "id":
-          type = "number";
-          step = "1";
-          min = "1";
-          break;
-        case "expected-arrival-date":
-          type = "date";
-          break;
-        case "real-arrival-date":
-          type = "date";
-          break;
-        case "sup-email":
-          type = "email";
-          break;
-        case "gs-longitude":
-          type = "number";
-          step = "any";
-          break;
-        case "gs-latitude":
-          type = "number";
-          step = "any";
-          break;
-        default:
-          type = "text";
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    nav a:hover {
+      color: #ccc;
+      cursor: pointer;
+    }
+
+    a {
+      color: #0066c0;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #003399;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      margin: 10px auto;
+      padding: 20px;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+
+    form label {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    form input,
+    form textarea {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    form #submit {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    form #submit:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Supply Handling</h1>
+  </div>
+  <nav>
+    <a href="/">Home</a>
+    <a id="all_supplies_nav" onclick="ShowSupplies()">Supplies</a>
+    <a id="search_supplies_nav" onclick="SearchSupply()">Search Supply</a>
+    <a id="add_supplies_nav" onclick="AddSupply()">Add Supply</a>
+  </nav>
+  <div id="all_supplies" style="display: block">
+    <table>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Expected Arrival Date</th>
+          <th>Real Arrival Date</th>
+          <th>Supplier Email</th>
+          <th>GS Longitude</th>
+          <th>GS Latitude</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for supply in supplies %}
+        <tr id="{{supply.0}}">
+          <td>{{supply.0}}</td>
+          <td>{{supply.1}}</td>
+          <td>{{supply.2}}</td>
+          <td>{{supply.3}}</td>
+          <td>{{supply.4}}</td>
+          <td>{{supply.5}}</td>
+          <td>
+            <a href="#'{{supply.0}}'" onclick="editSupply('{{supply.0}}')">Edit<a>
+                |
+                <a href="{{supply.0}}/">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div id="search_supply" style="display: none">
+    <p>Select fields you want to search for</p>
+    <select id="dropdown">
+      <option value="id">ID</option>
+      <option value="expected-arrival-date">Expected Arrival Date</option>
+      <option value="real-arrival-date">Real Arrival Date</option>
+      <option value="sup-email">Supplier Email</option>
+      <option value="gs-longitude">GS_Longitude</option>
+      <option value="gs-latitude">GS_Latitude</option>
+    </select>
+    <button onclick="addInput()">Add Input</button>
+    <form id="searchSupplyForm" method="POST">
+      {% csrf_token %}
+      <input type="submit" id="submit-search-supply" name="search_supply" value="submit">
+    </form>
+  </div>
+  <div id="add_supply" style="display: none">
+    <form id="addSupplyForm" method="POST">
+      {% csrf_token %}
+      <label for="id">ID:</label><br>
+      <input type="number" step="1" min="1" id="id" name="id"><br>
+      <label for="expected-arrival-date">Expected Arrival Date:</label><br>
+      <input type="date" id="expected-arrival-date" name="expected-arrival-date"><br>
+      <label for="real-arrival-date">Real Arrival Date:</label><br>
+      <input type="date" id="real-arrival-date" name="real-arrival-date"><br>
+      <label for="sup-email">Supplier Email:</label><br>
+      <input type="email" id="sup-email" name="sup-email"><br>
+      <label for="gs-longitude">GS_Longitude:</label><br>
+      <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
+      <label for="gs-latitude">GS_Latitude:</label><br>
+      <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+      <input type="submit" id="submit-add-supply" name="add_supply" value="submit">
+    </form>
+  </div>
+</body>
+
+<script>
+  function ShowSupplies() {
+    const all_supplies = document.getElementById("all_supplies");
+    all_supplies.style.display = "block";
+    const search_supply = document.getElementById("search_supply");
+    search_supply.style.display = "none";
+    const add_supply = document.getElementById("add_supply");
+    add_supply.style.display = "none";
+    window.location.href = "/supply/";
+  }
+
+  function SearchSupply() {
+    const all_supplies = document.getElementById("all_supplies");
+    all_supplies.style.display = "none";
+    const search_supply = document.getElementById("search_supply");
+    search_supply.style.display = "block";
+    const add_supply = document.getElementById("add_supply");
+    add_supply.style.display = "none";
+    document.getElementById("submit-search-supply").disabled = true;
+  }
+
+  function AddSupply() {
+    const all_supplies = document.getElementById("all_supplies");
+    all_supplies.style.display = "none";
+    const search_supply = document.getElementById("search_supply");
+    search_supply.style.display = "none";
+    const add_supply = document.getElementById("add_supply");
+    add_supply.style.display = "block";
+    const id_field = document.getElementById("id");
+    id_field.value = document.getElementsByTagName("tr").length;
+  }
+
+  function addInput() {
+    document.getElementById("submit-search-supply").disabled = false;
+    // Get selected option value
+    var dropdown = document.getElementById("dropdown");
+    var selectedOption = dropdown.value;
+    dropdown.selectedIndex++;
+    // Set input type based on selected option
+    var type;
+    switch (selectedOption) {
+      case "id":
+        type = "number";
+        step = "1";
+        min = "1";
+        break;
+      case "expected-arrival-date":
+        type = "date";
+        break;
+      case "real-arrival-date":
+        type = "date";
+        break;
+      case "sup-email":
+        type = "email";
+        break;
+      case "gs-longitude":
+        type = "number";
+        step = "any";
+        break;
+      case "gs-latitude":
+        type = "number";
+        step = "any";
+        break;
+      default:
+        type = "text";
+    }
+
+    var options = dropdown.options;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value == selectedOption) {
+        options[i].disabled = true;
+        break;
       }
-
-      var options = dropdown.options;
-      for (var i = 0; i < options.length; i++) {
-        if (options[i].value == selectedOption) {
-          options[i].disabled = true;
-          break;
-        }
-      }
-
-      // Add new input field to form
-      var form = document.getElementById("searchSupplyForm");
-      var input = document.createElement("input");
-      var label = document.createElement("label");
-      input.type = type;
-      if (type == "number") {
-        input.step = step;
-      }
-      input.name = selectedOption;
-      label.setAttribute("for", selectedOption);
-      label.textContent = selectedOption;
-      form.insertBefore(document.createElement("br"), form.firstChild);
-      form.insertBefore(input, form.firstChild);
-      form.insertBefore(label, form.firstChild);
     }
 
-    function editSupply(id) {
-      // Get a reference to the table row
-      const row = document.querySelector(`tr[id="${id}"]`);
+    // Add new input field to form
+    var form = document.getElementById("searchSupplyForm");
+    var input = document.createElement("input");
+    var label = document.createElement("label");
+    input.type = type;
+    if (type == "number") {
+      input.step = step;
+    }
+    input.name = selectedOption;
+    label.setAttribute("for", selectedOption);
+    label.textContent = selectedOption;
+    form.insertBefore(document.createElement("br"), form.firstChild);
+    form.insertBefore(input, form.firstChild);
+    form.insertBefore(label, form.firstChild);
+  }
 
-      // Get the values of the cell elements
-      const cells = row.querySelectorAll("td");
-      const supply_id = cells[0].textContent;
-      const expected_arrival_date = cells[1].textContent;
-      const real_arrival_date = cells[2].textContent;
-      const sup_email = cells[3].textContent;
-      const gs_longitude = cells[4].textContent;
-      const gs_latitude = cells[5].textContent;
+  function editSupply(id) {
+    // Get a reference to the table row
+    const row = document.querySelector(`tr[id="${id}"]`);
 
-      // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${supply_id}" readonly="readonly">`;
-      cells[1].innerHTML = `<input type="date" name="expected-arrival-date" value="${expected_arrival_date}">`;
-      cells[2].innerHTML = `<input type="date" name="real-arrival-date" value="${real_arrival_date}">`;
-      cells[3].innerHTML = `<input type="email" name="sup-email" value="${sup_email}">`;
-      cells[4].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}">`;
-      cells[5].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}">`;
-      cells[6].innerHTML = `<a onclick="saveSupply('${supply_id}')">Save</a>`;
+    // Get the values of the cell elements
+    const cells = row.querySelectorAll("td");
+    const supply_id = cells[0].textContent;
+    const expected_arrival_date = cells[1].textContent;
+    const real_arrival_date = cells[2].textContent;
+    const sup_email = cells[3].textContent;
+    const gs_longitude = cells[4].textContent;
+    const gs_latitude = cells[5].textContent;
+
+    // Replace the cell elements with form inputs
+    cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${supply_id}" readonly="readonly">`;
+    cells[1].innerHTML = `<input type="date" name="expected-arrival-date" value="${expected_arrival_date}">`;
+    cells[2].innerHTML = `<input type="date" name="real-arrival-date" value="${real_arrival_date}">`;
+    cells[3].innerHTML = `<input type="email" name="sup-email" value="${sup_email}">`;
+    cells[4].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}">`;
+    cells[5].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}">`;
+    cells[6].innerHTML = `<a onclick="saveSupply('${supply_id}')">Save</a>`;
+  }
+
+  function saveSupply(id) {
+    // Get a reference to the table row
+    const row = document.querySelector(`tr[id="${id}"]`);
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/supply/";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "csrfmiddlewaretoken";
+    input.value = "{{ csrf_token }}";
+
+    form.appendChild(input);
+
+    const cells = row.querySelectorAll("td");
+
+    for (let i = 0; i < cells.length; i++) {
+      form.appendChild(cells[i]);
     }
 
-    function saveSupply(id) {
-      // Get a reference to the table row
-      const row = document.querySelector(`tr[id="${id}"]`);
+    row.parentNode.replaceChild(form, row);
+    form.submit();
+  }
+</script>
 
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = "/supply/";
-
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "csrfmiddlewaretoken";
-      input.value = "{{ csrf_token }}";
-
-      form.appendChild(input);
-
-      const cells = row.querySelectorAll("td");
-
-      for (let i = 0; i < cells.length; i++) {
-        form.appendChild(cells[i]);
-      }
-
-      row.parentNode.replaceChild(form, row);
-      form.submit();
-    }
-  </script>
 </html>

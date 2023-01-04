@@ -1,313 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-    <style>
-      nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #333;
-        color: #fff;
-        padding: 20px;
-      }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 8px;
-      }
-
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-
-      nav a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 16px;
-      }
-
-      nav a:hover {
-        color: #ccc;
-        cursor: pointer;
-      }
-
-      a {
-        color: #0066c0;
-        text-decoration: none;
-      }
-
-      a:hover {
-        color: #003399;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        width: 50%;
-        margin: 10px auto;
-        padding: 20px;
-        border: 2px solid #333;
-        border-radius: 5px;
-      }
-
-      form label {
-        margin-top: 10px;
-        font-size: 18px;
-      }
-
-      form input,
-      form textarea {
-        margin-top: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-      }
-
-      form #submit {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #333;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-
-      form #submit:hover {
-        background-color: #555;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="header">
-      <h1>Product Handling</h1>
-    </div>
-    <nav>
-      <a href="/">Home</a>
-      <a id="all_products_nav" onclick="ShowProducts()">Products</a>
-      <a id="search_product_nav" onclick="SearchProduct()">Search Product</a>
-      <a id="add_product_nav" onclick="AddProduct()">Add Product</a>
-    </nav>
-    <div id="all_products" style="display: block">
-      <table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Price</th>
-            <th>Corresponding Points</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for product in products %}
-          <tr id="{{product.0}}">
-            <td>{{product.0}}</td>
-            <td>{{product.1}}</td>
-            <td>{{product.2}}</td>
-            <td>{{product.3}}</td>
-            <td>{{product.4}}</td>
-            <td>
-              <a
-                href="#'{{product.0}}'"
-                onclick="editProduct('{{product.0}}')"
-                >Edit</a
-              >
-              |
-              <a href="{{product.0}}/">Delete</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div id="search_product" style="display: none">
-      <p>Select fields you want to search for</p>
-      <select id="dropdown">
-        <option value="id">ID</option>
-        <option value="type">Type</option>
-        <option value="price">Price</option>
-        <option value="corresponding-points">Points</option>
-      </select>
-      <button onclick="addInput()">Add Input</button>
-      <form id="searchProductForm" method="POST">
-        {% csrf_token %}
-        <input
-          type="submit"
-          id="submit-search-product"
-          name="search_product"
-          value="submit"
-        />
-      </form>
-    </div>
-    <div id="add_product" style="display: none">
-      <form id="addProductForm" method="POST">
-        {% csrf_token %}
-        <label for="id">ID:</label><br>
-        <input type="number" step="1" min="1" id="id" name="id"><br>
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name"><br>
-        <label for="type">Type:</label><br>
-        <input type="text" id="type" name="type"><br>
-        <label for="price">Price:</label><br>
-        <input type="number" step="any" min="0" id="price" name="price"><br>
-        <label for="corresponding-points">Corresponding Points:</label><br>
-        <input type="number" step="10" min="0" id="corresponding-points" name="corresponding-points"><br>
-        <input
-          type="submit"
-          id="submit-add-product"
-          name="add_product"
-          value="submit"
-        />
-      </form>
-    </div>
-  </body>
-
-  <script>
-    function ShowProducts() {
-      const all_products = document.getElementById("all_products");
-      all_products.style.display = "block";
-      const search_product = document.getElementById("search_product");
-      search_product.style.display = "none";
-      const add_product = document.getElementById("add_product");
-      add_product.style.display = "none";
-      window.location.href = "/product/";
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index</title>
+  <style>
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
     }
 
-    function SearchProduct() {
-      const all_products = document.getElementById("all_products");
-      all_products.style.display = "none";
-      const search_product = document.getElementById("search_product");
-      search_product.style.display = "block";
-      const add_product = document.getElementById("add_product");
-      add_product.style.display = "none";
-      document.getElementById("submit-search-product").disabled = true;
+    table {
+      width: 100%;
+      border-collapse: collapse;
     }
 
-    function AddProduct() {
-      const all_products = document.getElementById("all_products");
-      all_products.style.display = "none";
-      const search_product = document.getElementById("search_product");
-      search_product.style.display = "none";
-      const add_product = document.getElementById("add_product");
-      add_product.style.display = "block";
-      const id_field = document.getElementById("id");
-      id_field.value = document.getElementsByTagName("tr").length;
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
     }
 
-    function addInput() {
-      document.getElementById("submit-search-product").disabled = false;
-      // Get selected option value
-      var dropdown = document.getElementById("dropdown");
-      var selectedOption = dropdown.value;
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
 
-      // Set input type based on selected option
-      var type;
-      switch (selectedOption) {
-        case "id":
-          type = "number";
-          step = "1";
-          min = "1";
-          break;
-        case "name":
-          type = "text";
-          break;
-        case "price":
-          type = "number";
-          step = "any";
-          min = "0";
-          break;
-        case "corresponding-points":
-          type = "number";
-          step = "10";
-          min = "0";
-          break;
-        default:
-          type = "text";
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    nav a:hover {
+      color: #ccc;
+      cursor: pointer;
+    }
+
+    a {
+      color: #0066c0;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #003399;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      margin: 10px auto;
+      padding: 20px;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+
+    form label {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    form input,
+    form textarea {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    form #submit {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    form #submit:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Product Handling</h1>
+  </div>
+  <nav>
+    <a href="/">Home</a>
+    <a id="all_products_nav" onclick="ShowProducts()">Products</a>
+    <a id="search_product_nav" onclick="SearchProduct()">Search Product</a>
+    <a id="add_product_nav" onclick="AddProduct()">Add Product</a>
+  </nav>
+  <div id="all_products" style="display: block">
+    <table>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Corresponding Points</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr id="{{product.0}}">
+          <td>{{product.0}}</td>
+          <td>{{product.1}}</td>
+          <td>{{product.2}}</td>
+          <td>{{product.3}}</td>
+          <td>{{product.4}}</td>
+          <td>
+            <a href="#'{{product.0}}'" onclick="editProduct('{{product.0}}')">Edit</a>
+            |
+            <a href="{{product.0}}/">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div id="search_product" style="display: none">
+    <p>Select fields you want to search for</p>
+    <select id="dropdown">
+      <option value="id">ID</option>
+      <option value="type">Type</option>
+      <option value="price">Price</option>
+      <option value="corresponding-points">Points</option>
+    </select>
+    <button onclick="addInput()">Add Input</button>
+    <form id="searchProductForm" method="POST">
+      {% csrf_token %}
+      <input type="submit" id="submit-search-product" name="search_product" value="submit" />
+    </form>
+  </div>
+  <div id="add_product" style="display: none">
+    <form id="addProductForm" method="POST">
+      {% csrf_token %}
+      <label for="id">ID:</label><br>
+      <input type="number" step="1" min="1" id="id" name="id"><br>
+      <label for="name">Name:</label><br>
+      <input type="text" id="name" name="name"><br>
+      <label for="type">Type:</label><br>
+      <input type="text" id="type" name="type"><br>
+      <label for="price">Price:</label><br>
+      <input type="number" step="any" min="0" id="price" name="price"><br>
+      <label for="corresponding-points">Corresponding Points:</label><br>
+      <input type="number" step="10" min="0" id="corresponding-points" name="corresponding-points"><br>
+      <input type="submit" id="submit-add-product" name="add_product" value="submit" />
+    </form>
+  </div>
+</body>
+
+<script>
+  function ShowProducts() {
+    const all_products = document.getElementById("all_products");
+    all_products.style.display = "block";
+    const search_product = document.getElementById("search_product");
+    search_product.style.display = "none";
+    const add_product = document.getElementById("add_product");
+    add_product.style.display = "none";
+    window.location.href = "/product/";
+  }
+
+  function SearchProduct() {
+    const all_products = document.getElementById("all_products");
+    all_products.style.display = "none";
+    const search_product = document.getElementById("search_product");
+    search_product.style.display = "block";
+    const add_product = document.getElementById("add_product");
+    add_product.style.display = "none";
+    document.getElementById("submit-search-product").disabled = true;
+  }
+
+  function AddProduct() {
+    const all_products = document.getElementById("all_products");
+    all_products.style.display = "none";
+    const search_product = document.getElementById("search_product");
+    search_product.style.display = "none";
+    const add_product = document.getElementById("add_product");
+    add_product.style.display = "block";
+    const id_field = document.getElementById("id");
+    id_field.value = document.getElementsByTagName("tr").length;
+  }
+
+  function addInput() {
+    document.getElementById("submit-search-product").disabled = false;
+    // Get selected option value
+    var dropdown = document.getElementById("dropdown");
+    var selectedOption = dropdown.value;
+    dropdown.selectedIndex++;
+    // Set input type based on selected option
+    var type;
+    switch (selectedOption) {
+      case "id":
+        type = "number";
+        step = "1";
+        min = "1";
+        break;
+      case "name":
+        type = "text";
+        break;
+      case "price":
+        type = "number";
+        step = "any";
+        min = "0";
+        break;
+      case "corresponding-points":
+        type = "number";
+        step = "10";
+        min = "0";
+        break;
+      default:
+        type = "text";
+    }
+
+    var options = dropdown.options;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value == selectedOption) {
+        options[i].disabled = true;
+        break;
       }
-
-      var options = dropdown.options;
-      for (var i = 0; i < options.length; i++) {
-        if (options[i].value == selectedOption) {
-          options[i].disabled = true;
-          break;
-        }
-      }
-
-      // Add new input field to form
-      var form = document.getElementById("searchProductForm");
-      var input = document.createElement("input");
-      var label = document.createElement("label");
-      input.type = type;
-      if (type == "number") {
-        input.step = step;
-      }
-      input.name = selectedOption;
-      label.setAttribute("for", selectedOption);
-      label.textContent = selectedOption;
-      form.insertBefore(document.createElement("br"), form.firstChild);
-      form.insertBefore(input, form.firstChild);
-      form.insertBefore(label, form.firstChild);
     }
 
-    function editProduct(id) {
-      // Get a reference to the table row
-      const row = document.querySelector(`tr[id="${id}"]`);
+    // Add new input field to form
+    var form = document.getElementById("searchProductForm");
+    var input = document.createElement("input");
+    var label = document.createElement("label");
+    input.type = type;
+    if (type == "number") {
+      input.step = step;
+    }
+    input.name = selectedOption;
+    label.setAttribute("for", selectedOption);
+    label.textContent = selectedOption;
+    form.insertBefore(document.createElement("br"), form.firstChild);
+    form.insertBefore(input, form.firstChild);
+    form.insertBefore(label, form.firstChild);
+  }
 
-      // Get the values of the cell elements
-      const cells = row.querySelectorAll("td");
-      const product_id = cells[0].textContent;
-      const name = cells[1].textContent;
-      const type = cells[2].textContent;
-      const price = cells[3].textContent;
-      const corresponding_points = cells[4].textContent;
+  function editProduct(id) {
+    // Get a reference to the table row
+    const row = document.querySelector(`tr[id="${id}"]`);
 
-      // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${product_id}" readonly="readonly">`;
-      cells[1].innerHTML = `<input type="text" name="name" value="${name}">`;
-      cells[2].innerHTML = `<input type="text" name="type" value="${type}">`;
-      cells[3].innerHTML = `<input type="number" step="any" min="0" name="price" value="${price}">`;
-      cells[4].innerHTML = `<input type="number" step="10" min="0" name="corresponding-points" value="${corresponding_points}">`;
-      cells[5].innerHTML = `<a onclick="saveProduct('${product_id}')">Save</a>`;
+    // Get the values of the cell elements
+    const cells = row.querySelectorAll("td");
+    const product_id = cells[0].textContent;
+    const name = cells[1].textContent;
+    const type = cells[2].textContent;
+    const price = cells[3].textContent;
+    const corresponding_points = cells[4].textContent;
+
+    // Replace the cell elements with form inputs
+    cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${product_id}" readonly="readonly">`;
+    cells[1].innerHTML = `<input type="text" name="name" value="${name}">`;
+    cells[2].innerHTML = `<input type="text" name="type" value="${type}">`;
+    cells[3].innerHTML = `<input type="number" step="any" min="0" name="price" value="${price}">`;
+    cells[4].innerHTML = `<input type="number" step="10" min="0" name="corresponding-points" value="${corresponding_points}">`;
+    cells[5].innerHTML = `<a onclick="saveProduct('${product_id}')">Save</a>`;
+  }
+
+  function saveProduct(id) {
+    // Get a reference to the table row
+    const row = document.querySelector(`tr[id="${id}"]`);
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/product/";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "csrfmiddlewaretoken";
+    input.value = "{{ csrf_token }}";
+
+    form.appendChild(input);
+
+    const cells = row.querySelectorAll("td");
+
+    for (let i = 0; i < cells.length; i++) {
+      form.appendChild(cells[i]);
     }
 
-    function saveProduct(id) {
-      // Get a reference to the table row
-      const row = document.querySelector(`tr[id="${id}"]`);
+    row.parentNode.replaceChild(form, row);
+    form.submit();
+  }
+</script>
 
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = "/product/";
-
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "csrfmiddlewaretoken";
-      input.value = "{{ csrf_token }}";
-
-      form.appendChild(input);
-
-      const cells = row.querySelectorAll("td");
-
-      for (let i = 0; i < cells.length; i++) {
-        form.appendChild(cells[i]);
-      }
-
-      row.parentNode.replaceChild(form, row);
-      form.submit();
-    }
-  </script>
 </html>

@@ -55,6 +55,165 @@ def insertInto(id, last_check, capacity, quantity, product_id, longitude, latitu
             except Exception:
                 pass
 
+def searchBy(id, last_check, capacity, quantity, product_id, longitude, latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        if (id):
+            if (longitude and latitude):
+                c.execute('''
+                        SELECT * 
+                        FROM TANK
+                        WHERE Id = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
+                        (id, longitude, latitude))
+            else:
+                c.execute('''
+                        SELECT * 
+                        FROM TANK
+                        WHERE Id = ?''',
+                        (id, ))
+        elif (longitude and latitude):
+            c.execute('''
+                    SELECT * 
+                    FROM TANK
+                    WHERE GS_Longitude = ? AND GS_Latitude = ?''',
+                    (longitude, latitude))
+        elif (last_check):
+            if (capacity):
+                if (quantity):
+                    if (product_id):
+                        c.execute('''
+                                SELECT * 
+                                FROM TANK
+                                WHERE Last_Check_Up < ? AND Capacity = ? AND Quantity = ?
+                                AND Prod_Id = ?''',
+                                (last_check, capacity, quantity, product_id))
+                    else:
+                        c.execute('''
+                                SELECT * 
+                                FROM TANK
+                                WHERE Last_Check_Up < ? AND Capacity = ? AND Quantity = ?''',
+                                (last_check, capacity, quantity))
+                else:
+                    c.execute('''
+                                SELECT * 
+                                FROM TANK
+                                WHERE Last_Check_Up < ? AND Capacity = ? AND Prod_Id = ?''',
+                                (last_check, capacity, product_id))
+            elif (quantity):
+                    if (product_id):
+                        c.execute('''
+                                SELECT * 
+                                FROM TANK
+                                WHERE Last_Check_Up < ? AND Quantity = ?
+                                AND Prod_Id = ?''',
+                                (last_check, quantity, product_id))
+                    else:
+                        c.execute('''
+                                SELECT * 
+                                FROM TANK
+                                WHERE Last_Check_Up < ? AND Quantity = ?''',
+                                (last_check, quantity))
+            elif (product_id):
+                c.execute('''
+                            SELECT * 
+                            FROM TANK
+                            WHERE Last_Check_Up < ? AND Prod_Id = ?''',
+                            (last_check, product_id))
+            else:
+                c.execute('''
+                            SELECT * 
+                            FROM TANK
+                            WHERE Last_Check_Up < ? ''',
+                            (last_check, ))
+        elif (capacity):
+            if (quantity):
+                if (product_id):
+                    c.execute('''
+                            SELECT * 
+                            FROM TANK
+                            WHERE Capacity = ? AND Quantity = ?
+                            AND Prod_Id = ?''',
+                            (capacity, quantity, product_id))
+                else:
+                    c.execute('''
+                            SELECT * 
+                            FROM TANK
+                            WHERE Capacity = ? AND Quantity = ?''',
+                            (capacity, quantity))
+            elif (product_id):
+                c.execute('''
+                        SELECT * 
+                        FROM TANK
+                        WHERE Capacity = ? AND Prod_Id = ?''',
+                        (capacity, product_id))
+            else:
+                c.execute('''
+                        SELECT * 
+                        FROM TANK
+                        WHERE Capacity = ?''',
+                        (capacity, )) 
+        elif (quantity):
+            if (product_id):
+                c.execute('''
+                        SELECT * 
+                        FROM TANK
+                        WHERE Quantity = ? AND Prod_Id = ?''',
+                        (quantity, product_id))
+            else:
+                c.execute('''
+                        SELECT * 
+                        FROM TANK
+                        WHERE Quantity = ?''',
+                        (quantity, ))
+        else:
+            c.execute('''
+                    SELECT * 
+                    FROM TANK
+                    WHERE Prod_Id = ?''',
+                    (product_id, ))
+
+        
+        
+
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def update(id, last_check, capacity, quantity, product_id, longitude, latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE TANK
+                        SET Last_Check_Up = ?, Capacity = ?, Quantity = ?,
+                        Prod_Id = ? 
+                        WHERE Id = ? AND GS_Longitude = ? AND GS_Latitude = ?''', 
+                        (last_check, capacity, quantity, product_id, id, longitude, latitude))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+def delete(id_longitude_latitude):
+    id_longitude_latitude = id_longitude_latitude.split('_')
+    id = id_longitude_latitude[0]
+    longitude = id_longitude_latitude[1]
+    latitude = id_longitude_latitude[2]
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''DELETE FROM
+                        TANK WHERE
+                        Id = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
+                        (id, longitude, latitude))
+        except Exception as e:
+            print(e)
+    conn.close()
+
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()

@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createPurchaseTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -10,19 +11,21 @@ def createPurchaseTable():
                         (Id                 INTEGER     NOT NULL,
                         Purchase_Date       TEXT        NOT NULL,
                         Type_of_Payment     TEXT        NOT NULL,
-                        Cus_Email           TEXT        NOT NULL,
-                        GS_Longitude        REAL        NOT NULL,
-                        GS_Latitude         REAL        NOT NULL,
-                        Pump_Id             INTEGER     NOT NULL,
+                        Cus_Email           TEXT                ,
+                        GS_Longitude        REAL                ,
+                        GS_Latitude         REAL                ,
+                        Pump_Id             INTEGER             ,
+                        Tank_Id             INTEGER             ,
                         PRIMARY KEY (Id),
-                        FOREIGN KEY (Cus_Email) REFERENCES CUSTOMER(Email) ON UPDATE CASCADE ON DELETE CASCADE,
-                        FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE NO ACTION,
-                        FOREIGN KEY (Pump_Id) REFERENCES PUMP(Id) ON UPDATE CASCADE ON DELETE CASCADE
+                        FOREIGN KEY (Cus_Email) REFERENCES CUSTOMER(Email) ON UPDATE CASCADE ON DELETE SET NULL,
+                        FOREIGN KEY (Pump_Id, Tank_Id, GS_Longitude, GS_Latitude) REFERENCES PUMP(Id, Tank_Id, T_GS_Longitude, T_GS_Latitude)
+                                    ON UPDATE CASCADE ON DELETE SET NULL
                         );''')
             insertFromCsv("Datasets/purchase.csv")
         except Exception as e:
             pass
     conn.close()
+
 
 def insertFromCsv(fileName):
     conn = sqlite3.connect("Gas_Station.db")
@@ -32,32 +35,34 @@ def insertFromCsv(fileName):
             insertInto(tuple['ID'], tuple['Purchase_Date'],
                        tuple['Type_of_Payment'], tuple['Cus_Email'],
                        tuple['GS_Longitude'], tuple['GS_Latitude'],
-                       tuple['Pump_ID'], conn)
+                       tuple['Pump_ID'], tuple['Tank_ID'], conn)
     conn.close()
 
-def insertInto(id, purchase_date, type_of_payment, cus_email, gs_longitude, gs_latitude, pump_id, conn=False):
+
+def insertInto(id, purchase_date, type_of_payment, cus_email, gs_longitude, gs_latitude, pump_id, tank_id, conn=False):
     if (conn == False):
         conn = sqlite3.connect("Gas_Station.db")
         c = conn.cursor()
         with conn:
             try:
                 c.execute('''INSERT INTO PURCHASE
-                            VALUES (?,?,?,?,?,?,?);''',
-                            (id, purchase_date, type_of_payment, cus_email,
-                             gs_longitude, gs_latitude, pump_id))
+                            VALUES (?,?,?,?,?,?,?,?);''',
+                          (id, purchase_date, type_of_payment, cus_email,
+                           gs_longitude, gs_latitude, pump_id, tank_id))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
         with conn:
             try:
                 c.execute('''INSERT INTO PURCHASE
-                            VALUES (?,?,?,?,?,?,?);''',
-                            (id, purchase_date, type_of_payment, cus_email,
-                             gs_longitude, gs_latitude, pump_id))
+                            VALUES (?,?,?,?,?,?,?,?);''',
+                          (id, purchase_date, type_of_payment, cus_email,
+                           gs_longitude, gs_latitude, pump_id, tank_id))
             except Exception as e:
                 pass
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

@@ -506,8 +506,42 @@ def supply_delete(request, id):
     return redirect(supply)
 
 def tank(request):
-    tanks = Tank.retrieveAllColumns()
+    if request.method=="POST":
+        tank_id = request.POST.get('id', False)
+        last_check_up = request.POST.get('last-check-up', False)
+        capacity = request.POST.get('capacity', False)
+        quantity = request.POST.get('quantity', False)
+        prod_id = request.POST.get('prod-id', False)
+        gs_longitude = request.POST.get('gs-longitude', False)
+        gs_latitude = request.POST.get('gs-latitude', False)
+
+        if "add_tank" in request.POST:
+            try:
+                Tank.insertInto(int(tank_id), last_check_up, float(capacity), float(quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
+                return redirect(tank)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_tank" in request.POST:
+            try:
+                tanks = Tank.searchBy(int(tank_id), last_check_up, float(capacity), float(quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Tank.update(int(tank_id), last_check_up, float(capacity), float(quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
+                return redirect(tank)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        tanks = Tank.retrieveAllColumns()
     return render(request, 'tank.html', {'tanks': tanks})
+
+def tank_delete(request, id_longitude_latitude):
+    Tank.delete(id_longitude_latitude)
+    return redirect(tank)
 
 if __name__ == 'Database_Management.views':
     ConsistsOf.createConsistsOfTable()

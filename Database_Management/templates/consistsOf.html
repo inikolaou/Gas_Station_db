@@ -147,13 +147,13 @@
       <form id="addConsistsOfForm" method="POST">
         {% csrf_token %}
         <label for="supply-id">Supply ID:</label><br>
-        <input type="number" id="supply-id" name="supply-id"><br>
+        <input type="number" step="1" min="1" id="supply-id" name="supply-id"><br>
         <label for="prod-id">Product ID:</label><br>
-        <input type="number" id="prod-id" name="prod-id"><br>
+        <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
         <label for="cost">Cost:</label><br>
-        <input type="number" step="any" id="cost" name="cost"><br>
+        <input type="number" step="any" min="0" id="cost" name="cost"><br>
         <label for="quantity">Quantity:</label><br>
-        <input type="number" step="any" id="quantity" name="quantity"><br>
+        <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
         <input type="submit" id="submit-add-consists-of" name="add_consists_of" value="submit">
       </form>
     </div>
@@ -256,11 +256,11 @@
       const quantity = cells[3].textContent;
 
       // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="number" name="supply-id" value="${supply_id}" readonly="readonly">`;
-      cells[1].innerHTML = `<input type="number" name="prod-id" value="${prod_id}">
+      cells[0].innerHTML = `<input type="number" step="1" min="1" name="supply-id" value="${supply_id}" readonly="readonly">`;
+      cells[1].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">
                             <input type="hidden" name="previous-prod-id" value="${prod_id}">`;
-      cells[2].innerHTML = `<input type="number" step="any" name="cost" value="${cost}">`;
-      cells[3].innerHTML = `<input type="number" step="any" name="quantity" value="${quantity}">`;
+      cells[2].innerHTML = `<input type="number" step="any" min="0" name="cost" value="${cost}">`;
+      cells[3].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
       cells[4].innerHTML = `<a onclick="saveConsistsOf('${id}')">Save</a>`;
     }
 

@@ -152,7 +152,7 @@
         <label for="essn">Essn:</label><br>
         <input type="text" id="essn" name="essn"><br>
         <label for="contract-id">Contract Id:</label><br>
-        <input type="number" id="contract-id" name="contract-id"><br>
+        <input type="number" step="1" min="1" id="contract-id" name="contract-id"><br>
         <input
           type="submit"
           id="submit-add-sign"
@@ -249,7 +249,7 @@
 
       // Replace the cell elements with form inputs
       cells[0].innerHTML = `<input type="text" name="essn" value="${essn}" readonly="readonly">`;
-      cells[1].innerHTML = `<input type="number" name="contract-id" value="${contract_id}">
+      cells[1].innerHTML = `<input type="number" step="1" min="1" name="contract-id" value="${contract_id}">
                               <input type="hidden" name="previous-contract-id" value="${contract_id}">`;
       cells[2].innerHTML = `<a onclick="saveSign('${id}')">Save</a>`;
     }

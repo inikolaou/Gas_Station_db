@@ -172,13 +172,13 @@
         <label for="birth-date">Birth Date:</label><br>
         <input type="date" id="birth-date" name="birth-date"><br>
         <label for="phone-number">Phone Number:</label><br>
-        <input type="number" id="phone-number" name="phone-number"><br>
+        <input type="number" step="1" min="6900000000" max="6999999999" id="phone-number" name="phone-number"><br>
         <label for="longitude">Longitude:</label><br>
         <input type="number" step="any" id="longitude" name="longitude"><br>
         <label for="latitude">Latitude:</label><br>
         <input type="number" step="any" id="latitude" name="latitude"><br>
         <label for="remaining-points">Remaining Points:</label><br>
-        <input type="number" step = "10" id="remaining-points" name="remaining-points"><br>
+        <input type="number" step="10" min="0" id="remaining-points" name="remaining-points"><br>
         <input
           type="submit"
           id="submit-add-customer"
@@ -290,10 +290,10 @@
     cells[1].innerHTML = `<input type="text" name="first-name" value="${first_name}">`;
     cells[2].innerHTML = `<input type="text" name="last-name" value="${last_name}">`;
     cells[3].innerHTML = `<input type="text" name="birth-date" value="${birth_date}">`;
-    cells[4].innerHTML = `<input type="number" name="phone-number" value="${phone_number}">`;
+    cells[4].innerHTML = `<input type="number" step="1" min="6900000000" max="6999999999" name="phone-number" value="${phone_number}">`;
     cells[5].innerHTML = `<input type="number" name="longitude" value="${longitude}">`;
     cells[6].innerHTML = `<input type="number" name="latitude" value="${latitude}">`;
-    cells[7].innerHTML = `<input type="number" name="remaining-points" value="${remaining_points}">`;
+    cells[7].innerHTML = `<input type="number" step="10" min="0" name="remaining-points" value="${remaining_points}">`;
     cells[8].innerHTML = `<a onclick="saveCustomer('${id}')">Save</a>`;
   }
 

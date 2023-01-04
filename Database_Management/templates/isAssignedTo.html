@@ -145,7 +145,7 @@
             <label for="essn">Essn:</label><br>
             <input type="text" id="essn" name="essn"><br>
             <label for="service-id">Service Id:</label><br>
-            <input type="number" id="service-id" name="service-id"><br>
+            <input type="number" step="1" min="1" id="service-id" name="service-id"><br>
             <input type="submit" id="submit-add-assignment" name="add_assignment" value="submit" />
         </form>
     </div>
@@ -196,6 +196,7 @@
             case "service-id":
                 type = "number";
                 step = "1";
+                min = "1";
                 break;
             default:
                 type = "text";
@@ -236,7 +237,7 @@
 
         // Replace the cell elements with form inputs
         cells[0].innerHTML = `<input type="text" name="essn" value="${essn}" readonly="readonly">`;
-        cells[1].innerHTML = `<input type="number" name="service-id" value="${service_id}">
+        cells[1].innerHTML = `<input type="number" step="1" min="1" name="service-id" value="${service_id}">
                               <input type="hidden" name="previous-service-id" value="${service_id}">`;
         cells[2].innerHTML = `<a onclick="saveAssignment('${id}')">Save</a>`;
     }

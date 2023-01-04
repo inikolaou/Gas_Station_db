@@ -158,15 +158,15 @@
       <form id="addProductForm" method="POST">
         {% csrf_token %}
         <label for="id">ID:</label><br>
-        <input type="number" id="id" name="id"><br>
+        <input type="number" step="1" min="1" id="id" name="id"><br>
         <label for="name">Name:</label><br>
         <input type="text" id="name" name="name"><br>
         <label for="type">Type:</label><br>
         <input type="text" id="type" name="type"><br>
         <label for="price">Price:</label><br>
-        <input type="number" step="any" id="price" name="price"><br>
+        <input type="number" step="any" min="0" id="price" name="price"><br>
         <label for="corresponding-points">Corresponding Points:</label><br>
-        <input type="number" step="10" id="corresponding-points" name="corresponding-points"><br>
+        <input type="number" step="10" min="0" id="corresponding-points" name="corresponding-points"><br>
         <input
           type="submit"
           id="submit-add-product"
@@ -277,11 +277,11 @@
       const corresponding_points = cells[4].textContent;
 
       // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="number" name="id" value="${product_id}" readonly="readonly">`;
+      cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${product_id}" readonly="readonly">`;
       cells[1].innerHTML = `<input type="text" name="name" value="${name}">`;
       cells[2].innerHTML = `<input type="text" name="type" value="${type}">`;
-      cells[3].innerHTML = `<input type="number" step="any" name="price" value="${price}">`;
-      cells[4].innerHTML = `<input type="number" step="10" name="corresponding-points" value="${corresponding_points}">`;
+      cells[3].innerHTML = `<input type="number" step="any" min="0" name="price" value="${price}">`;
+      cells[4].innerHTML = `<input type="number" step="10" min="0" name="corresponding-points" value="${corresponding_points}">`;
       cells[5].innerHTML = `<a onclick="saveProduct('${product_id}')">Save</a>`;
     }
 

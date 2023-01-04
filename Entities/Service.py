@@ -71,7 +71,7 @@ def searchBy(id, price, points):
                     SELECT * 
                     FROM SERVICE
                     WHERE Price = ?''',
-                    (price))
+                    (price, ))
         elif (points):
             c.execute('''
                 SELECT * 

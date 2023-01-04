@@ -13,7 +13,7 @@ def createSupplyTable():
                         Sup_Email               TEXT        NOT NULL,
                         GS_Longitude            REAL        NOT NULL,
                         GS_Latitude             REAL        NOT NULL,
-                        PRIMARY KEY (Id),
+                        PRIMARY KEY (Id, Sup_Email),
                         FOREIGN KEY (Sup_Email) REFERENCES SUPPLIER(Email) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')

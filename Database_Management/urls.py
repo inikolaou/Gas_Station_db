@@ -34,5 +34,6 @@ urlpatterns = [
     path('supplier/<str:email>/', views.supplier_delete),
     path('supply/', views.supply, name='supply'),
     path('supply/<int:id>/', views.supply_delete),
-    path('tank/', views.tank, name='tank')
+    path('tanks/', views.tank, name='tank'),
+    path('tanks/<str:id_longitude_latitude>/', views.tank_delete)
 ]

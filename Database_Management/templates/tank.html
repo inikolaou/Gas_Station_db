@@ -2,18 +2,328 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0066c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #003399;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        form input,
+        form textarea {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form #submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        form #submit:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-    {% for tank in tanks %}
-    <p>Id: {{tank.0}}, last_check: {{tank.1}}, capacity: {{tank.2}}, quantity: {{tank.3}}, product_id: {{tank.4}}
-        GS_longitude: {{tank.5}}, GS_latitude: {{tank.6}},
-    </p>
-    {% endfor %}
+    <div class="header">
+        <h1>Tank Handling</h1>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a id="all_tank_nav" onclick="ShowTank()">Tanks</a>
+        <a id="search_tank_nav" onclick="SearchTank()">Search Tank</a>
+        <a id="add_tank_nav" onclick="AddTank()">Add Tank</a>
+    </nav>
+    <div id="all_tanks" style="display: block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Last Check Up</th>
+                    <th>Capacity</th>
+                    <th>Quantity</th>
+                    <th>Prod Id</th>
+                    <th>GS Longitude</th>
+                    <th>GS Latitude</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tank in tanks %}
+                <tr id="{{tank.0}}_{{tank.5}}_{{tank.6}}">
+                    <td>{{tank.0}}</td>
+                    <td>{{tank.1}}</td>
+                    <td>{{tank.2}}</td>
+                    <td>{{tank.3}}</td>
+                    <td>{{tank.4}}</td>
+                    <td>{{tank.5}}</td>
+                    <td>{{tank.6}}</td>
+                    <td>
+                        <a href="#'{{tank.0}}_{{tank.5}}_{{tank.6}}'"
+                            onclick="editTank('{{tank.0}}_{{tank.5}}_{{tank.6}}')">Edit</a>
+                        |
+                        <a href="{{tank.0}}_{{tank.5}}_{{tank.6}}/">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="search_tank" style="display: none">
+        <p>Select fields you want to search for</p>
+        <select id="dropdown">
+            <option value="id">Id</option>
+            <option value="last-check-up">Last_Check_Up</option>
+            <option value="capacity">Capacity</option>
+            <option value="quantity">Quantity</option>
+            <option value="prod-id">Prod_Id</option>
+            <option value="gs-longitude">GS_Longitude</option>
+            <option value="gs-latitude">GS_Latitude</option>
+        </select>
+        <button onclick="addInput()">Add Input</button>
+        <form id="searchTankForm" method="POST">
+            {% csrf_token %}
+            <input type="submit" id="submit-search-tank" name="search_tank" value="submit" />
+        </form>
+    </div>
+    <div id="add_tank" style="display: none">
+        <form id="addTankForm" method="POST">
+            {% csrf_token %}
+            <label for="id">Id:</label><br>
+            <input type="number" step="any" id="id" name="id"><br>
+            <label for="last-check-up">Last Check Up:</label><br>
+            <input type="text" id="last-check-up" name="last-check-up"><br>
+            <label for="capacity">Capacity:</label><br>
+            <input type="number" step="any" id="capacity" name="capacity"><br>
+            <label for="quantity">Quantity:</label><br>
+            <input type="number" step="any" id="quantity" name="quantity"><br>
+            <label for="prod-id">Product Id:</label><br>
+            <input type="number" min="1" max="6" id="prod-id" name="prod-id"><br>
+            <label for="gs-longitude">GS Longitude:</label><br>
+            <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
+            <label for="gs-latitude">GS Latitude:</label><br>
+            <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+            <input type="submit" id="submit-add-tank" name="add_tank" value="submit" />
+        </form>
+    </div>
 </body>
+
+<script>
+    function ShowTank() {
+        const all_tanks = document.getElementById("all_tanks");
+        all_tanks.style.display = "block";
+        const search_tank = document.getElementById("search_tank");
+        search_tank.style.display = "none";
+        const add_tank = document.getElementById("add_tank");
+        add_tank.style.display = "none";
+        window.location.href = "/tanks/";
+    }
+
+    function SearchTank() {
+        const all_tanks = document.getElementById("all_tanks");
+        all_tanks.style.display = "none";
+        const search_tank = document.getElementById("search_tank");
+        search_tank.style.display = "block";
+        const add_tank = document.getElementById("add_tank");
+        add_tank.style.display = "none";
+        document.getElementById("submit-search-tank").disabled = true;
+    }
+
+    function AddTank() {
+        const all_tanks = document.getElementById("all_tanks");
+        all_tanks.style.display = "none";
+        const search_tank = document.getElementById("search_tank");
+        search_tank.style.display = "none";
+        const add_tank = document.getElementById("add_tank");
+        add_tank.style.display = "block";
+    }
+
+    function addInput() {
+        document.getElementById("submit-search-tank").disabled = false;
+        // Get selected option value
+        var dropdown = document.getElementById("dropdown");
+        var selectedOption = dropdown.value;
+
+        // Set input type based on selected option
+        var type;
+        switch (selectedOption) {
+            case "id":
+                type = "number";
+                step = "any";
+                break;
+            case "last-check-up":
+                type = "text";
+                break;
+            case "capacity":
+                type = "text";
+                step = "any";
+                break;
+            case "quantity":
+                type = "number";
+                step = "any";
+                break;
+            case "prod-id":
+                type = "number";
+                step = "1";
+                min = "1";
+                max = "6";
+                break;
+            case "gs-longitude":
+                type = "number";
+                step = "any";
+                break;
+            case "gs-latitude":
+                type = "number";
+                step = "any";
+                break;
+            default:
+                type = "text";
+        }
+
+        var options = dropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == selectedOption) {
+                options[i].disabled = true;
+                break;
+            }
+        }
+
+        // Add new input field to form
+        var form = document.getElementById("searchTankForm");
+        var input = document.createElement("input");
+        var label = document.createElement("label");
+        input.type = type;
+        if (type == "number") {
+            input.step = step;
+            if (selectedOption == "prod-id") {
+                input.max = max;
+                input.min = min;
+            }
+        }
+        input.name = selectedOption;
+        label.setAttribute("for", selectedOption);
+        label.textContent = selectedOption;
+        form.insertBefore(document.createElement("br"), form.firstChild);
+        form.insertBefore(input, form.firstChild);
+        form.insertBefore(label, form.firstChild);
+    }
+
+    function editTank(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        // Get the values of the cell elements
+        const cells = row.querySelectorAll("td");
+        const tank_id = cells[0].textContent;
+        const last_check_up = cells[1].textContent;
+        const capacity = cells[2].textContent;
+        const quantity = cells[3].textContent;
+        const prod_id = cells[4].textContent;
+        const gs_longitude = cells[5].textContent;
+        const gs_latitude = cells[6].textContent;
+
+        // Replace the cell elements with form inputs
+        cells[0].innerHTML = `<input type="number" name="id" value="${tank_id}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="text" name="last-check-up" value="${last_check_up}">`;
+        cells[2].innerHTML = `<input type="number" step="any" name="capacity" value="${capacity}">`;
+        cells[3].innerHTML = `<input type="number" step="any" name="quantity" value="${quantity}">`;
+        cells[4].innerHTML = `<input type="number" min="1" max="6" name="prod-id" value="${prod_id}">`;
+        cells[5].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
+        cells[6].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
+        cells[7].innerHTML = `<a onclick="saveTank('${id}')">Save</a>`;
+    }
+
+    function saveTank(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/tanks/";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "csrfmiddlewaretoken";
+        input.value = "{{ csrf_token }}";
+
+        form.appendChild(input);
+
+        const cells = row.querySelectorAll("td");
+
+        for (let i = 0; i < cells.length; i++) {
+            form.appendChild(cells[i]);
+        }
+
+        row.parentNode.replaceChild(form, row);
+        form.submit();
+    }
+</script>
 
 </html>

@@ -19,6 +19,7 @@ urlpatterns = [
     path('involves/', views.involve, name='involves'),
     path('involves/<str:prod_pur>/', views.involves_delete),
     path('is_assigned_to/', views.isAssignedTo, name='isAssignedTo'),
+    path('is_assigned_to/<str:essn_servid>/', views.isAssignedTo_delete),
     path('offers/', views.offers, name='offers'),
     path('product/', views.product, name='product'),
     path('product/<int:id>/', views.product_delete),

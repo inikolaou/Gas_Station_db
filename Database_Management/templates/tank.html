@@ -157,15 +157,15 @@
         <form id="addTankForm" method="POST">
             {% csrf_token %}
             <label for="id">Id:</label><br>
-            <input type="number" step="any" id="id" name="id"><br>
+            <input type="number" step="1" min="1" id="id" name="id"><br>
             <label for="last-check-up">Last Check Up:</label><br>
             <input type="text" id="last-check-up" name="last-check-up"><br>
             <label for="capacity">Capacity:</label><br>
-            <input type="number" step="any" id="capacity" name="capacity"><br>
+            <input type="number" step="any" min="0" id="capacity" name="capacity"><br>
             <label for="quantity">Quantity:</label><br>
-            <input type="number" step="any" id="quantity" name="quantity"><br>
+            <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
             <label for="prod-id">Product Id:</label><br>
-            <input type="number" min="1" max="6" id="prod-id" name="prod-id"><br>
+            <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
             <label for="gs-longitude">GS Longitude:</label><br>
             <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
             <label for="gs-latitude">GS Latitude:</label><br>
@@ -216,7 +216,8 @@
         switch (selectedOption) {
             case "id":
                 type = "number";
-                step = "any";
+                step = "1";
+                min = "1";
                 break;
             case "last-check-up":
                 type = "text";
@@ -224,16 +225,17 @@
             case "capacity":
                 type = "text";
                 step = "any";
+                min = "0";
                 break;
             case "quantity":
                 type = "number";
                 step = "any";
+                min = "0";
                 break;
             case "prod-id":
                 type = "number";
                 step = "1";
                 min = "1";
-                max = "6";
                 break;
             case "gs-longitude":
                 type = "number";
@@ -290,11 +292,11 @@
         const gs_latitude = cells[6].textContent;
 
         // Replace the cell elements with form inputs
-        cells[0].innerHTML = `<input type="number" name="id" value="${tank_id}" readonly="readonly">`;
+        cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${tank_id}" readonly="readonly">`;
         cells[1].innerHTML = `<input type="text" name="last-check-up" value="${last_check_up}">`;
-        cells[2].innerHTML = `<input type="number" step="any" name="capacity" value="${capacity}">`;
-        cells[3].innerHTML = `<input type="number" step="any" name="quantity" value="${quantity}">`;
-        cells[4].innerHTML = `<input type="number" min="1" max="6" name="prod-id" value="${prod_id}">`;
+        cells[2].innerHTML = `<input type="number" step="any" min="0" name="capacity" value="${capacity}">`;
+        cells[3].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
+        cells[4].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">`;
         cells[5].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
         cells[6].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
         cells[7].innerHTML = `<a onclick="saveTank('${id}')">Save</a>`;

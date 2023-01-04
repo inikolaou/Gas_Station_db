@@ -153,7 +153,7 @@
       <form id="addProvidesForm" method="POST">
         {% csrf_token %}
         <label for="serv-id">Service ID:</label><br>
-        <input type="number" id="serv-id" name="serv-id"><br>
+        <input type="number" step="1" min="1" id="serv-id" name="serv-id"><br>
         <label for="gs-longitude">GS_Longitude:</label><br>
         <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
         <label for="gs-latitude">GS_Latitude:</label><br>
@@ -210,6 +210,7 @@
         case "serv-id":
             type = "number";
             step = "1";
+            min = "1";
             break;
         case "gs-longitude":
             type = "number";
@@ -258,7 +259,7 @@
       const gs_latitude = cells[2].textContent;
 
       // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="number" name="serv-id" value="${serv_id}">
+      cells[0].innerHTML = `<input type="number" step="1" min="1" name="serv-id" value="${serv_id}">
                             <input type="hidden" name="previous-serv-id" value="${serv_id}">`;
       cells[1].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
       cells[2].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;

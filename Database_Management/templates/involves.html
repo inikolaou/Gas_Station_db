@@ -153,11 +153,11 @@
       <form id="addInvolvesForm" method="POST">
         {% csrf_token %}
         <label for="prod-id">Product ID:</label><br>
-        <input type="number" id="prod-id" name="prod-id"><br>
+        <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
         <label for="pur-id">Purchase Id:</label><br>
-        <input type="number" id="pur-id" name="pur-id"><br>
+        <input type="number" step="1" min="1" id="pur-id" name="pur-id"><br>
         <label for="quantity">Quantity:</label><br>
-        <input type="number" step="any" id="quantity" name="quantity"><br>
+        <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
         <input
           type="submit"
           id="submit-add-involves"
@@ -210,14 +210,17 @@
         case "prod-id":
           type = "number";
           step = "1";
+          min = "1";
           break;
         case "pur-id":
           type = "number";
           step = "1";
+          min = "1";
           break;
         case "quantity":
           type = "number";
           step = "any";
+          min = "0";
           break;
         default:
           type = "text";
@@ -258,10 +261,10 @@
       const quantity = cells[2].textContent;
 
       // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="number" name="prod-id" value="${prod_id}">
+      cells[0].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">
                             <input type="hidden" name="previous-prod-id" value="${prod_id}">`;
-      cells[1].innerHTML = `<input type="number" name="pur-id" value="${pur_id}" readonly="readonly">`;
-      cells[2].innerHTML = `<input type="number" step="any" name="quantity" value="${quantity}">`;
+      cells[1].innerHTML = `<input type="number" step="1" min="1" name="pur-id" value="${pur_id}" readonly="readonly">`;
+      cells[2].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
       cells[3].innerHTML = `<a onclick="saveInvolves('${id}')">Save</a>`;
     }
 

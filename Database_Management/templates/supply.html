@@ -153,7 +153,7 @@
       <form id="addSupplyForm" method="POST">
         {% csrf_token %}
         <label for="id">ID:</label><br>
-        <input type="number" id="id" name="id"><br>
+        <input type="number" step="1" min="1" id="id" name="id"><br>
         <label for="expected-arrival-date">Expected Arrival Date:</label><br>
         <input type="date" id="expected-arrival-date" name="expected-arrival-date"><br>
         <label for="real-arrival-date">Real Arrival Date:</label><br>
@@ -213,6 +213,7 @@
         case "id":
           type = "number";
           step = "1";
+          min = "1";
           break;
         case "expected-arrival-date":
           type = "date";
@@ -273,7 +274,7 @@
       const gs_latitude = cells[5].textContent;
 
       // Replace the cell elements with form inputs
-      cells[0].innerHTML = `<input type="number" name="id" value="${supply_id}" readonly="readonly">`;
+      cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${supply_id}" readonly="readonly">`;
       cells[1].innerHTML = `<input type="date" name="expected-arrival-date" value="${expected_arrival_date}">`;
       cells[2].innerHTML = `<input type="date" name="real-arrival-date" value="${real_arrival_date}">`;
       cells[3].innerHTML = `<input type="email" name="sup-email" value="${sup_email}">`;

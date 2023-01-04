@@ -148,13 +148,13 @@
         <form id="addContractForm" method="POST">
             {% csrf_token %}
             <label for="id">ID:</label><br>
-            <input type="number" id="id" name="id"><br>
+            <input type="number" step="1" min="1" id="id" name="id"><br>
             <label for="start-date">Start Date:</label><br>
             <input type="date" id="start-date" name="start-date"><br>
             <label for="end-date">End Date:</label><br>
             <input type="date" id="end-date" name="end-date"><br>
             <label for="salary">Salary:</label><br>
-            <input type="number" step="any" id="salary" name="salary"><br>
+            <input type="number" step="any" min="0" id="salary" name="salary"><br>
             <input type="submit" id="submit-add-contract" name="add_contract" value="submit" />
         </form>
     </div>
@@ -204,6 +204,7 @@
             case "id":
                 type = "number";
                 step = "1";
+                min = "1";
                 break;
             case "start-date":
                 type = "date";
@@ -214,6 +215,7 @@
             case "salary":
                 type = "number";
                 step = "any";
+                min = "0";
             default:
                 type = "text";
         }
@@ -254,10 +256,10 @@
         const salary = cells[3].textContent;
 
         // Replace the cell elements with form inputs
-        cells[0].innerHTML = `<input type="number" name="id" value="${contract_id}" readonly="readonly">`;
+        cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${contract_id}" readonly="readonly">`;
         cells[1].innerHTML = `<input type="date" name="start-date" value="${start_date}">`;
         cells[2].innerHTML = `<input type="date" name="end-date" value="${end_date}">`;
-        cells[3].innerHTML = `<input type="number" step="any" name="salary" value="${salary}">`;
+        cells[3].innerHTML = `<input type="number" step="any" min="0" name="salary" value="${salary}">`;
         cells[4].innerHTML = `<a onclick="saveContract('${contract_id}')">Save</a>`;
     }
 

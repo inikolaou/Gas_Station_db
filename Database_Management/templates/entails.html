@@ -142,9 +142,9 @@
     <form id="addEntailsForm" method="POST">
       {% csrf_token %}
       <label for="serv-id">Service ID:</label><br>
-      <input type="number" id="serv-id" name="serv-id"><br>
+      <input type="number" step="1" min="1" id="serv-id" name="serv-id"><br>
       <label for="pur-id">Purchase Id:</label><br>
-      <input type="number" id="pur-id" name="pur-id"><br>
+      <input type="number" step="1" min="1" id="pur-id" name="pur-id"><br>
       <input type="submit" id="submit-add-entails" name="add_entails" value="submit" />
     </form>
   </div>
@@ -192,10 +192,12 @@
       case "serv-id":
         type = "number";
         step = "1";
+        min = "1";
         break;
       case "pur-id":
         type = "number";
         step = "1";
+        min = "1";
         break;
       default:
         type = "text";
@@ -235,9 +237,9 @@
     const pur_id = cells[1].textContent;
 
     // Replace the cell elements with form inputs
-    cells[0].innerHTML = `<input type="number" name="serv-id" value="${serv_id}">
+    cells[0].innerHTML = `<input type="number" step="1" min="1" name="serv-id" value="${serv_id}">
                             <input type="hidden" name="previous-serv-id" value="${serv_id}">`;
-    cells[1].innerHTML = `<input type="number" name="pur-id" value="${pur_id}" readonly="readonly">`;
+    cells[1].innerHTML = `<input type="number" step="1" min="1" name="pur-id" value="${pur_id}" readonly="readonly">`;
     cells[2].innerHTML = `<a onclick="saveEntails('${id}')">Save</a>`;
   }
 

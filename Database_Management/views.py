@@ -1,3 +1,4 @@
+from email_validator import validate_email, EmailNotValidError
 from datetime import datetime
 from django.shortcuts import render, redirect
 from Entities import ConsistsOf, Contract, Customer, Employee, Entails, GasStation, Involves, IsAssignedTo, Offers, Product, Provides, Pump, Purchase, Service, Signs, Supplier, Supply, Tank
@@ -248,12 +249,13 @@ def customer(request):
             today = today.split('-')
             today = '/'.join(today[::-1])
             today = today.split('/')
-            valid_date = datetime(int(today[2])-8, int(today[1]), int(today[0]))
+            valid_date = datetime(
+                int(today[2])-8, int(today[1]), int(today[0]))
 
             if (b_date.date() > valid_date.date()):
                 birth_date_fault = "Please write a valid Birth Date (older than 18)"
                 error_occured = True
-        
+
         if (phone_number != False):
             phone_number = phone_number.strip()
             if (not phone_number.replace('.', '', 1).isdigit()):
@@ -378,6 +380,34 @@ def employee(request):
 
         error_occured = False
 
+        if (ssn != False):
+            ssn = ssn.strip()
+            ssn_check = ''.join(ssn.split('-'))
+            if (not ssn_check.isdigit() or len(ssn_check) != 9):
+                ssn_fault = "Please write a valid ssn with 9 digits"
+                error_occured = True
+            all_ssn = Employee.allSsn()
+            ssn_check = (ssn, )
+            if (ssn in all_ssn and "add_employee" in request.POST):
+                ssn_fault = "Ssn already exists"
+                error_occured = True
+
+        if (first_name != False):
+            first_name = first_name.strip()
+            if (not first_name.isalpha()):
+                first_name_fault = "Please write a valid first name"
+                error_occured = True
+            else:
+                first_name = first_name.capitalize()
+
+        if (last_name != False):
+            last_name = last_name.strip()
+            if (not last_name.isalpha()):
+                last_name_fault = "Please write a valid last name"
+                error_occured = True
+            else:
+                last_name = last_name.capitalize()
+
         if (birth_date != False):
             birth_date = birth_date.strip()
             birth_date = birth_date.split('-')
@@ -392,12 +422,13 @@ def employee(request):
             today = today.split('-')
             today = '/'.join(today[::-1])
             today = today.split('/')
-            valid_date = datetime(int(today[2])-8, int(today[1]), int(today[0]))
+            valid_date = datetime(
+                int(today[2])-8, int(today[1]), int(today[0]))
 
             if (b_date.date() > valid_date.date()):
                 birth_date_fault = "Please write a valid Birth Date (older than 18)"
                 error_occured = True
-        
+
         if (phone_number != False):
             phone_number = phone_number.strip()
             if (not phone_number.replace('.', '', 1).isdigit()):
@@ -408,6 +439,15 @@ def employee(request):
                 if (phone_number > 6999999999 or phone_number < 6900000000):
                     phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
                     error_occured = True
+
+        if (email != False):
+            email = email.strip()
+            try:
+                validation = validate_email(email)
+                email = validation.email
+            except EmailNotValidError as e:
+                email_fault = str(e)
+                error_occured = True
 
         if (longitude != False):
             longitude = longitude.strip()
@@ -443,6 +483,13 @@ def employee(request):
                         latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
                         error_occured = True
 
+        if (role != False):
+            role = role.strip()
+            all_roles = Employee.allRoles()
+            if (role not in all_roles and "search_employee" not in request.POST):
+                role_fault = "Please write a valid role"
+                error_occured = True
+
         if (hours != False):
             hours = hours.strip()
             if (not hours.replace('.', '', 1).isdigit()):
@@ -453,6 +500,22 @@ def employee(request):
                 if (hours > 168 or hours < 1):
                     hours_fault = "Please write a integer between 0 and 168(All 7 days, all hours) for hours"
                     error_occured = True
+
+        if (super_ssn != False):
+            super_ssn = super_ssn.strip()
+            super_ssn_check = ''.join(super_ssn.split('-'))
+            all_ssn = Employee.allSsn()
+            if (super_ssn == 'NULL'):
+                pass
+            elif (not super_ssn_check.isdigit() or len(ssn_check) != 9):
+                super_ssn_fault = "Please write a valid super ssn with 9 digits"
+                error_occured = True
+            elif (super_ssn not in all_ssn):
+                super_ssn_fault = "Please write a valid super ssn. This employee doesn't exist"
+                error_occured = True
+            elif (role == 'Manager' and super_ssn != 'NULL' and "search_employee" not in request.POST):
+                super_ssn_fault = "A manager cannot be assigned to another manager"
+                error_occured = True
 
         if (gs_longitude != False):
             gs_longitude = gs_longitude.strip()
@@ -467,8 +530,12 @@ def employee(request):
                 else:
                     numbers = str(gs_longitude).split('.')
                     decimal_part = numbers[1]
+                    all_gs_longitudes = Employee.allGSLongitudes()
                     if (len(decimal_part) > 6):
                         gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                        error_occured = True
+                    elif (gs_longitude not in all_gs_longitudes and "search_employee" not in request.POST):
+                        gs_longitude_fault = "Specify an existing gas station longitude"
                         error_occured = True
 
         if (gs_latitude != False):
@@ -484,8 +551,12 @@ def employee(request):
                 else:
                     numbers = str(gs_latitude).split('.')
                     decimal_part = numbers[1]
+                    all_gs_latitudes = Employee.allGSLatitudes()
                     if (len(decimal_part) > 6):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                        error_occured = True
+                    elif (gs_latitude not in all_gs_latitudes and "search_employee" not in request.POST):
+                        gs_latitude_fault = "Specify an existing gas station latitude"
                         error_occured = True
 
         if (not error_occured):
@@ -668,7 +739,7 @@ def gasStation(request):
             if "add_gas_station" in request.POST:
                 try:
                     GasStation.insertInto(longitude, latitude, type_of_service, start_date,
-                                        minimarket, mgr_ssn)
+                                          minimarket, mgr_ssn)
                     return redirect(gasStation)
                 except Exception as e:
                     print("View exception")
@@ -676,14 +747,14 @@ def gasStation(request):
             elif "search_gas_station" in request.POST:
                 try:
                     gasStations = GasStation.searchBy(longitude, latitude, type_of_service,
-                                                    minimarket, mgr_ssn)
+                                                      minimarket, mgr_ssn)
                 except Exception as e:
                     print("View exception")
                     print(e)
             else:
                 try:
                     GasStation.update(longitude, latitude, type_of_service, start_date,
-                                    minimarket, mgr_ssn)
+                                      minimarket, mgr_ssn)
                     return redirect(gasStation)
                 except Exception as e:
                     print("View exception")
@@ -749,7 +820,8 @@ def involve(request):
         if (not error_occured):
             if "add_involves" in request.POST:
                 try:
-                    Involves.insertInto(int(prod_id), int(pur_id), float(quantity))
+                    Involves.insertInto(
+                        int(prod_id), int(pur_id), float(quantity))
                     return redirect(involve)
                 except Exception as e:
                     print("View exception")

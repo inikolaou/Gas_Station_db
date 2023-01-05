@@ -55,14 +55,15 @@ def contract(request):
     salary_fault = False
 
     if request.method == "POST":
-        id = request.POST.get('id', False).strip()
-        start_date = request.POST.get('start-date', False).strip()
-        end_date = request.POST.get('end-date', False).strip()
+        id = request.POST.get('id', False)
+        start_date = request.POST.get('start-date', False)
+        end_date = request.POST.get('end-date', False)
         salary = request.POST.get('salary', False).strip()
 
         error_occured = False
 
         if (id != False):
+            id = id.strip()
             if (not id.isdigit()):
                 id_fault = "Please write a positive integer for id"
                 error_occured = True
@@ -70,6 +71,7 @@ def contract(request):
                 id = int(id)
 
         if (start_date != False):
+            start_date = start_date.strip()
             start_date = start_date.split('-')
             start_date = '/'.join(start_date[::-1])
             if (not start_date.replace('/', '', 2).isdigit()):
@@ -77,6 +79,7 @@ def contract(request):
                 error_occured = True
 
         if (end_date != False):
+            end_date = end_date.strip()
             end_date = end_date.split('-')
             end_date = '/'.join(end_date[::-1])
             if (not end_date.replace('/', '', 2).isdigit()):
@@ -99,6 +102,7 @@ def contract(request):
                     error_occured = True
 
         if (salary != False):
+            salary = salary.strip()
             if (not salary.replace('.', '', 1).isdigit()):
                 salary_fault = "Please write a float number between 0 and 100000 with 2 decimal places for salary"
                 error_occured = True

@@ -225,9 +225,13 @@
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
 
-        const values = ++dropdown.selectedIndex;
+        if (typeof addInput.counter == 'undefined') {
+            addInput.counter = 0;
+        }
+        addInput.counter++;
+        dropdown.selectedIndex++;
 
-        if (values === 4) {
+        if (addInput.counter === 4) {
             document.getElementById("add-input-button").disabled = true;
         }
         // Set input type based on selected option

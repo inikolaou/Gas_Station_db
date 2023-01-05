@@ -1511,6 +1511,14 @@ def supply_delete(request, id):
 
 
 def tank(request):
+    tank_id_fault = False
+    last_check_up_fault = False
+    capacity_fault = False
+    quantity_fault = False
+    prod_id_fault = False
+    gs_longitude_fault = False
+    gs_latitude_fault = False
+
     if request.method == "POST":
         tank_id = request.POST.get('id', False)
         last_check_up = request.POST.get('last-check-up', False)
@@ -1520,32 +1528,135 @@ def tank(request):
         gs_longitude = request.POST.get('gs-longitude', False)
         gs_latitude = request.POST.get('gs-latitude', False)
 
-        if "add_tank" in request.POST:
-            try:
-                Tank.insertInto(int(tank_id), last_check_up, float(capacity), float(
-                    quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
-                return redirect(tank)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_tank" in request.POST:
-            try:
-                tanks = Tank.searchBy(int(tank_id), last_check_up, float(capacity), float(
-                    quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
-            except Exception as e:
-                print("View exception")
-                print(e)
+        error_occured = False
+
+        if (tank_id != False):
+            tank_id = tank_id.strip()
+            if (not tank_id.isdigit()):
+                tank_id_fault = "Please write a positive integer for Tank ID"
+                error_occured = True
+            else:
+                tank_id = int(tank_id)
+
+        if (last_check_up != False):
+            last_check_up = last_check_up.strip()
+            last_check_up = last_check_up.split('-')
+            last_check_up = '/'.join(last_check_up[::-1])
+            if (not last_check_up.replace('/', '', 2).isdigit()):
+                last_check_up_fault = "Please write a valid Start Date"
+                error_occured = True
+            lcu_date = last_check_up.split('/')
+            lcu_date = datetime(int(lcu_date[2]), int(lcu_date[1]), int(lcu_date[0]))
+
+            if (lcu_date.date() > datetime.today().date()):
+                end_date_fault = "Start Date should be lesser than today"
+                error_occured = True
+
+        if (capacity != False):
+            capacity = capacity.strip()
+            if (not capacity.replace('.', '', 1).isdigit()):
+                capacity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for Capacity"
+                error_occured = True
+            else:
+                capacity = float(capacity)
+                if (capacity > 99999.999 or capacity < 0):
+                    capacity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for Capacity"
+                    error_occured = True
+                else:
+                    numbers = str(capacity).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 3):
+                        capacity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for Capacity"
+                        error_occured = True
+
+        if (quantity != False):
+            quantity = quantity.strip()
+            if (not quantity.replace('.', '', 1).isdigit()):
+                quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                error_occured = True
+            else:
+                quantity = float(quantity)
+                if (quantity > 99999.999 or quantity < 0):
+                    quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                    error_occured = True
+                else:
+                    numbers = str(quantity).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 3):
+                        quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                        error_occured = True
+
+        if (prod_id != False):
+            prod_id = prod_id.strip()
+            if (not prod_id.isdigit()):
+                prod_id_fault = "Please write a positive integer for Product ID"
+                error_occured = True
+            else:
+                prod_id = int(prod_id)
+
+        if (gs_longitude != False):
+            gs_longitude = gs_longitude.strip()
+            if (not gs_longitude.replace('.', '', 1).isdigit()):
+                gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                error_occured = True
+            else:
+                gs_longitude = float(gs_longitude)
+                if (gs_longitude > 99.999999 or gs_longitude < 0):
+                    gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_longitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                        error_occured = True
+
+        if (gs_latitude != False):
+            gs_latitude = gs_latitude.strip()
+            if (not gs_latitude.replace('.', '', 1).isdigit()):
+                gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                error_occured = True
+            else:
+                gs_latitude = float(gs_latitude)
+                if (gs_latitude > 999.999999 or gs_latitude < 0):
+                    gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_latitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                        error_occured = True
+
+        if (not error_occured):
+            if "add_tank" in request.POST:
+                try:
+                    Tank.insertInto(int(tank_id), last_check_up, float(capacity), float(
+                        quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
+                    return redirect(tank)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_tank" in request.POST:
+                try:
+                    tanks = Tank.searchBy(int(tank_id), last_check_up, float(capacity), float(
+                        quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Tank.update(int(tank_id), last_check_up, float(capacity), float(
+                        quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
+                    return redirect(tank)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Tank.update(int(tank_id), last_check_up, float(capacity), float(
-                    quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
-                return redirect(tank)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            tanks = Tank.retrieveAllColumns()
     else:
         tanks = Tank.retrieveAllColumns()
-    return render(request, 'tank.html', {'tanks': tanks})
+    return render(request, 'tank.html', {'tanks': tanks, 'tank_id_fault': tank_id_fault, 'last_check_up_fault': last_check_up_fault, 'capacity_fault': capacity_fault, 'quantity_fault': quantity_fault, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
 def tank_delete(request, id_longitude_latitude):

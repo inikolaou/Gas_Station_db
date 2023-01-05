@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createEmployeeTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -26,8 +27,9 @@ def createEmployeeTable():
                         );''')
             insertFromCsv("Datasets/employee.csv")
         except Exception as e:
-            pass # Database created
+            pass  # Database created
     conn.close()
+
 
 def insertFromCsv(fileName):
     conn = sqlite3.connect("Gas_Station.db")
@@ -35,38 +37,40 @@ def insertFromCsv(fileName):
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
             insertInto(tuple['Ssn'], tuple['Fname'], tuple['Lname'],
-                       tuple['Birth_Date'],tuple['Phone_Number'], tuple['Email'],
+                       tuple['Birth_Date'], tuple['Phone_Number'], tuple['Email'],
                        tuple['Longitude'], tuple['Latitude'], tuple['Role'],
                        tuple['Hours'], tuple['Super_Ssn'], tuple['GS_Longitude'],
                        tuple['GS_Latitude'], conn)
     conn.close()
 
-def insertInto(ssn, fname, lname, birth_date, phone_number, email, longitude, latitude, 
-        role, hours, super_ssn, gs_longitude, gs_latitude, conn=False):
+
+def insertInto(ssn, fname, lname, birth_date, phone_number, email, longitude, latitude,
+               role, hours, super_ssn, gs_longitude, gs_latitude, conn=False):
     if (conn == False):
         conn = sqlite3.connect("Gas_Station.db")
         c = conn.cursor()
         with conn:
             try:
                 c.execute('''INSERT INTO EMPLOYEE
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);''', 
-                            (ssn, fname, lname, birth_date, phone_number, email,
-                            longitude, latitude, role, hours, super_ssn,
-                            gs_longitude, gs_latitude))
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);''',
+                          (ssn, fname, lname, birth_date, phone_number, email,
+                           longitude, latitude, role, hours, super_ssn,
+                           gs_longitude, gs_latitude))
             except Exception as e:
-                print(e) # tuple already added
+                print(e)  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
         with conn:
             try:
                 c.execute('''INSERT INTO EMPLOYEE
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);''', 
-                            (ssn, fname, lname, birth_date, phone_number, email,
-                            longitude, latitude, role, hours, super_ssn,
-                            gs_longitude, gs_latitude))
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);''',
+                          (ssn, fname, lname, birth_date, phone_number, email,
+                           longitude, latitude, role, hours, super_ssn,
+                           gs_longitude, gs_latitude))
             except Exception as e:
                 pass
+
 
 def searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude):
     conn = sqlite3.connect("Gas_Station.db")
@@ -77,7 +81,7 @@ def searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude):
                         SELECT * 
                         FROM EMPLOYEE
                         WHERE Ssn = ?''',
-                        (ssn, ))
+                      (ssn, ))
         elif (role):
             if (super_ssn):
                 if (gs_longitude and gs_latitude):
@@ -85,51 +89,52 @@ def searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude):
                         SELECT * 
                         FROM EMPLOYEE
                         WHERE Role = ? AND Super_Ssn = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
-                        (role, super_ssn, gs_longitude, gs_latitude))
+                              (role, super_ssn, gs_longitude, gs_latitude))
                 else:
                     c.execute('''
                         SELECT * 
                         FROM EMPLOYEE
                         WHERE Role = ? AND Super_Ssn = ?''',
-                        (role, super_ssn))
+                              (role, super_ssn))
             elif (gs_longitude and gs_latitude):
                 c.execute('''
                         SELECT * 
                         FROM EMPLOYEE
                         WHERE Role = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
-                        (role, gs_longitude, gs_latitude))
+                          (role, gs_longitude, gs_latitude))
             else:
                 c.execute('''
                         SELECT * 
                         FROM EMPLOYEE
                         WHERE Role = ?''',
-                        (role, ))
+                          (role, ))
         elif (super_ssn):
             if (gs_longitude and gs_latitude):
-                    c.execute('''
+                c.execute('''
                         SELECT * 
                         FROM EMPLOYEE
                         WHERE Super_Ssn = ? AND GS_Longitude = ? AND GS_Latitude = ?''',
-                        (super_ssn, gs_longitude, gs_latitude))
+                          (super_ssn, gs_longitude, gs_latitude))
             else:
                 c.execute('''
                         SELECT * 
                         FROM EMPLOYEE
                         WHERE Super_Ssn = ?''',
-                        (super_ssn, ))
+                          (super_ssn, ))
         elif (gs_longitude and gs_latitude):
             c.execute('''
                     SELECT * 
                     FROM EMPLOYEE
                     WHERE GS_Longitude = ? AND GS_Latitude = ?''',
-                    (gs_longitude, gs_latitude))
+                      (gs_longitude, gs_latitude))
 
     data = c.fetchall()
     conn.close()
     return data
 
-def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitude, 
-        role, hours, super_ssn, gs_longitude, gs_latitude):
+
+def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitude,
+           role, hours, super_ssn, gs_longitude, gs_latitude):
     conn = sqlite3.connect("Gas_Station.db")
     conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
@@ -139,14 +144,15 @@ def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitu
                         SET Fname = ?, Lname = ?, Birth_Date = ?,
                         Phone_Number = ?, Email = ?, Longitude = ?,
                         Latitude = ?, Role = ?, Hours = ?, Super_Ssn = ?,
-                        GS_Longitude = ?, GS_Latitude = ? WHERE Ssn = ?''', 
-                        (fname, lname, birth_date, phone_number, email,
-                        longitude, latitude, role, hours, super_ssn,
-                        gs_longitude, gs_latitude, ssn))
+                        GS_Longitude = ?, GS_Latitude = ? WHERE Ssn = ?''',
+                      (fname, lname, birth_date, phone_number, email,
+                       longitude, latitude, role, hours, super_ssn,
+                       gs_longitude, gs_latitude, ssn))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(ssn):
     conn = sqlite3.connect("Gas_Station.db")
@@ -161,6 +167,7 @@ def delete(ssn):
             print(e)
     conn.close()
 
+
 def searchByName():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -169,6 +176,7 @@ def searchByName():
     conn.close()
     return data
 
+
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -176,6 +184,43 @@ def retrieveAllColumns():
     data = c.fetchall()
     conn.close()
     return data
+
+
+def allSsn():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Ssn from EMPLOYEE")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allRoles():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Role from EMPLOYEE")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allGSLongitudes():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select GS_Longitude from EMPLOYEE")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allGSLatitudes():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select GS_Latitude from EMPLOYEE")
+    data = c.fetchall()
+    conn.close()
+    return data
+
 
 def orderEmployeesBySalaryByGasStation(salary):
     conn = sqlite3.connect("Gas_Station.db")

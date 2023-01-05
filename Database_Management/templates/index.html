@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
     <title>Gas Station</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -129,7 +131,8 @@
     </div>
     <div class="main">
         <div class="card">
-            <img src="https://img.freepik.com/premium-vector/red-bright-gas-station-pump-with-fuel-nozzle-petrol-pump-realistic-vector-illustration-isolated-white_149267-1769.jpg?w=2000" alt="Gas Pump">
+            <img src="https://img.freepik.com/premium-vector/red-bright-gas-station-pump-with-fuel-nozzle-petrol-pump-realistic-vector-illustration-isolated-white_149267-1769.jpg?w=2000"
+                alt="Gas Pump">
             <h3>Fuel</h3>
             <p>We offer a variety of fuel options, including regular, premium, and diesel.</p>
             <button onclick="visitPumps()">Visit Pumps</button>
@@ -142,7 +145,8 @@
             <button onclick="visitProducts()">Visit Products</button>
         </div>
         <div class="card">
-            <img src="https://www.shell.ca/en_ca/motorists/shell-canada-car-wash/_jcr_content/par/grid_562368221/p0/contentblock_copy/image.img.960.jpeg/1664395343561/carwash.jpeg?imwidth=960" alt="Car Wash">
+            <img src="https://www.shell.ca/en_ca/motorists/shell-canada-car-wash/_jcr_content/par/grid_562368221/p0/contentblock_copy/image.img.960.jpeg/1664395343561/carwash.jpeg?imwidth=960"
+                alt="Car Wash">
             <h3>Car Wash</h3>
             <p>Keep your car looking its best with our self-serve or full-service car wash options.</p>
             <button onclick="visitServices()">Visit Services</button>
@@ -154,13 +158,14 @@
 </body>
 <script>
     function visitPumps() {
-      window.location = "pump/";
+        window.location = "pump/";
     }
     function visitProducts() {
-      window.location = "product/";
+        window.location = "product/";
     }
     function visitServices() {
-      window.location = "service/";
+        window.location = "service/";
     }
 </script>
+
 </html>

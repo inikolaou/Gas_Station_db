@@ -835,39 +835,108 @@ def isAssignedTo_delete(request, essn_servid):
 
 
 def offer(request):
+    prod_id_fault = False
+    gs_longitude_fault = False
+    gs_latitude_fault = False
+    quantity_fault = False
+    
     if request.method == "POST":
         prod_id = request.POST.get('prod-id', False)
         previous_prod_id = request.POST.get('previous-prod-id', False)
         gs_longitude = request.POST.get('gs-longitude', False)
         gs_latitude = request.POST.get('gs-latitude', False)
         quantity = request.POST.get('quantity', False)
+        
+        error_occured = False
+        
+        if (prod_id != False):
+            prod_id = prod_id.strip()
+            if (not prod_id.isdigit()):
+                prod_id_fault = "Please write a positive integer for Product ID"
+                error_occured = True
+            else:
+                prod_id = int(prod_id)
+                
+        if (gs_longitude != False):
+            gs_longitude = gs_longitude.strip()
+            if (not gs_longitude.replace('.', '', 1).isdigit()):
+                gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                error_occured = True
+            else:
+                gs_longitude = float(gs_longitude)
+                if (gs_longitude > 99.999999 or gs_longitude < 0):
+                    gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_longitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                        error_occured = True
 
-        if "add_offers" in request.POST:
-            try:
-                Offers.insertInto(int(prod_id), float(
-                    gs_longitude), float(gs_latitude), float(quantity))
-                return redirect(offer)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_offers" in request.POST:
-            try:
-                offers = Offers.searchBy(int(prod_id), float(
-                    gs_longitude), float(gs_latitude), float(quantity))
-            except Exception as e:
-                print("View exception")
-                print(e)
+        if (gs_latitude != False):
+            gs_latitude = gs_latitude.strip()
+            if (not gs_latitude.replace('.', '', 1).isdigit()):
+                gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                error_occured = True
+            else:
+                gs_latitude = float(gs_latitude)
+                if (gs_latitude > 999.999999 or gs_latitude < 0):
+                    gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_latitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                        error_occured = True
+                        
+        if (quantity != False):
+            quantity = quantity.strip()
+            if (not quantity.replace('.', '', 1).isdigit()):
+                quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                error_occured = True
+            else:
+                quantity = float(quantity)
+                if (quantity > 99999.999 or quantity < 0):
+                    quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                    error_occured = True
+                else:
+                    numbers = str(quantity).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 3):
+                        quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                        error_occured = True
+                        
+        if (not error_occured):
+            if "add_offers" in request.POST:
+                try:
+                    Offers.insertInto(int(prod_id), float(
+                        gs_longitude), float(gs_latitude), float(quantity))
+                    return redirect(offer)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_offers" in request.POST:
+                try:
+                    offers = Offers.searchBy(int(prod_id), float(
+                        gs_longitude), float(gs_latitude), float(quantity))
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Offers.update(int(prod_id), int(previous_prod_id), float(gs_longitude),
+                                float(gs_latitude), float(quantity))
+                    return redirect(offer)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Offers.update(int(prod_id), int(previous_prod_id), float(gs_longitude),
-                              float(gs_latitude), float(quantity))
-                return redirect(offer)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            offers = Offers.retrieveAllColumns()
     else:
         offers = Offers.retrieveAllColumns()
-    return render(request, 'offers.html', {'offers': offers})
+    return render(request, 'offers.html', {'offers': offers, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault, 'quantity_fault': quantity_fault})
 
 
 def offer_delete(request, prodid_longitude_latitude):
@@ -876,6 +945,12 @@ def offer_delete(request, prodid_longitude_latitude):
 
 
 def product(request):
+    id_fault = False
+    name_fault = False
+    type_fault = False
+    price_fault = False
+    corresponding_points_fault = False
+    
     if request.method == "POST":
         id = request.POST.get('id', False)
         name = request.POST.get('name', False)
@@ -883,32 +958,73 @@ def product(request):
         price = request.POST.get('price', False)
         corresponding_points = request.POST.get('corresponding-points', False)
 
-        if "add_product" in request.POST:
-            try:
-                Product.insertInto(id, name, type, price,
-                                   int(corresponding_points))
-                return redirect(product)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_product" in request.POST:
-            try:
-                products = Product.searchBy(
-                    int(id), type, float(price), int(corresponding_points))
-            except Exception as e:
-                print("View exception")
-                print(e)
+        error_occured = False
+        
+        if (id != False):
+            id = id.strip()
+            if (not id.isdigit()):
+                id_fault = "Please write a positive integer for id"
+                error_occured = True
+            else:
+                id = int(id)
+                
+        if (price != False):
+            price = price.strip()
+            if (not price.replace('.', '', 1).isdigit()):
+                price_fault = "Please write a float number between 0 and 10000 with 2 decimal places for price"
+                error_occured = True
+            else:
+                price = float(price)
+                if (price > 9999.99 or price < 0):
+                    price_fault = "Please write a float number between 0 and 10000 with 2 decimal places for price"
+                    error_occured = True
+                else:
+                    numbers = str(price).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 2):
+                        price_fault = "Please write a float number between 0 and 10000 with 2 decimal places for price"
+                        error_occured = True
+                        
+        if (corresponding_points != False):
+            corresponding_points = corresponding_points.strip()
+            if (not corresponding_points.replace('.', '', 1).isdigit()):
+                corresponding_points_fault = "Please write a integer between 0 and 999 for Corresponding Points"
+                error_occured = True
+            else:
+                corresponding_points = int(corresponding_points)
+                if (corresponding_points > 999 or corresponding_points < 0):
+                    corresponding_points_fault = "Please write a integer between 0 and 999 for Corresponding Points"
+                    error_occured = True
+
+        if (not error_occured):
+            if "add_product" in request.POST:
+                try:
+                    Product.insertInto(id, name, type, price,
+                                    int(corresponding_points))
+                    return redirect(product)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_product" in request.POST:
+                try:
+                    products = Product.searchBy(
+                        int(id), type, float(price), int(corresponding_points))
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Product.update(int(id), name, type, float(
+                        price), int(corresponding_points))
+                    return redirect(product)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Product.update(int(id), name, type, float(
-                    price), int(corresponding_points))
-                return redirect(product)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            products = Product.retrieveAllColumns()
     else:
         products = Product.retrieveAllColumns()
-    return render(request, 'product.html', {'products': products})
+    return render(request, 'product.html', {'products': products, 'id_fault': id_fault, 'name_fault': name_fault, 'type_fault': type_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
 
 
 def product_delete(request, id):

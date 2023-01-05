@@ -1033,37 +1033,88 @@ def product_delete(request, id):
 
 
 def provide(request):
+    serv_id = request.POST.get('serv-id', False)
+    gs_longitude = request.POST.get('gs-longitude', False)
+    gs_latitude = request.POST.get('gs-latitude', False)
+
     if request.method == "POST":
         serv_id = request.POST.get('serv-id', False)
         gs_longitude = request.POST.get('gs-longitude', False)
         gs_latitude = request.POST.get('gs-latitude', False)
         previous_serv_id = request.POST.get('previous-serv-id', False)
 
-        if "add_provides" in request.POST:
-            try:
-                Provides.insertInto(int(serv_id), gs_longitude, gs_latitude)
-                return redirect(provide)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_provides" in request.POST:
-            try:
-                provides = Provides.searchBy(
-                    int(serv_id), gs_longitude, gs_latitude)
-            except Exception as e:
-                print("View exception")
-                print(e)
+        error_occured = False
+
+        if (serv_id != False):
+            serv_id = serv_id.strip()
+            if (not serv_id.isdigit()):
+                serv_id_fault = "Please write a positive integer for Service ID"
+                error_occured = True
+            else:
+                serv_id = int(serv_id)
+
+        if (gs_longitude != False):
+            gs_longitude = gs_longitude.strip()
+            if (not gs_longitude.replace('.', '', 1).isdigit()):
+                gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                error_occured = True
+            else:
+                gs_longitude = float(gs_longitude)
+                if (gs_longitude > 99.999999 or gs_longitude < 0):
+                    gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_longitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                        error_occured = True
+
+        if (gs_latitude != False):
+            gs_latitude = gs_latitude.strip()
+            if (not gs_latitude.replace('.', '', 1).isdigit()):
+                gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                error_occured = True
+            else:
+                gs_latitude = float(gs_latitude)
+                if (gs_latitude > 999.999999 or gs_latitude < 0):
+                    gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_latitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                        error_occured = True
+
+        if (not error_occured):
+            if "add_provides" in request.POST:
+                try:
+                    Provides.insertInto(int(serv_id), gs_longitude, gs_latitude)
+                    return redirect(provide)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_provides" in request.POST:
+                try:
+                    provides = Provides.searchBy(
+                        int(serv_id), gs_longitude, gs_latitude)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Provides.update(int(serv_id), gs_longitude,
+                                    gs_latitude, int(previous_serv_id))
+                    return redirect(provide)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Provides.update(int(serv_id), gs_longitude,
-                                gs_latitude, int(previous_serv_id))
-                return redirect(provide)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            provides = Provides.retrieveAllColumns()
     else:
         provides = Provides.retrieveAllColumns()
-    return render(request, 'provides.html', {'provides': provides})
+    return render(request, 'provides.html', {'provides': provides, 'serv_id': serv_id, 'gs_longitude': gs_longitude, 'gs_latitude': gs_latitude})
 
 
 def provides_delete(request, serv_gslong_lat):
@@ -1170,37 +1221,83 @@ def purchase_delete(request, id):
 
 
 def service(request):
+    id_fault = False
+    name_fault = False
+    price_fault = False
+    corresponding_points_fault = False
+
     if request.method == "POST":
         id = request.POST.get('id', False)
         name = request.POST.get('name', False)
         price = request.POST.get('price', False)
         corresponding_points = request.POST.get('corresponding-points', False)
 
-        if "add_service" in request.POST:
-            try:
-                Service.insertInto(id, name, price, int(corresponding_points))
-                return redirect(service)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_service" in request.POST:
-            try:
-                services = Service.searchBy(
-                    int(id), float(price), int(corresponding_points))
-            except Exception as e:
-                print("View exception")
-                print(e)
+        error_occured = False
+        
+        if (id != False):
+            id = id.strip()
+            if (not id.isdigit()):
+                id_fault = "Please write a positive integer for id"
+                error_occured = True
+            else:
+                id = int(id)
+
+        if (price != False):
+            price = price.strip()
+            if (not price.replace('.', '', 1).isdigit()):
+                price_fault = "Please write a float number between 0 and 10000 with 2 decimal places for price"
+                error_occured = True
+            else:
+                price = float(price)
+                if (price > 9999.99 or price < 0):
+                    price_fault = "Please write a float number between 0 and 10000 with 2 decimal places for price"
+                    error_occured = True
+                else:
+                    numbers = str(price).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 2):
+                        price_fault = "Please write a float number between 0 and 10000 with 2 decimal places for price"
+                        error_occured = True
+                        
+        if (corresponding_points != False):
+            corresponding_points = corresponding_points.strip()
+            if (not corresponding_points.replace('.', '', 1).isdigit()):
+                corresponding_points_fault = "Please write a integer between 0 and 999 for Corresponding Points"
+                error_occured = True
+            else:
+                corresponding_points = int(corresponding_points)
+                if (corresponding_points > 999 or corresponding_points < 0):
+                    corresponding_points_fault = "Please write a integer between 0 and 999 for Corresponding Points"
+                    error_occured = True
+
+        if (not error_occured):
+            if "add_service" in request.POST:
+                try:
+                    Service.insertInto(id, name, price, int(corresponding_points))
+                    return redirect(service)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_service" in request.POST:
+                try:
+                    services = Service.searchBy(
+                        int(id), float(price), int(corresponding_points))
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Service.update(int(id), name, float(
+                        price), int(corresponding_points))
+                    return redirect(service)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Service.update(int(id), name, float(
-                    price), int(corresponding_points))
-                return redirect(service)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            services = Service.retrieveAllColumns()
     else:
         services = Service.retrieveAllColumns()
-    return render(request, 'service.html', {'services': services})
+    return render(request, 'service.html', {'services': services, 'id_fault': id_fault, 'name_fault': name_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
 
 
 def service_delete(request, id):
@@ -1209,31 +1306,47 @@ def service_delete(request, id):
 
 
 def sign(request):
+    essn_fault = False
+    contract_id_fault = False
+
     if request.method == "POST":
         essn = request.POST.get('essn', False)
         contract_id = request.POST.get('contract-id', False)
         previous_contract_id = request.POST.get('previous-contract-id', False)
 
-        if "add_sign" in request.POST:
-            try:
-                Signs.insertInto(essn, int(contract_id))
-                return redirect(sign)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_sign" in request.POST:
-            try:
-                signs = Signs.searchBy(essn, int(contract_id))
-            except Exception as e:
-                print("View exception")
-                print(e)
+        error_occured = False
+
+        if (contract_id != False):
+            contract_id = contract_id.strip()
+            if (not contract_id.isdigit()):
+                contract_id_fault = "Please write a positive integer for Contact ID"
+                error_occured = True
+            else:
+                contract_id = int(contract_id)
+
+        if (not error_occured):
+            if "add_sign" in request.POST:
+                try:
+                    Signs.insertInto(essn, int(contract_id))
+                    return redirect(sign)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_sign" in request.POST:
+                try:
+                    signs = Signs.searchBy(essn, int(contract_id))
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Signs.update(essn, int(contract_id), int(previous_contract_id))
+                    return redirect(sign)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Signs.update(essn, int(contract_id), int(previous_contract_id))
-                return redirect(sign)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            signs = Signs.retrieveAllColumns()
     else:
         signs = Signs.retrieveAllColumns()
     return render(request, 'signs.html', {'signs': signs})
@@ -1245,6 +1358,13 @@ def sign_delete(request, essn_contract):
 
 
 def supplier(request):
+    email_fault = False
+    first_name_fault = False
+    last_name_fault = False
+    phone_number_fault = False
+    longitude_fault = False
+    latitude_fault = False
+
     if request.method == "POST":
         email = request.POST.get('email', False)
         first_name = request.POST.get('first-name', False)
@@ -1253,32 +1373,82 @@ def supplier(request):
         longitude = request.POST.get('longitude', False)
         latitude = request.POST.get('latitude', False)
 
-        if "add_supplier" in request.POST:
-            try:
-                Supplier.insertInto(email, first_name, last_name,
-                                    phone_number, longitude, latitude)
-                return redirect(supplier)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_supplier" in request.POST:
-            try:
-                suppliers = Supplier.searchBy(
-                    email, phone_number, longitude, latitude)
-            except Exception as e:
-                print("View exception")
-                print(e)
+        error_occured = False
+
+        if (phone_number != False):
+            phone_number = phone_number.strip()
+            if (not phone_number.replace('.', '', 1).isdigit()):
+                phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
+                error_occured = True
+            else:
+                phone_number = int(phone_number)
+                if (phone_number > 6999999999 or phone_number < 6900000000):
+                    phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
+                    error_occured = True
+
+        if (longitude != False):
+            longitude = longitude.strip()
+            if (not longitude.replace('.', '', 1).isdigit()):
+                longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for Longitude"
+                error_occured = True
+            else:
+                longitude = float(longitude)
+                if (longitude > 99.999999 or longitude < 0):
+                    longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for Longitude"
+                    error_occured = True
+                else:
+                    numbers = str(longitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for Longitude"
+                        error_occured = True
+
+        if (latitude != False):
+            latitude = latitude.strip()
+            if (not latitude.replace('.', '', 1).isdigit()):
+                latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
+                error_occured = True
+            else:
+                latitude = float(latitude)
+                if (latitude > 999.999999 or latitude < 0):
+                    latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
+                    error_occured = True
+                else:
+                    numbers = str(latitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
+                        error_occured = True
+
+        if (not error_occured):
+            if "add_supplier" in request.POST:
+                try:
+                    Supplier.insertInto(email, first_name, last_name,
+                                        phone_number, longitude, latitude)
+                    return redirect(supplier)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_supplier" in request.POST:
+                try:
+                    suppliers = Supplier.searchBy(
+                        email, phone_number, longitude, latitude)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Supplier.update(email, first_name, last_name, phone_number,
+                                    longitude, latitude)
+                    return redirect(supplier)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Supplier.update(email, first_name, last_name, phone_number,
-                                longitude, latitude)
-                return redirect(supplier)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            suppliers = Supplier.retrieveAllColumns()
     else:
         suppliers = Supplier.retrieveAllColumns()
-    return render(request, 'supplier.html', {'suppliers': suppliers})
+    return render(request, 'supplier.html', {'suppliers': suppliers, 'email_fault': email_fault, 'first_name_fault': first_name_fault, 'last_name_fault': last_name_fault, 'phone_number_fault': phone_number_fault, 'longitude_fault': longitude_fault, 'latitude_fault': latitude_fault})
 
 
 def supplier_delete(request, email):
@@ -1287,41 +1457,52 @@ def supplier_delete(request, email):
 
 
 def supply(request):
+    id_fault = False
+    expected_arrival_date_fault = False
+    real_arrival_date_fault = False
+    sup_email_fault = False
+    gs_longitude_fault = False
+    gs_latitude_fault = False
+
     if request.method == "POST":
         id = request.POST.get('id', False)
-        expected_arrival_date = request.POST.get(
-            'expected-arrival-date', False)
+        expected_arrival_date = request.POST.get('expected-arrival-date', False)
         real_arrival_date = request.POST.get('real-arrival-date', False)
         sup_email = request.POST.get('sup-email', False)
         gs_longitude = request.POST.get('gs-longitude', False)
         gs_latitude = request.POST.get('gs-latitude', False)
 
-        if "add_supply" in request.POST:
-            try:
-                Supply.insertInto(int(id), expected_arrival_date,
-                                  real_arrival_date, sup_email, gs_longitude, gs_latitude)
-                return redirect(supply)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_supply" in request.POST:
-            try:
-                supplies = Supply.searchBy(int(
-                    id), expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
-            except Exception as e:
-                print("View exception")
-                print(e)
+        error_occured = False
+
+        if (not error_occured):
+            if "add_supply" in request.POST:
+                try:
+                    Supply.insertInto(int(id), expected_arrival_date,
+                                    real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                    return redirect(supply)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_supply" in request.POST:
+                try:
+                    supplies = Supply.searchBy(int(
+                        id), expected_arrival_date, real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Supply.update(int(id), expected_arrival_date,
+                                real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                    return redirect(supply)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Supply.update(int(id), expected_arrival_date,
-                              real_arrival_date, sup_email, gs_longitude, gs_latitude)
-                return redirect(supply)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            supplies = Supply.retrieveAllColumns()
     else:
         supplies = Supply.retrieveAllColumns()
-    return render(request, 'supply.html', {'supplies': supplies})
+    return render(request, 'supply.html', {'supplies': supplies,'id_fault': id_fault, 'expected_arrival_date_fault': expected_arrival_date_fault, 'real_arrival_date_fault': real_arrival_date_fault, 'sup_email_fault': sup_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
 def supply_delete(request, id):

@@ -5,8 +5,5 @@ name = "pypi"
 
 [packages]
 django = "*"
-
-[dev-packages]
-
-[requires]
-python_version = "3.10"
+autopep8 = "*"
+email-validator = "*"

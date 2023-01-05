@@ -911,16 +911,16 @@ def offer(request):
     gs_longitude_fault = False
     gs_latitude_fault = False
     quantity_fault = False
-    
+
     if request.method == "POST":
         prod_id = request.POST.get('prod-id', False)
         previous_prod_id = request.POST.get('previous-prod-id', False)
         gs_longitude = request.POST.get('gs-longitude', False)
         gs_latitude = request.POST.get('gs-latitude', False)
         quantity = request.POST.get('quantity', False)
-        
+
         error_occured = False
-        
+
         if (prod_id != False):
             prod_id = prod_id.strip()
             if (not prod_id.isdigit()):
@@ -928,7 +928,7 @@ def offer(request):
                 error_occured = True
             else:
                 prod_id = int(prod_id)
-                
+
         if (gs_longitude != False):
             gs_longitude = gs_longitude.strip()
             if (not gs_longitude.replace('.', '', 1).isdigit()):
@@ -962,7 +962,7 @@ def offer(request):
                     if (len(decimal_part) > 6):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                         error_occured = True
-                        
+
         if (quantity != False):
             quantity = quantity.strip()
             if (not quantity.replace('.', '', 1).isdigit()):
@@ -979,7 +979,7 @@ def offer(request):
                     if (len(decimal_part) > 3):
                         quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
                         error_occured = True
-                        
+
         if (not error_occured):
             if "add_offers" in request.POST:
                 try:
@@ -999,7 +999,7 @@ def offer(request):
             else:
                 try:
                     Offers.update(int(prod_id), int(previous_prod_id), float(gs_longitude),
-                                float(gs_latitude), float(quantity))
+                                  float(gs_latitude), float(quantity))
                     return redirect(offer)
                 except Exception as e:
                     print("View exception")
@@ -1022,7 +1022,7 @@ def product(request):
     type_fault = False
     price_fault = False
     corresponding_points_fault = False
-    
+
     if request.method == "POST":
         id = request.POST.get('id', False)
         name = request.POST.get('name', False)
@@ -1031,7 +1031,7 @@ def product(request):
         corresponding_points = request.POST.get('corresponding-points', False)
 
         error_occured = False
-        
+
         if (id != False):
             id = id.strip()
             if (not id.isdigit()):
@@ -1039,7 +1039,7 @@ def product(request):
                 error_occured = True
             else:
                 id = int(id)
-                
+
         if (price != False):
             price = price.strip()
             if (not price.replace('.', '', 1).isdigit()):
@@ -1056,7 +1056,7 @@ def product(request):
                     if (len(decimal_part) > 2):
                         price_fault = "Please write a float number between 0 and 10000 with 2 decimal places for price"
                         error_occured = True
-                        
+
         if (corresponding_points != False):
             corresponding_points = corresponding_points.strip()
             if (not corresponding_points.replace('.', '', 1).isdigit()):
@@ -1072,7 +1072,7 @@ def product(request):
             if "add_product" in request.POST:
                 try:
                     Product.insertInto(id, name, type, price,
-                                    int(corresponding_points))
+                                       int(corresponding_points))
                     return redirect(product)
                 except Exception as e:
                     print("View exception")
@@ -1162,7 +1162,8 @@ def provide(request):
         if (not error_occured):
             if "add_provides" in request.POST:
                 try:
-                    Provides.insertInto(int(serv_id), gs_longitude, gs_latitude)
+                    Provides.insertInto(
+                        int(serv_id), gs_longitude, gs_latitude)
                     return redirect(provide)
                 except Exception as e:
                     print("View exception")
@@ -1305,7 +1306,7 @@ def service(request):
         corresponding_points = request.POST.get('corresponding-points', False)
 
         error_occured = False
-        
+
         if (id != False):
             id = id.strip()
             if (not id.isdigit()):
@@ -1330,7 +1331,7 @@ def service(request):
                     if (len(decimal_part) > 2):
                         price_fault = "Please write a float number between 0 and 10000 with 2 decimal places for price"
                         error_occured = True
-                        
+
         if (corresponding_points != False):
             corresponding_points = corresponding_points.strip()
             if (not corresponding_points.replace('.', '', 1).isdigit()):
@@ -1345,7 +1346,8 @@ def service(request):
         if (not error_occured):
             if "add_service" in request.POST:
                 try:
-                    Service.insertInto(id, name, price, int(corresponding_points))
+                    Service.insertInto(
+                        id, name, price, int(corresponding_points))
                     return redirect(service)
                 except Exception as e:
                     print("View exception")
@@ -1412,7 +1414,8 @@ def sign(request):
                     print(e)
             else:
                 try:
-                    Signs.update(essn, int(contract_id), int(previous_contract_id))
+                    Signs.update(essn, int(contract_id),
+                                 int(previous_contract_id))
                     return redirect(sign)
                 except Exception as e:
                     print("View exception")
@@ -1538,7 +1541,8 @@ def supply(request):
 
     if request.method == "POST":
         id = request.POST.get('id', False)
-        expected_arrival_date = request.POST.get('expected-arrival-date', False)
+        expected_arrival_date = request.POST.get(
+            'expected-arrival-date', False)
         real_arrival_date = request.POST.get('real-arrival-date', False)
         sup_email = request.POST.get('sup-email', False)
         gs_longitude = request.POST.get('gs-longitude', False)
@@ -1550,7 +1554,7 @@ def supply(request):
             if "add_supply" in request.POST:
                 try:
                     Supply.insertInto(int(id), expected_arrival_date,
-                                    real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                                      real_arrival_date, sup_email, gs_longitude, gs_latitude)
                     return redirect(supply)
                 except Exception as e:
                     print("View exception")
@@ -1565,7 +1569,7 @@ def supply(request):
             else:
                 try:
                     Supply.update(int(id), expected_arrival_date,
-                                real_arrival_date, sup_email, gs_longitude, gs_latitude)
+                                  real_arrival_date, sup_email, gs_longitude, gs_latitude)
                     return redirect(supply)
                 except Exception as e:
                     print("View exception")
@@ -1574,7 +1578,7 @@ def supply(request):
             supplies = Supply.retrieveAllColumns()
     else:
         supplies = Supply.retrieveAllColumns()
-    return render(request, 'supply.html', {'supplies': supplies,'id_fault': id_fault, 'expected_arrival_date_fault': expected_arrival_date_fault, 'real_arrival_date_fault': real_arrival_date_fault, 'sup_email_fault': sup_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
+    return render(request, 'supply.html', {'supplies': supplies, 'id_fault': id_fault, 'expected_arrival_date_fault': expected_arrival_date_fault, 'real_arrival_date_fault': real_arrival_date_fault, 'sup_email_fault': sup_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
 def supply_delete(request, id):

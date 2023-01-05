@@ -2,20 +2,337 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index</title>
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0066c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #003399;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        form label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        form input,
+        form textarea {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form #submit {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        form #submit:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-    {% for purchase in purchases %}
-    <p>Id: {{purchase.0}}, Purchase_Date: {{purchase.1}}
-        Type_of_Payment: {{purchase.2}},
-        Cus_Email: {{purchase.3}}, GS_Longitude: {{purchase.4}},
-        GS_Latitude: {{purchase.5}}, Pump_Id: {{purchase.6}}, Tank_Id: {{purchase.7}}
-    </p>
-    {% endfor %}
+    <div class="header">
+        <h1>Purchase Handling</h1>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a id="all_purchase_nav" onclick="ShowPurchase()">Purchases</a>
+        <a id="search_purchase_nav" onclick="SearchPurchase()">Search Purchase</a>
+        <a id="add_purchase_nav" onclick="AddPurchase()">Add Purchase</a>
+    </nav>
+    <div id="all_purchases" style="display: block">
+        <table>
+            <thead>
+                <tr>
+                    <th>Purchase Id</th>
+                    <th>Purchase Date</th>
+                    <th>Type of Payment</th>
+                    <th>Customer Email</th>
+                    <th>Gas Station Longitude</th>
+                    <th>Gas Station Latitude</th>
+                    <th>Pump Id</th>
+                    <th>Tank Id</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for purchase in purchases %}
+                <tr id="{{purchase.0}}">
+                    <td>{{purchase.0}}</td>
+                    <td>{{purchase.1}}</td>
+                    <td>{{purchase.2}}</td>
+                    <td>{{purchase.3}}</td>
+                    <td>{{purchase.4}}</td>
+                    <td>{{purchase.5}}</td>
+                    <td>{{purchase.6}}</td>
+                    <td>{{purchase.7}}</td>
+                    <td>
+                        <a href="#'{{purchase.0}}'" onclick="editPurchase('{{purchase.0}}')">Edit</a>
+                        |
+                        <a href="{{purchase.0}}/">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="search_purchase" style="display: none">
+        <p>Select fields you want to search for</p>
+        <select id="dropdown">
+            <option value="purchase-id">Purchase_Id</option>
+            <option value="purchase-date">Purchase_Date</option>
+            <option value="type-of-payment">Type_Of_Payment</option>
+            <option value="customer-email">Customer_Email</option>
+            <option value="gs-longitude">Gas_Station_Longitude</option>
+            <option value="gs-latitude">Gas_Station_Latitude</option>
+            <option value="pump-id">Pump_Id</option>
+            <option value="tank-id">Tank_Id</option>
+
+        </select>
+        <button id="add-input-button" onclick="addInput()">Add Input</button>
+        <form id="searchPurchaseForm" method="POST">
+            {% csrf_token %}
+            <input type="submit" id="submit-search-purchase" name="search_purchase" value="submit" />
+        </form>
+    </div>
+    <div id="add_purchase" style="display: none">
+        <form id="addPurchaseForm" method="POST">
+            {% csrf_token %}
+            <label for="purchase-id">Purchase Id:</label><br>
+            <input type="number" id="purchase-id" name="purchase-id" readonly="readonly"><br>
+            <label for="purchase-date">Purchase Date:</label><br>
+            <input type="text" id="purchase-date" name="purchase-date"><br>
+            <label for="type-of-payment">Type of Payment:</label><br>
+            <input type="text" id="type-of-payment" name="type-of-payment"><br>
+            <label for="customer-email">Customer Email:</label><br>
+            <input type="email" id="customer-email" name="customer-email"><br>
+            <label for="gs-longitude">GS Longitude:</label><br>
+            <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
+            <label for="gs-latitude">GS Latitude:</label><br>
+            <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+            <label for="pump-id">Pump Id:</label><br>
+            <input type="number" min="1" id="pump-id" name="pump-id"><br>
+            <label for="tank-id">Tank Id:</label><br>
+            <input type="number" min="1" id="tank-id" name="tank-id"><br>
+            <input type="submit" id="submit-add-purchase" name="add_purchase" value="submit" />
+        </form>
+    </div>
 </body>
+
+<script>
+    function ShowPurchase() {
+        const all_purchases = document.getElementById("all_purchases");
+        all_purchases.style.display = "block";
+        const search_purchase = document.getElementById("search_purchase");
+        search_purchase.style.display = "none";
+        const add_purchase = document.getElementById("add_purchase");
+        add_purchase.style.display = "none";
+        window.location.href = "/purchases/";
+    }
+
+    function SearchPurchase() {
+        const all_purchases = document.getElementById("all_purchases");
+        all_purchases.style.display = "none";
+        const search_purchase = document.getElementById("search_purchase");
+        search_purchase.style.display = "block";
+        const add_purchase = document.getElementById("add_purchase");
+        add_purchase.style.display = "none";
+        document.getElementById("submit-search-purchase").disabled = true;
+    }
+
+    function AddPurchase() {
+        const all_purchases = document.getElementById("all_purchases");
+        all_purchases.style.display = "none";
+        const search_purchase = document.getElementById("search_purchase");
+        search_purchase.style.display = "none";
+        const add_purchase = document.getElementById("add_purchase");
+        add_purchase.style.display = "block";
+        const new_purchase_id = document.getElementById("purchase-id");
+        new_purchase_id.value = document.getElementsByTagName("tr").length;
+    }
+
+    function addInput() {
+        document.getElementById("submit-search-purchase").disabled = false;
+        // Get selected option value
+        var dropdown = document.getElementById("dropdown");
+        var selectedOption = dropdown.value;
+        dropdown.selectedIndex++;
+        if (dropdown.selectedIndex === -1) {
+            document.getElementById("add-input-button").disabled = true;
+        }
+        // Set input type based on selected option
+        var type;
+        switch (selectedOption) {
+            case "purchase-id":
+                type = "number";
+                step = "1";
+                break;
+            case "purchase-date":
+                type = "text";
+                break;
+            case "type-of-payment":
+                type = "text";
+                break;
+            case "customer-email":
+                type = "email";
+                break;
+            case "gs-longitude":
+                type = "number";
+                step = "any";
+                break;
+            case "gs-latitude":
+                type = "number";
+                step = "any";
+                break;
+            case "pump-id":
+                type = "number";
+                step = "1";
+                break;
+            case "tank-id":
+                type = "number";
+                step = "1";
+                break;
+            default:
+                type = "text";
+        }
+
+        var options = dropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == selectedOption) {
+                options[i].disabled = true;
+                break;
+            }
+        }
+
+        // Add new input field to form
+        var form = document.getElementById("searchPurchaseForm");
+        var input = document.createElement("input");
+        var label = document.createElement("label");
+        input.type = type;
+        if (type == "number") {
+            input.step = step;
+        }
+        input.name = selectedOption;
+        label.setAttribute("for", selectedOption);
+        label.textContent = selectedOption;
+        form.insertBefore(document.createElement("br"), form.firstChild);
+        form.insertBefore(input, form.firstChild);
+        form.insertBefore(label, form.firstChild);
+    }
+
+    function editPurchase(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        // Get the values of the cell elements
+        const cells = row.querySelectorAll("td");
+        const purchase_id = cells[0].textContent;
+        const purchase_date = cells[1].textContent;
+        const type_of_payment = cells[2].textContent;
+        const customer_email = cells[3].textContent;
+        const gs_longitude = cells[4].textContent;
+        const gs_latitude = cells[5].textContent;
+        const pump_id = cells[6].textContent;
+        const tank_id = cells[7].textContent;
+
+        // Replace the cell elements with form inputs
+        cells[0].innerHTML = `<input type="number" name="purchase-id" value="${purchase_id}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="text" name="purchase-date" value="${purchase_date}">`;
+        cells[2].innerHTML = `<input type="text" name="type-of-payment" value="${type_of_payment}">`;
+        cells[3].innerHTML = `<input type="email" name="customer-email" value="${customer_email}">`;
+        cells[4].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}">`;
+        cells[5].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}">`;
+        cells[6].innerHTML = `<input type="number" name="pump-id" value="${pump_id}">`;
+        cells[7].innerHTML = `<input type="number" name="tank-id" value="${tank_id}">`;
+        cells[8].innerHTML = `<a onclick="savePurchase('${id}')">Save</a>`;
+    }
+
+    function savePurchase(id) {
+        // Get a reference to the table row
+        const row = document.querySelector(`tr[id="${id}"]`);
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/purchases/";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "csrfmiddlewaretoken";
+        input.value = "{{ csrf_token }}";
+
+        form.appendChild(input);
+
+        const cells = row.querySelectorAll("td");
+
+        for (let i = 0; i < cells.length; i++) {
+            form.appendChild(cells[i]);
+        }
+
+        row.parentNode.replaceChild(form, row);
+        form.submit();
+    }
+</script>
 
 </html>

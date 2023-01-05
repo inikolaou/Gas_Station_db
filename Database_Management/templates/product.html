@@ -140,7 +140,7 @@
       <option value="price">Price</option>
       <option value="corresponding-points">Points</option>
     </select>
-    <button onclick="addInput()">Add Input</button>
+    <button id="add-input-button" onclick="addInput()">Add Input</button>
     <form id="searchProductForm" method="POST">
       {% csrf_token %}
       <input type="submit" id="submit-search-product" name="search_product" value="submit" />
@@ -202,6 +202,9 @@
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
     dropdown.selectedIndex++;
+    if (dropdown.selectedIndex === -1) {
+      document.getElementById("add-input-button").disabled = true;
+    }
     // Set input type based on selected option
     var type;
     switch (selectedOption) {

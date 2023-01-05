@@ -144,7 +144,7 @@
       <option value="gs-longitude">GS_Longitude</option>
       <option value="gs-latitude">GS_Latitude</option>
     </select>
-    <button onclick="addInput()">Add Input</button>
+    <button id="add-input-button" onclick="addInput()">Add Input</button>
     <form id="searchSupplyForm" method="POST">
       {% csrf_token %}
       <input type="submit" id="submit-search-supply" name="search_supply" value="submit">
@@ -208,6 +208,9 @@
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
     dropdown.selectedIndex++;
+    if (dropdown.selectedIndex === -1) {
+      document.getElementById("add-input-button").disabled = true;
+    }
     // Set input type based on selected option
     var type;
     switch (selectedOption) {

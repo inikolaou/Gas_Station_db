@@ -335,9 +335,45 @@ def isAssignedTo_delete(request, essn_servid):
     return redirect(isAssignedTo)
 
 
-def offers(request):
-    offers = Offers.retrieveAllColumns()
+def offer(request):
+    if request.method == "POST":
+        prod_id = request.POST.get('prod-id', False)
+        previous_prod_id = request.POST.get('previous-prod-id', False)
+        gs_longitude = request.POST.get('gs-longitude', False)
+        gs_latitude = request.POST.get('gs-latitude', False)
+        quantity = request.POST.get('quantity', False)
+
+        if "add_offers" in request.POST:
+            try:
+                Offers.insertInto(int(prod_id), float(
+                    gs_longitude), float(gs_latitude), float(quantity))
+                return redirect(offer)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_offers" in request.POST:
+            try:
+                offers = Offers.searchBy(int(prod_id), float(
+                    gs_longitude), float(gs_latitude), float(quantity))
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Offers.update(int(prod_id), int(previous_prod_id), float(gs_longitude),
+                              float(gs_latitude), float(quantity))
+                return redirect(offer)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        offers = Offers.retrieveAllColumns()
     return render(request, 'offers.html', {'offers': offers})
+
+
+def offer_delete(request, prodid_longitude_latitude):
+    Offers.delete(prodid_longitude_latitude)
+    return redirect(offer)
 
 
 def product(request):
@@ -465,8 +501,57 @@ def pump_delete(request, id_tankId_tankLongitude_tankLatitude):
 
 
 def purchase(request):
-    purchases = Purchase.retrieveAllColumns()
+    if request.method == "POST":
+        id = request.POST.get('purchase-id', False)
+        purchase_date = request.POST.get('purchase-date', False)
+        type_of_payment = request.POST.get('type-of-payment', False)
+        customer_email = request.POST.get('customer-email', False)
+        if (customer_email == ''):
+            customer_email = None
+        gs_longitude = request.POST.get('gs-longitude', False)
+        gs_latitude = request.POST.get('gs-latitude', False)
+        pump_id = request.POST.get('pump-id', False)
+        tank_id = request.POST.get('tank-id', False)
+        if (pump_id == ''):
+            pump_id = None
+        else:
+            pump_id = int(pump_id)
+        if (tank_id == ''):
+            tank_id = None
+        else:
+            tank_id = int(tank_id)
+
+        if "add_purchase" in request.POST:
+            try:
+                Purchase.insertInto(int(id), purchase_date, type_of_payment, customer_email,
+                                    float(gs_longitude), float(gs_latitude), pump_id, tank_id)
+                return redirect(purchase)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        elif "search_purchase" in request.POST:
+            try:
+                purchases = Purchase.searchBy(int(id), purchase_date, type_of_payment, customer_email,
+                                              float(gs_longitude), float(gs_latitude), pump_id, tank_id)
+            except Exception as e:
+                print("View exception")
+                print(e)
+        else:
+            try:
+                Purchase.update(int(id), purchase_date, type_of_payment, customer_email,
+                                float(gs_longitude), float(gs_latitude), pump_id, tank_id)
+                return redirect(purchase)
+            except Exception as e:
+                print("View exception")
+                print(e)
+    else:
+        purchases = Purchase.retrieveAllColumns()
     return render(request, 'purchase.html', {'purchases': purchases})
+
+
+def purchase_delete(request, id):
+    Purchase.delete(id)
+    return redirect(purchase)
 
 
 def service(request):

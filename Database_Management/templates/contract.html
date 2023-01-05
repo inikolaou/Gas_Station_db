@@ -138,7 +138,7 @@
             <option value="end-date">End_Date</option>
             <option value="salary">Salary</option>
         </select>
-        <button onclick="addInput()">Add Input</button>
+        <button id="add-input-button" onclick="addInput()">Add Input</button>
         <form id="searchContractForm" method="POST">
             {% csrf_token %}
             <input type="submit" id="submit-search-contract" name="search_contract" value="submit" />
@@ -198,6 +198,9 @@
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
         dropdown.selectedIndex++;
+        if (dropdown.selectedIndex === -1) {
+            document.getElementById("add-input-button").disabled = true;
+        }
         // Set input type based on selected option
         var type;
         switch (selectedOption) {

@@ -138,7 +138,7 @@
       <option value="cost">Cost</option>
       <option value="quantity">Quantity</option>
     </select>
-    <button onclick="addInput()">Add Input</button>
+    <button id="add-input-button" onclick="addInput()">Add Input</button>
     <form id="searchConsistsOfForm" method="POST">
       {% csrf_token %}
       <input type="submit" id="submit-search-consists-of" name="search_consists_of" value="submit">
@@ -196,6 +196,9 @@
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
     dropdown.selectedIndex++;
+    if (dropdown.selectedIndex === -1) {
+      document.getElementById("add-input-button").disabled = true;
+    }
     // Set input type based on selected option
     var type;
     switch (selectedOption) {

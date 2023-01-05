@@ -148,19 +148,44 @@
         <form id="addContractForm" method="POST">
             {% csrf_token %}
             <label for="id">ID:</label><br>
-            <input type="number" step="1" min="1" id="id" name="id"><br>
+            <input type="number" step="1" min="1" id="id" name="id" readonly="readonly"><br>
             <label for="start-date">Start Date:</label><br>
-            <input type="date" id="start-date" name="start-date"><br>
+            <input type="date" id="start-date" name="start-date" required><br>
             <label for="end-date">End Date:</label><br>
-            <input type="date" id="end-date" name="end-date"><br>
+            <input type="date" id="end-date" name="end-date" required><br>
             <label for="salary">Salary:</label><br>
-            <input type="number" step="any" min="0" id="salary" name="salary"><br>
+            <input type="number" step=".01" min="0" max="99999.99" id="salary" name="salary" required><br>
             <input type="submit" id="submit-add-contract" name="add_contract" value="submit" />
         </form>
     </div>
 </body>
 
+{% if id_fault %}
 <script>
+    alert('{{id_fault}}');
+</script>
+{% endif %}
+
+{% if start_date_fault %}
+<script>
+    alert('{{start_date_fault}}');
+</script>
+{% endif %}
+
+{% if end_date_fault %}
+<script>
+    alert('{{end_date_fault}}');
+</script>
+{% endif %}
+
+{% if salary_fault %}
+<script>
+    alert('{{salary_fault}}');
+</script>
+{% endif %}
+
+<script>
+
     function ShowContracts() {
         const all_contracts = document.getElementById("all_contracts");
         all_contracts.style.display = "block";
@@ -189,7 +214,9 @@
         const add_contract = document.getElementById("add_contract");
         add_contract.style.display = "block";
         const id_field = document.getElementById("id");
-        id_field.value = document.getElementsByTagName("tr").length;
+        const table_row = document.getElementsByTagName("tr");
+        const index = document.getElementsByTagName("tr").length - 1;
+        id_field.value = parseInt(table_row[index].id) + 1;
     }
 
     function addInput() {
@@ -197,8 +224,10 @@
         // Get selected option value
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
-        dropdown.selectedIndex++;
-        if (dropdown.selectedIndex === -1) {
+
+        const values = ++dropdown.selectedIndex;
+
+        if (values === 4) {
             document.getElementById("add-input-button").disabled = true;
         }
         // Set input type based on selected option
@@ -254,15 +283,21 @@
         // Get the values of the cell elements
         const cells = row.querySelectorAll("td");
         const contract_id = cells[0].textContent;
-        const start_date = cells[1].textContent;
-        const end_date = cells[2].textContent;
+        var start_date = cells[1].textContent;
+        var end_date = cells[2].textContent;
         const salary = cells[3].textContent;
+
+        start_date = start_date.split('/')
+        start_date = start_date[2] + "-" + start_date[1] + "-" + start_date[0];
+
+        end_date = end_date.split('/')
+        end_date = end_date[2] + "-" + end_date[1] + "-" + end_date[0];
 
         // Replace the cell elements with form inputs
         cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${contract_id}" readonly="readonly">`;
-        cells[1].innerHTML = `<input type="date" name="start-date" value="${start_date}">`;
-        cells[2].innerHTML = `<input type="date" name="end-date" value="${end_date}">`;
-        cells[3].innerHTML = `<input type="number" step="any" min="0" name="salary" value="${salary}">`;
+        cells[1].innerHTML = `<input type="date" name="start-date" value="${start_date}" required>`;
+        cells[2].innerHTML = `<input type="date" name="end-date" value="${end_date}" required>`;
+        cells[3].innerHTML = `<input type="number" step="any" min="0" name="salary" value="${salary}" required>`;
         cells[4].innerHTML = `<a onclick="saveContract('${contract_id}')">Save</a>`;
     }
 

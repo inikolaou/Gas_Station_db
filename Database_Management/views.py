@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render, redirect
 from Entities import ConsistsOf, Contract, Customer, Employee, Entails, GasStation, Involves, IsAssignedTo, Offers, Product, Provides, Pump, Purchase, Service, Signs, Supplier, Supply, Tank
 
@@ -48,36 +49,98 @@ def consistsOf_delete(request, supply_prod):
 
 
 def contract(request):
-    if request.method == "POST":
-        id = request.POST.get('id', False)
-        start_date = request.POST.get('start-date', False)
-        end_date = request.POST.get('end-date', False)
-        salary = request.POST.get('salary', False)
+    id_fault = False
+    start_date_fault = False
+    end_date_fault = False
+    salary_fault = False
 
-        if "add_contract" in request.POST:
-            try:
-                Contract.insertInto(id, start_date, end_date, salary)
-                return redirect(contract)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_contract" in request.POST:
-            try:
-                contracts = Contract.searchBy(
-                    int(id), start_date, end_date, float(salary))
-            except Exception as e:
-                print("View exception")
-                print(e)
+    if request.method == "POST":
+        id = request.POST.get('id', False).strip()
+        start_date = request.POST.get('start-date', False).strip()
+        end_date = request.POST.get('end-date', False).strip()
+        salary = request.POST.get('salary', False).strip()
+
+        error_occured = False
+
+        if (id != False):
+            if (not id.isdigit()):
+                id_fault = "Please write a positive integer for id"
+                error_occured = True
+            else:
+                id = int(id)
+
+        if (start_date != False):
+            start_date = start_date.split('-')
+            start_date = '/'.join(start_date[::-1])
+            if (not start_date.replace('/', '', 2).isdigit()):
+                start_date_fault = "Please write a valid start date"
+                error_occured = True
+
+        if (end_date != False):
+            end_date = end_date.split('-')
+            end_date = '/'.join(end_date[::-1])
+            if (not end_date.replace('/', '', 2).isdigit()):
+                end_date_fault = "Please write a valid end date"
+                error_occured = True
+            elif (start_date != False):
+                s_date = start_date.split('/')
+                s_date = datetime(int(s_date[2]), int(
+                    s_date[1]), int(s_date[0]))
+
+                e_date = end_date.split('/')
+                e_date = datetime(int(e_date[2]), int(
+                    e_date[1]), int(e_date[0]))
+
+                if (e_date.date() < datetime.today().date()):
+                    end_date_fault = "End date should be greater than today"
+                    error_occured = True
+                elif (s_date.date() > e_date.date()):
+                    end_date_fault = "End date should be greater than start date"
+                    error_occured = True
+
+        if (salary != False):
+            if (not salary.replace('.', '', 1).isdigit()):
+                salary_fault = "Please write a float number between 0 and 100000 with 2 decimal places for salary"
+                error_occured = True
+            else:
+                salary = float(salary)
+                if (salary > 99999.99 or salary < 0):
+                    salary_fault = "Please write a float number between 0 and 100000 with 2 decimal places for salary"
+                    error_occured = True
+                else:
+                    numbers = str(salary).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 2):
+                        salary_fault = "Please write a float number between 0 and 100000 with 2 decimal places for salary"
+                        error_occured = True
+
+        if (not error_occured):
+            if "add_contract" in request.POST:
+                try:
+                    Contract.insertInto(id, start_date, end_date, salary)
+                    return redirect(contract)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_contract" in request.POST:
+                try:
+                    contracts = Contract.searchBy(
+                        id, start_date, end_date, salary)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Contract.update(id, start_date, end_date, salary)
+                    return redirect(contract)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Contract.update(int(id), start_date, end_date, float(salary))
-                return redirect(contract)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            contracts = Contract.retrieveAllColumns()
     else:
         contracts = Contract.retrieveAllColumns()
-    return render(request, 'contract.html', {'contracts': contracts})
+    return render(request, 'contract.html', {'contracts': contracts, 'id_fault': id_fault, 'start_date_fault': start_date_fault, 'end_date_fault': end_date_fault, 'salary_fault': salary_fault})
 
 
 def contract_delete(request, id):

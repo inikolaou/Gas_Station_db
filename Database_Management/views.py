@@ -415,15 +415,18 @@ def employee(request):
 
         if (ssn != False):
             ssn = ssn.strip()
-            ssn_check = ''.join(ssn.split('-'))
-            if (not ssn_check.isdigit() or len(ssn_check) != 9):
-                ssn_fault = "Please write a valid ssn with 9 digits"
+            ssn_check = ssn.split('-')
+            if (not ''.join(ssn_check).isdigit() or len(ssn_check[0]) != 3 or len(ssn_check[1]) != 2 or len(ssn_check[2]) != 4):
+                ssn_fault = "Please write a valid ssn with this format 'xxx-xx-xxxx'"
                 error_occured = True
-            all_ssn = Employee.allSsn()
-            ssn_check = (ssn, )
-            if ((ssn_check in all_ssn) and ("add_employee" in request.POST)):
-                ssn_fault = "Ssn already exists"
-                error_occured = True
+            else:
+                all_ssn = Employee.allSsn()
+                # only by this way we can compare values with sqlite response
+                ssn_check = (ssn, )
+                # only when we try to add an employee we check to see if the specified id already exists
+                if ((ssn_check in all_ssn) and ("add_employee" in request.POST)):
+                    ssn_fault = "Ssn already exists"
+                    error_occured = True
 
         if (first_name != False):
             first_name = first_name.strip()
@@ -518,10 +521,17 @@ def employee(request):
 
         if (role != False):
             role = role.strip()
-            all_roles = Employee.allRoles()
-            if (role not in all_roles and "search_employee" not in request.POST):
+            if (not role.replace(' ', '', 1).isalpha()):
                 role_fault = "Please write a valid role"
                 error_occured = True
+            else:
+                all_roles = Employee.allRoles()
+                role_check = (role, )
+                # when trying to add or update employee we don't want a role other than the ones already specified to be added
+                if ("search_employee" not in request.POST):
+                    if (role_check not in all_roles):
+                        role_fault = "Please write a valid role"
+                        error_occured = True
 
         if (hours != False):
             hours = hours.strip()
@@ -536,61 +546,101 @@ def employee(request):
 
         if (super_ssn != False):
             super_ssn = super_ssn.strip()
-            super_ssn_check = ''.join(super_ssn.split('-'))
-            all_ssn = Employee.allSsn()
-            if (super_ssn == 'NULL'):
-                pass
-            elif (not super_ssn_check.isdigit() or len(ssn_check) != 9):
-                super_ssn_fault = "Please write a valid super ssn with 9 digits"
-                error_occured = True
-            elif (super_ssn not in all_ssn):
-                super_ssn_fault = "Please write a valid super ssn. This employee doesn't exist"
-                error_occured = True
-            elif (role == 'Manager' and super_ssn != 'NULL' and "search_employee" not in request.POST):
-                super_ssn_fault = "A manager cannot be assigned to another manager"
-                error_occured = True
+            super_ssn_check = super_ssn.split('-')
+            all_mgr_ssn = Employee.allMgrSsn()
+            if (super_ssn != 'NULL'):
+                if (not ''.join(super_ssn_check).isdigit() or len(super_ssn_check[0]) != 3 or len(super_ssn_check[1]) != 2 or len(super_ssn_check[2]) != 4):
+                    ssn_fault = "Please write a valid super ssn with this format 'xxx-xx-xxxx'"
+                    error_occured = True
+                else:
+                    super_ssn_check = (super_ssn, )
+                    if ((super_ssn_check not in all_mgr_ssn) and ("search_employee" not in request.POST)):
+                        super_ssn_fault = "Please write a valid super ssn. This manager does not exist"
+                        error_occured = True
+                    elif ((role == 'Manager') and ("search_employee" not in request.POST)):
+                        super_ssn_fault = "A manager cannot be assigned to another manager"
+                        error_occured = True
+            else:
+                if (role != 'Manager'):
+                    super_ssn_fault = "Please write a valid super ssn. An employee must have a Manager"
+                    error_occured = True
 
         if (gs_longitude != False):
             gs_longitude = gs_longitude.strip()
-            if (not gs_longitude.replace('.', '', 1).isdigit()):
-                gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
-                error_occured = True
-            else:
-                gs_longitude = float(gs_longitude)
-                if (gs_longitude > 99.999999 or gs_longitude < 0):
+            if (gs_longitude != ''):
+                if ((role == 'Manager') and ("add_employee" in request.POST)):
+                    gs_longitude_fault = "If you are trying to add a Manager the GS Longitude should be NULL"
+                    error_occured = True
+                elif (not gs_longitude.replace('.', '', 1).isdigit()):
                     gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
                     error_occured = True
                 else:
-                    numbers = str(gs_longitude).split('.')
-                    decimal_part = numbers[1]
-                    all_gs_longitudes = Employee.allGSLongitudes()
-                    if (len(decimal_part) > 6):
+                    gs_longitude = float(gs_longitude)
+                    if (gs_longitude > 99.999999 or gs_longitude < 0):
                         gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
                         error_occured = True
-                    elif (gs_longitude not in all_gs_longitudes and "search_employee" not in request.POST):
-                        gs_longitude_fault = "Specify an existing gas station longitude"
-                        error_occured = True
+                    else:
+                        numbers = str(gs_longitude).split('.')
+                        decimal_part = numbers[1]
+                        if (len(decimal_part) > 6):
+                            gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                            error_occured = True
+            else:
+                if ((role != 'Manager') and (super_ssn != 'NULL') and ("search_employee" not in request.POST)):
+                    gs_longitude_fault = "Gas station longitude cannot have NULL value if the employee is not a manager"
+                    error_occured = True
 
         if (gs_latitude != False):
             gs_latitude = gs_latitude.strip()
-            if (not gs_latitude.replace('.', '', 1).isdigit()):
-                gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
-                error_occured = True
-            else:
-                gs_latitude = float(gs_latitude)
-                if (gs_latitude > 999.999999 or gs_latitude < 0):
+            if (gs_latitude != ''):
+                if ((role == 'Manager') and ("add_employee" in request.POST)):
+                    gs_latitude_fault = "If you are trying to add a Manager the GS Latitude should be NULL"
+                    error_occured = True
+                elif (not gs_latitude.replace('.', '', 1).isdigit()):
                     gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                     error_occured = True
                 else:
-                    numbers = str(gs_latitude).split('.')
-                    decimal_part = numbers[1]
-                    all_gs_latitudes = Employee.allGSLatitudes()
-                    if (len(decimal_part) > 6):
+                    gs_latitude = float(gs_latitude)
+                    if (gs_latitude > 999.999999 or gs_latitude < 0):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                         error_occured = True
-                    elif (gs_latitude not in all_gs_latitudes and "search_employee" not in request.POST):
-                        gs_latitude_fault = "Specify an existing gas station latitude"
-                        error_occured = True
+                    else:
+                        numbers = str(gs_latitude).split('.')
+                        decimal_part = numbers[1]
+                        gs_longitude_latitude_check = (
+                            gs_longitude, gs_latitude)
+                        all_gs_longitudes_latitudes = GasStation.allGSLongitudesLatitudes()
+                        if (len(decimal_part) > 6):
+                            gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                            error_occured = True
+                        elif ((gs_longitude_latitude_check not in all_gs_longitudes_latitudes) and ("search_employee" not in request.POST)):
+                            gs_longitude_fault = "Specify an existing gas station longitude"
+                            gs_latitude_fault = "Specify an existing gas station latitude"
+                            error_occured = True
+                        else:
+                            # gs should be full-service to have attendants
+                            if (role == "Fuel Attendant" or role == "Gas Attendant"):
+                                gs_longitude_latitude_with_attendants = Employee.getGSLongitudeLatitudeAttendants()
+                                if ((gs_longitude_latitude_check not in gs_longitude_latitude_with_attendants) and ("search_employee" not in request.POST)):
+                                    gs_longitude_fault = "Please specify a longitude for a gas station that is full service"
+                                    gs_latitude_fault = "Please specify a latitude for a gas station that is full service"
+                                    error_occured = True
+                            # gs shouldn't be self-service and should have minimarket and shouldn't have already one cashier
+                            elif (role == "Cashier"):
+                                # all gs that are self-service and don't have minimarkets
+                                gs_longitude_latitude_with_no_minimarket_self_service = GasStation.getGSLongitudeLatitudeNoMinimarketSelf()
+                                if ((gs_longitude_latitude_check in gs_longitude_latitude_with_no_minimarket_self_service) and ("search_employee" not in request.POST)):
+                                    gs_longitude_fault = "Please specify a longitude for a gas station that is full service and has minimarket"
+                                    gs_latitude_fault = "Please specify a latitude for a gas station that is full service and has minimarket"
+                                    error_occured = True
+                                if (Employee.hasCashier(gs_longitude, gs_latitude)):
+                                    gs_longitude_fault = "Please specify a longitude for a gas station that does not already have a cashier"
+                                    gs_latitude_fault = "Please specify a latitude for a gas station that does not already have a cashier"
+                                    error_occured = True
+            else:
+                if ((role != 'Manager') and (super_ssn != 'NULL') and ("search_employee" not in request.POST)):
+                    gs_latitude_fault = "Gas station latitude cannot have NULL value if the employee is not a manager"
+                    error_occured = True
 
         if (not error_occured):
             if "add_employee" in request.POST:
@@ -785,7 +835,7 @@ def gasStation(request):
                 mgr_ssn_fault = "Please write a valid manager ssn with 9 digits"
                 error_occured = True
             elif (mgr_ssn not in all_ssn):
-                mgr_ssn_fault = "Please write a valid manager ssn. This employee doesn't exist"
+                mgr_ssn_fault = "Please write a valid manager ssn. This employee does not exist"
                 error_occured = True
 
         if (not error_occured):
@@ -935,7 +985,7 @@ def isAssignedTo(request):
                 essn_fault = "Please write a valid ssn with 9 digits"
                 error_occured = True
             elif (essn not in all_ssn):
-                essn_fault = "Please write a valid ssn. This employee doesn't exist"
+                essn_fault = "Please write a valid ssn. This employee does not exist"
                 error_occured = True
 
         if (not error_occured):
@@ -1487,7 +1537,7 @@ def sign(request):
                 essn_fault = "Please write a valid ssn with 9 digits"
                 error_occured = True
             elif (essn not in all_ssn):
-                essn_fault = "Please write a valid ssn. This employee doesn't exist"
+                essn_fault = "Please write a valid ssn. This employee does not exist"
                 error_occured = True
 
         if (contract_id != False):
@@ -1497,7 +1547,7 @@ def sign(request):
                 contract_id_fault = "Please write a positive integer for Contact ID"
                 error_occured = True
             elif (contract_id not in all_contract_id and "search_contract" not in request.POST):
-                contract_id_fault = "Please write a contract id. This contract id doesn't exist"
+                contract_id_fault = "Please write a contract id. This contract id does not exist"
                 error_occured = True
             else:
                 contract_id = int(contract_id)
@@ -1751,7 +1801,8 @@ def tank(request):
                 last_check_up_fault = "Please write a valid Start Date"
                 error_occured = True
             lcu_date = last_check_up.split('/')
-            lcu_date = datetime(int(lcu_date[2]), int(lcu_date[1]), int(lcu_date[0]))
+            lcu_date = datetime(int(lcu_date[2]), int(
+                lcu_date[1]), int(lcu_date[0]))
 
             if (lcu_date.date() > datetime.today().date()):
                 end_date_fault = "Start Date should be lesser than today"

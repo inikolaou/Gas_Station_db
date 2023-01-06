@@ -195,6 +195,19 @@ def allSsn():
     return data
 
 
+def allMgrSsn():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Ssn
+                FROM EMPLOYEE
+                WHERE Role='Manager'
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
 def allRoles():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -220,6 +233,35 @@ def allGSLatitudes():
     data = c.fetchall()
     conn.close()
     return data
+
+
+def getGSLongitudeLatitudeAttendants():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT DISTINCT GS_Longitude, GS_Latitude
+                FROM EMPLOYEE
+                WHERE Role='Fuel Attendant' OR Role='Gas Attendant'
+                ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def hasCashier(gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                select *
+                from EMPLOYEE
+                WHERE GS_Longitude=? AND GS_Latitude=? AND Role='Cashier'
+                ''', (gs_longitude, gs_latitude))
+    data = c.fetchall()
+    conn.close()
+    if (len(data) == 1):
+        return True
+    else:
+        return False
 
 
 def orderEmployeesBySalaryByGasStation(salary):

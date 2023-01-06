@@ -693,3 +693,11 @@ def retrieveAllColumns():
     data = c.fetchall()
     conn.close()
     return data
+
+def allPurchaseIds():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Id from PURCHASE")
+    data = c.fetchall()
+    conn.close()
+    return data

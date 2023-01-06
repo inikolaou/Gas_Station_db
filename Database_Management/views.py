@@ -291,11 +291,17 @@ def customer(request):
 
         if (phone_number != False):
             phone_number = phone_number.strip()
-            if (not phone_number.replace('.', '', 1).isdigit()):
+            if (not phone_number.isdigit()):
                 phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
                 error_occured = True
             else:
+                all_phone_numbers = Customer.allPhoneNumbers()
                 phone_number = int(phone_number)
+                check_phone_number = (phone_number, )
+                # check if phone number already exists when trying to add new customer
+                if (check_phone_number in all_phone_numbers and "add_customer" in request.POST):
+                    phone_number_fault = "Please write a positive integer for Phone Number. Phone Number already exists"
+                    error_occured = True
                 if (phone_number > 6999999999 or phone_number < 6900000000):
                     phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
                     error_occured = True
@@ -336,7 +342,7 @@ def customer(request):
 
         if (remaining_points != False):
             remaining_points = remaining_points.strip()
-            if (not remaining_points.replace('.', '', 1).isdigit()):
+            if (not remaining_points.isdigit()):
                 remaining_points_fault = "Please write a integer between 0 and 999 for Remaining Points"
                 error_occured = True
             else:
@@ -467,11 +473,16 @@ def employee(request):
 
         if (phone_number != False):
             phone_number = phone_number.strip()
-            if (not phone_number.replace('.', '', 1).isdigit()):
+            if (not phone_number.isdigit()):
                 phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
                 error_occured = True
             else:
+                all_phone_numbers = Employee.allPhoneNumbers()
                 phone_number = int(phone_number)
+                check_phone_number = (phone_number, )
+                if (check_phone_number in all_phone_numbers and "add_employee" in request.POST):
+                    phone_number_fault = "Please write a positive integer for Phone Number. Phone Number already exists"
+                    error_occured = True
                 if (phone_number > 6999999999 or phone_number < 6900000000):
                     phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
                     error_occured = True
@@ -1154,7 +1165,13 @@ def product(request):
                 id_fault = "Please write a positive integer for id"
                 error_occured = True
             else:
+                all_products = Product.allProductIds()
                 id = int(id)
+                check_product = (id, )
+                # check if product id already exists when trying to add new product
+                if (check_product in all_products and "add_product" in request.POST):
+                    id_fault = "Please write a positive integer for id. Product id already exists"
+                    error_occured = True
 
         if (name != False):
             name = name.strip()
@@ -1444,7 +1461,13 @@ def service(request):
                 id_fault = "Please write a positive integer for id"
                 error_occured = True
             else:
+                all_contracts = Contract.allContractIds()
                 id = int(id)
+                check_contract = (id, )
+                # check if contract id already exists when trying to add new contract
+                if (check_contract in all_contracts and "add_contract" in request.POST):
+                    id_fault = "Please write a positive integer for id. Contract id already exists"
+                    error_occured = True
 
         if (name != False):
             name = name.strip()
@@ -1631,11 +1654,16 @@ def supplier(request):
 
         if (phone_number != False):
             phone_number = phone_number.strip()
-            if (not phone_number.replace('.', '', 1).isdigit()):
+            if (not phone_number.isdigit()):
                 phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
                 error_occured = True
             else:
+                all_phone_numbers = Supplier.allPhoneNumbers()
                 phone_number = int(phone_number)
+                check_phone_number = (phone_number, )
+                if (check_phone_number in all_phone_numbers and "add_supplier" in request.POST):
+                    phone_number_fault = "Please write a positive integer for Phone Number. Phone Number already exists"
+                    error_occured = True
                 if (phone_number > 6999999999 or phone_number < 6900000000):
                     phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
                     error_occured = True

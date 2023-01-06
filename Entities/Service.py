@@ -125,3 +125,11 @@ def retrieveAllColumns():
     data = c.fetchall()
     conn.close()
     return data
+
+def allServiceIds():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Id from SERVICE")
+    data = c.fetchall()
+    conn.close()
+    return data

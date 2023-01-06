@@ -278,3 +278,11 @@ def orderEmployeesBySalaryByGasStation(salary):
     data = c.fetchall()
     conn.close()
     return data
+
+def allPhoneNumbers():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Phone_Number from EMPLOYEE")
+    data = c.fetchall()
+    conn.close()
+    return data

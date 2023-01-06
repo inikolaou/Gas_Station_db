@@ -139,3 +139,11 @@ def retrieveAllColumns():
     data = c.fetchall()
     conn.close()
     return data
+
+def allPhoneNumbers():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Phone_Number from CUSTOMER")
+    data = c.fetchall()
+    conn.close()
+    return data

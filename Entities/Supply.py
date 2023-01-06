@@ -1,50 +1,5 @@
 import sqlite3
 import csv
-import pandas as pd
-
-df = pd.read_csv("Datasets/supply.csv")
-li = []
-for date in df['Expected_Arrival_Date']:
-    numbers = date.split('/')
-    if (len(numbers[0]) == 1):
-        if (len(numbers[1]) == 1):
-            day = '0' + numbers[0]
-            month = '0' + numbers[1]
-        else:
-            day = '0' + numbers[0]
-            month = numbers[1]
-    else:
-        if (len(numbers[1]) == 1):
-            day = numbers[0]
-            month = '0' + numbers[1]
-        else:
-            day = numbers[0]
-            month = numbers[1]
-    correct_date = '/'.join([day, month, numbers[2]])
-    li.append(correct_date)
-df['Expected_Arrival_Date'] = li
-
-li = []
-for date in df['Real_Arrival_Date']:
-    numbers = date.split('/')
-    if (len(numbers[0]) == 1):
-        if (len(numbers[1]) == 1):
-            day = '0' + numbers[0]
-            month = '0' + numbers[1]
-        else:
-            day = '0' + numbers[0]
-            month = numbers[1]
-    else:
-        if (len(numbers[1]) == 1):
-            day = numbers[0]
-            month = '0' + numbers[1]
-        else:
-            day = numbers[0]
-            month = numbers[1]
-    correct_date = '/'.join([day, month, numbers[2]])
-    li.append(correct_date)
-df['Real_Arrival_Date'] = li
-df.to_csv("Datasets/supply.csv", index=False)
 
 def createSupplyTable():
     conn = sqlite3.connect("Gas_Station.db")

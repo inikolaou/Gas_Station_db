@@ -59,18 +59,18 @@ def consistOf(request):
         if (quantity != False):
             quantity = quantity.strip()
             if (not quantity.replace('.', '', 1).isdigit()):
-                quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                 error_occured = True
             else:
                 quantity = float(quantity)
-                if (quantity > 99999.999 or quantity < 0):
-                    quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                if (quantity > 15000 or quantity < 0):
+                    quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                     error_occured = True
                 else:
                     numbers = str(quantity).split('.')
                     decimal_part = numbers[1]
                     if (len(decimal_part) > 3):
-                        quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                        quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                         error_occured = True
 
         if (not error_occured):
@@ -132,9 +132,12 @@ def contract(request):
                 all_contracts = Contract.allContractIds()
                 id = int(id)
                 check_contract = (id, )
+                if (id < 0):
+                    id_fault = "Please write a positive integer for id"
+                    error_occured = True
                 # check if contract id already exists when trying to add new contract
                 if (check_contract in all_contracts and "add_contract" in request.POST):
-                    id_fault = "Please write a positive integer for id. Contract id already exists"
+                    id_fault = "Please write a valid id. Contract id already exists"
                     error_occured = True
 
         if (start_date != False):
@@ -142,7 +145,7 @@ def contract(request):
             start_date = start_date.split('-')
             start_date = '/'.join(start_date[::-1])
             if (not start_date.replace('/', '', 2).isdigit()):
-                start_date_fault = "Please write a valid start date"
+                start_date_fault = "Please write a valid Start Date"
                 error_occured = True
 
         if (end_date != False):
@@ -243,15 +246,6 @@ def customer(request):
 
         error_occured = False
 
-        if (email != False):
-            email = email.strip()
-            try:
-                validation = validate_email(email)
-                email = validation.email
-            except EmailNotValidError as e:
-                email_fault = str(e)
-                error_occured = True
-
         if (first_name != False):
             first_name = first_name.strip()
             if (not first_name.isalpha()):
@@ -259,6 +253,25 @@ def customer(request):
                 error_occured = True
             else:
                 first_name = first_name.capitalize()
+
+        if (email != False):
+            email = email.strip()
+            try:
+                validation = validate_email(email)
+                email = validation.email
+                # check if the email belongs to another customer
+                if (not error_occured):
+                    all_customer_emails = Customer.allCustomerEmails()
+                    check_customer_emails = (email, )
+                    all_customer_names = Customer.allCustomerNames()
+                    first_name = first_name.strip()
+                    check_customer_names = (first_name, )
+                    if ((check_customer_emails in all_customer_emails) and (check_customer_names not in all_customer_names) and ("add_customer" in request.POST)):
+                        email_fault = "Please write a valid email. This email belongs to another customer"
+                    error_occured = True
+            except EmailNotValidError as e:
+                email_fault = str(e)
+                error_occured = True
 
         if (last_name != False):
             last_name = last_name.strip()
@@ -295,7 +308,7 @@ def customer(request):
                 phone_number_fault = "Please write a integer between 6900000000 and 6999999999 for Phone Number"
                 error_occured = True
             else:
-                all_phone_numbers = Customer.allPhoneNumbers()
+                all_phone_numbers = Customer.allCustomerPhoneNumbers()
                 phone_number = int(phone_number)
                 check_phone_number = (phone_number, )
                 # check if phone number already exists when trying to add new customer
@@ -343,12 +356,12 @@ def customer(request):
         if (remaining_points != False):
             remaining_points = remaining_points.strip()
             if (not remaining_points.isdigit()):
-                remaining_points_fault = "Please write a integer between 0 and 999 for Remaining Points"
+                remaining_points_fault = "Please write a integer between 0 and 990 for Remaining Points"
                 error_occured = True
             else:
                 remaining_points = int(remaining_points)
-                if (remaining_points > 999 or remaining_points < 0):
-                    remaining_points_fault = "Please write a integer between 0 and 999 for Remaining Points"
+                if (remaining_points > 990 or remaining_points < 0):
+                    remaining_points_fault = "Please write a integer between 0 and 990 for Remaining Points"
                     error_occured = True
 
         if (not error_occured):
@@ -546,13 +559,13 @@ def employee(request):
 
         if (hours != False):
             hours = hours.strip()
-            if (not hours.replace('.', '', 1).isdigit()):
-                hours_fault = "Please write a integer between 0 and 168(All 7 days, all hours) for hours"
+            if (not hours.isdigit()):
+                hours_fault = "Please write a integer between 0 and 168(All 7 days, all 24 hours) for hours"
                 error_occured = True
             else:
                 hours = int(hours)
                 if (hours > 168 or hours < 1):
-                    hours_fault = "Please write a integer between 0 and 168(All 7 days, all hours) for hours"
+                    hours_fault = "Please write a integer between 0 and 168(All 7 days, all 24 hours) for hours"
                     error_occured = True
 
         if (super_ssn != False):
@@ -822,12 +835,12 @@ def gasStation(request):
             s_date = datetime(int(s_date[2]), int(s_date[1]), int(s_date[0]))
 
             if (s_date.date() > datetime.today().date()):
-                end_date_fault = "Start Date should be lesser than today"
+                end_date_fault = "Start Date should be before today"
                 error_occured = True
 
         if (minimarket != False):
             minimarket = minimarket.strip()
-            if (not minimarket.replace('.', '', 1).isdigit()):
+            if (not minimarket.isdigit()):
                 minimarket_fault = "Please write a integer between 0(false) and 1(true) for the existence of a Minimarket"
                 error_occured = True
             else:
@@ -843,7 +856,7 @@ def gasStation(request):
             if (mgr_ssn == 'NULL'):
                 pass
             elif (not mgr_ssn_check.isdigit() or len(mgr_ssn) != 9):
-                mgr_ssn_fault = "Please write a valid manager ssn with 9 digits"
+                mgr_ssn_fault = "Please write a valid manager ssn with 9 digits with this format 'xxx-xx-xxxx'"
                 error_occured = True
             elif (mgr_ssn not in all_ssn):
                 mgr_ssn_fault = "Please write a valid manager ssn. This employee does not exist"
@@ -917,18 +930,18 @@ def involve(request):
         if (quantity != False):
             quantity = quantity.strip()
             if (not quantity.replace('.', '', 1).isdigit()):
-                quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                 error_occured = True
             else:
                 quantity = float(quantity)
-                if (quantity > 99999.999 or quantity < 0):
-                    quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                if (quantity > 15000 or quantity < 0):
+                    quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                     error_occured = True
                 else:
                     numbers = str(quantity).split('.')
                     decimal_part = numbers[1]
                     if (len(decimal_part) > 3):
-                        quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                        quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                         error_occured = True
 
         if (not error_occured):
@@ -978,14 +991,6 @@ def isAssignedTo(request):
 
         error_occured = False
 
-        if (service_id != False):
-            service_id = service_id.strip()
-            if (not service_id.isdigit()):
-                service_id = "Please write a positive integer for Service ID"
-                error_occured = True
-            else:
-                service_id = int(service_id)
-
         if (essn != False):
             essn = essn.strip()
             essn_check = ''.join(essn.split('-'))
@@ -993,11 +998,19 @@ def isAssignedTo(request):
             if (essn == 'NULL'):
                 pass
             elif (not essn_check.isdigit() or len(essn) != 9):
-                essn_fault = "Please write a valid ssn with 9 digits"
+                essn_fault = "Please write a valid ssn with 9 digits with this format 'xxx-xx-xxxx'"
                 error_occured = True
             elif (essn not in all_ssn):
                 essn_fault = "Please write a valid ssn. This employee does not exist"
                 error_occured = True
+
+        if (service_id != False):
+            service_id = service_id.strip()
+            if (not service_id.isdigit()):
+                service_id = "Please write a positive integer for Service ID"
+                error_occured = True
+            else:
+                service_id = int(service_id)
 
         if (not error_occured):
             if "add_assignment" in request.POST:
@@ -1093,18 +1106,18 @@ def offer(request):
         if (quantity != False):
             quantity = quantity.strip()
             if (not quantity.replace('.', '', 1).isdigit()):
-                quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                 error_occured = True
             else:
                 quantity = float(quantity)
-                if (quantity > 99999.999 or quantity < 0):
-                    quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                if (quantity > 15000 or quantity < 0):
+                    quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                     error_occured = True
                 else:
                     numbers = str(quantity).split('.')
                     decimal_part = numbers[1]
                     if (len(decimal_part) > 3):
-                        quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                        quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                         error_occured = True
 
         if (not error_occured):
@@ -1168,6 +1181,9 @@ def product(request):
                 all_products = Product.allProductIds()
                 id = int(id)
                 check_product = (id, )
+                if (id < 0):
+                    id_fault = "Please write a positive integer for id"
+                    error_occured = True
                 # check if product id already exists when trying to add new product
                 if (check_product in all_products and "add_product" in request.POST):
                     id_fault = "Please write a positive integer for id. Product id already exists"
@@ -1179,13 +1195,17 @@ def product(request):
                 name_fault = "Please write a valid product name"
                 error_occured = True
             else:
+                all_product_names = Product.allProductNames()
+                if (name in all_product_names and "add_product" in request.POST):
+                    name_fault = "Please write a valid product. Product name already exists"
+                    error_occured = True
                 name = name.capitalize()
 
         if (type_of_product != False):
             type_of_product = type_of_product.strip()
             all_types_of_product = Product.allTypesOfProduct()
             if (type_of_product not in all_types_of_product and "search_product" not in request.POST):
-                type_of_product_fault = "Please write a valid type of product"
+                type_of_product_fault = "Please write a valid type of product. The types are Fuel, Special Products and Minimarket Products"
                 error_occured = True
 
         if (price != False):
@@ -1207,13 +1227,13 @@ def product(request):
 
         if (corresponding_points != False):
             corresponding_points = corresponding_points.strip()
-            if (not corresponding_points.replace('.', '', 1).isdigit()):
-                corresponding_points_fault = "Please write a integer between 0 and 999 for Corresponding Points"
+            if (not corresponding_points.isdigit()):
+                corresponding_points_fault = "Please write a integer between 0 and 990 for Corresponding Points"
                 error_occured = True
             else:
                 corresponding_points = int(corresponding_points)
-                if (corresponding_points > 999 or corresponding_points < 0):
-                    corresponding_points_fault = "Please write a integer between 0 and 999 for Corresponding Points"
+                if (corresponding_points > 990 or corresponding_points < 0):
+                    corresponding_points_fault = "Please write a integer between 0 and 990 for Corresponding Points"
                     error_occured = True
 
         if (not error_occured):
@@ -1344,8 +1364,17 @@ def provides_delete(request, serv_gslong_lat):
 
 
 def pump(request):
+    id_fault = False
+    tank_id_fault = False
+    tank_gs_longitude_fault = False
+    tank_gs_latitude_fault = False
+    current_state_fault = False
+    last_check_up_fault = False
+    nozzle_last_check_up_fault = False
+    product_quantity_fault = False
+
     if request.method == "POST":
-        pump_id = request.POST.get('pump-id', False)
+        id = request.POST.get('pump-id', False)
         tank_id = request.POST.get('tank-id', False)
         tank_gs_longitude = request.POST.get('tank-gs-longitude', False)
         tank_gs_latitude = request.POST.get('tank-gs-latitude', False)
@@ -1354,32 +1383,151 @@ def pump(request):
         nozzle_last_check_up = request.POST.get('nozzle-last-check-up', False)
         product_quantity = request.POST.get('product-quantity', False)
 
-        if "add_pump" in request.POST:
-            try:
-                Pump.insertInto(int(pump_id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
+        error_occured = False
+
+        if (id != False):
+            id = id.strip()
+            if (not id.isdigit()):
+                id_fault = "Please write a positive integer for id"
+                error_occured = True
+            else:
+                all_pumps = Pump.allPumpIds()
+                id = int(id)
+                check_pump = (id, )
+                if (id < 0):
+                    id_fault = "Please write a positive integer for id"
+                    error_occured = True
+                if (check_pump in all_pumps and "add_pump" in request.POST):
+                    id_fault = "Please write a valid id. Pump id already exists"
+                    error_occured = True
+
+        if (tank_id != False):
+            tank_id = tank_id.strip()
+            if (not tank_id.isdigit()):
+                tank_id_fault = "Please write a positive integer for Tank ID"
+                error_occured = True
+            else:
+                tank_id = int(tank_id)
+
+        if (tank_gs_longitude != False):
+            tank_gs_longitude = tank_gs_longitude.strip()
+            if (not tank_gs_longitude.replace('.', '', 1).isdigit()):
+                tank_gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for the Gas Station Longitude of the Tank"
+                error_occured = True
+            else:
+                tank_gs_longitude = float(tank_gs_longitude)
+                if (tank_gs_longitude > 99.999999 or tank_gs_longitude < 0):
+                    tank_gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for the Gas Station Longitude of the Tank"
+                    error_occured = True
+                else:
+                    numbers = str(tank_gs_longitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        tank_gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for the Gas Station Longitude of the Tank"
+                        error_occured = True
+
+        if (tank_gs_latitude != False):
+            tank_gs_latitude = tank_gs_latitude.strip()
+            if (not tank_gs_latitude.replace('.', '', 1).isdigit()):
+                tank_gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for the Gas Station Latitude of the Tank"
+                error_occured = True
+            else:
+                tank_gs_latitude = float(tank_gs_latitude)
+                if (tank_gs_latitude > 999.999999 or tank_gs_latitude < 0):
+                    tank_gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for the Gas Station Latitude of the Tank"
+                    error_occured = True
+                else:
+                    numbers = str(tank_gs_latitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        tank_gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for the Gas Station Latitude of the Tank"
+                        error_occured = True
+
+        if (current_state != False):
+            current_state = current_state.strip()
+            if (not current_state.isdigit()):
+                current_state_fault = "Please write a integer between 0(not used) and 1(used) for the current state of the pump"
+                error_occured = True
+            else:
+                current_state = int(current_state)
+                if (current_state > 1 or current_state < 0):
+                    current_state_fault = "Please write a integer between 0(not used) and 1(used) for the current state of the pump"
+                    error_occured = True
+
+        if (last_check_up != False):
+            last_check_up = last_check_up.strip()
+            last_check_up = last_check_up.split('-')
+            last_check_up = '/'.join(last_check_up[::-1])
+            if (not last_check_up.replace('/', '', 2).isdigit()):
+                last_check_up_fault = "Please write a valid date for the last check up of the pump"
+                error_occured = True
+            lcu_date = last_check_up.split('/')
+            lcu_date = datetime(int(lcu_date[2]), int(lcu_date[1]), int(lcu_date[0]))
+
+            if (lcu_date.date() > datetime.today().date()):
+                last_check_up_fault = "Last Check Up for the pump should be before today"
+                error_occured = True
+
+        if (nozzle_last_check_up != False):
+            nozzle_last_check_up = nozzle_last_check_up.strip()
+            nozzle_last_check_up = nozzle_last_check_up.split('-')
+            nozzle_last_check_up = '/'.join(nozzle_last_check_up[::-1])
+            if (not nozzle_last_check_up.replace('/', '', 2).isdigit()):
+                nozzle_last_check_up_fault = "Please write a valid date for the last check up of the pump nozzle"
+                error_occured = True
+            nlcu_date = nozzle_last_check_up.split('/')
+            nlcu_date = datetime(int(nlcu_date[2]), int(nlcu_date[1]), int(nlcu_date[0]))
+
+            if (nlcu_date.date() > datetime.today().date()):
+                nozzle_last_check_up_fault = "Last Check Up for the pump nozzle should be before today"
+                error_occured = True
+
+        if (product_quantity != False):
+            product_quantity = product_quantity.strip()
+            if (not product_quantity.replace('.', '', 1).isdigit()):
+                product_quantity_fault = "Please write a float number between 0 and 5000 (1/3 of Tank Capacity) with 3 decimal places for Product Quantity"
+                error_occured = True
+            else:
+                product_quantity = float(product_quantity)
+                if (product_quantity > 5000 or product_quantity < 0):
+                    product_quantity_fault = "Please write a float number between 0 and 5000 (1/3 of Tank Capacity) with 3 decimal places for Product Quantity"
+                    error_occured = True
+                else:
+                    numbers = str(product_quantity).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 3):
+                        product_quantity_fault = "Please write a float number between 0 and 5000 (1/3 of Tank Capacity) with 3 decimal places for Product Quantity"
+                        error_occured = True
+
+        if (not error_occured):
+            if "add_pump" in request.POST:
+                try:
+                    Pump.insertInto(int(id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
+                                    last_check_up, nozzle_last_check_up, float(product_quantity))
+                    return redirect(pump)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_pump" in request.POST:
+                try:
+                    pumps = Pump.searchBy(int(id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
+                                        last_check_up, nozzle_last_check_up, float(product_quantity))
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Pump.update(int(id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
                                 last_check_up, nozzle_last_check_up, float(product_quantity))
-                return redirect(pump)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_pump" in request.POST:
-            try:
-                pumps = Pump.searchBy(int(pump_id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
-                                      last_check_up, nozzle_last_check_up, float(product_quantity))
-            except Exception as e:
-                print("View exception")
-                print(e)
+                    return redirect(pump)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Pump.update(int(pump_id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
-                            last_check_up, nozzle_last_check_up, float(product_quantity))
-                return redirect(pump)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            pumps = Pump.retrieveAllColumns()
     else:
         pumps = Pump.retrieveAllColumns()
-    return render(request, 'pump.html', {'pumps': pumps})
+    return render(request, 'pump.html', {'pumps': pumps, 'id_fault': id_fault, 'tank_id_fault': tank_id_fault, 'tank_gs_longitude_fault': tank_gs_longitude_fault, 'tank_gs_latitude_fault': tank_gs_latitude_fault, 'current_state_fault': current_state_fault, 'current_state_fault': current_state_fault, 'last_check_up_fault': last_check_up_fault, 'nozzle_last_check_up_fault': nozzle_last_check_up_fault, 'product_quantity_fault': product_quantity_fault})
 
 
 def pump_delete(request, id_tankId_tankLongitude_tankLatitude):
@@ -1388,6 +1536,15 @@ def pump_delete(request, id_tankId_tankLongitude_tankLatitude):
 
 
 def purchase(request):
+    id_fault = False
+    purchase_date_fault = False
+    type_of_payment_fault = False
+    customer_email_fault = False
+    gs_longitude_fault = False
+    gs_latitude_fault = False
+    pump_id_fault = False
+    tank_id_fault = False
+
     if request.method == "POST":
         id = request.POST.get('purchase-id', False)
         purchase_date = request.POST.get('purchase-date', False)
@@ -1408,32 +1565,133 @@ def purchase(request):
         else:
             tank_id = int(tank_id)
 
-        if "add_purchase" in request.POST:
+        error_occured = False
+
+        if (id != False):
+            id = id.strip()
+            if (not id.isdigit()):
+                id_fault = "Please write a positive integer for id"
+                error_occured = True
+            else:
+                all_purchases = Purchase.allPurchaseIds()
+                id = int(id)
+                check_purchase = (id, )
+                if (id < 0):
+                    id_fault = "Please write a positive integer for id"
+                    error_occured = True
+                if (check_purchase in all_purchases and "add_purchase" in request.POST):
+                    id_fault = "Please write a valid id. Purchase id already exists"
+                    error_occured = True
+
+        if (purchase_date != False):
+            purchase_date = purchase_date.strip()
+            purchase_date = purchase_date.split('-')
+            purchase_date = '/'.join(purchase_date[::-1])
+            if (not purchase_date.replace('/', '', 2).isdigit()):
+                purchase_date_fault = "Please write a valid Purchase Date"
+                error_occured = True
+            s_date = purchase_date.split('/')
+            s_date = datetime(int(s_date[2]), int(s_date[1]), int(s_date[0]))
+
+            if (s_date.date() > datetime.today().date()):
+                purchase_date_fault = "Purchase Date should be before today"
+                error_occured = True
+
+        if (type_of_payment != False):
+            type_of_payment = type_of_payment.strip()
+            all_type_of_payment = Purchase.allRoles()
+            if (type_of_payment not in all_type_of_payment and "search_purchase" not in request.POST):
+                type_of_payment_fault = "Please write a valid type of payment. The types are Cash, Debit Card and Credit Card"
+                error_occured = True
+
+        if (customer_email != False):
+            customer_email = customer_email.strip()
             try:
-                Purchase.insertInto(int(id), purchase_date, type_of_payment, customer_email,
+                validation = validate_email(customer_email)
+                customer_email = validation.customer_email
+            except EmailNotValidError as e:
+                customer_email_fault = str(e)
+                error_occured = True
+
+        if (gs_longitude != False):
+            gs_longitude = gs_longitude.strip()
+            if (not gs_longitude.replace('.', '', 1).isdigit()):
+                gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                error_occured = True
+            else:
+                gs_longitude = float(gs_longitude)
+                if (gs_longitude > 99.999999 or gs_longitude < 0):
+                    gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_longitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                        error_occured = True
+
+        if (gs_latitude != False):
+            gs_latitude = gs_latitude.strip()
+            if (not gs_latitude.replace('.', '', 1).isdigit()):
+                gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                error_occured = True
+            else:
+                gs_latitude = float(gs_latitude)
+                if (gs_latitude > 999.999999 or gs_latitude < 0):
+                    gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_latitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                        error_occured = True
+
+        if (pump_id != False):
+            pump_id = pump_id.strip()
+            if (not pump_id.isdigit()):
+                pump_id_fault = "Please write a positive integer for Pump ID"
+                error_occured = True
+            else:
+                pump_id = int(pump_id)
+
+        if (tank_id != False):
+            tank_id = tank_id.strip()
+            if (not tank_id.isdigit()):
+                tank_id_fault = "Please write a positive integer for Tank ID"
+                error_occured = True
+            else:
+                tank_id = int(tank_id)
+
+        if (not error_occured):
+            if "add_purchase" in request.POST:
+                try:
+                    Purchase.insertInto(int(id), purchase_date, type_of_payment, customer_email,
+                                        float(gs_longitude), float(gs_latitude), pump_id, tank_id)
+                    return redirect(purchase)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            elif "search_purchase" in request.POST:
+                try:
+                    purchases = Purchase.searchBy(int(id), purchase_date, type_of_payment, customer_email,
+                                                float(gs_longitude), float(gs_latitude), pump_id, tank_id)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
+            else:
+                try:
+                    Purchase.update(int(id), purchase_date, type_of_payment, customer_email,
                                     float(gs_longitude), float(gs_latitude), pump_id, tank_id)
-                return redirect(purchase)
-            except Exception as e:
-                print("View exception")
-                print(e)
-        elif "search_purchase" in request.POST:
-            try:
-                purchases = Purchase.searchBy(int(id), purchase_date, type_of_payment, customer_email,
-                                              float(gs_longitude), float(gs_latitude), pump_id, tank_id)
-            except Exception as e:
-                print("View exception")
-                print(e)
+                    return redirect(purchase)
+                except Exception as e:
+                    print("View exception")
+                    print(e)
         else:
-            try:
-                Purchase.update(int(id), purchase_date, type_of_payment, customer_email,
-                                float(gs_longitude), float(gs_latitude), pump_id, tank_id)
-                return redirect(purchase)
-            except Exception as e:
-                print("View exception")
-                print(e)
+            purchases = Purchase.retrieveAllColumns()
     else:
         purchases = Purchase.retrieveAllColumns()
-    return render(request, 'purchase.html', {'purchases': purchases})
+    return render(request, 'purchase.html', {'purchases': purchases, 'id_fault': id_fault, 'purchase_date_fault': purchase_date_fault, 'type_of_payment_fault': type_of_payment_fault, 'customer_email_fault': customer_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault, 'pump_id_fault': pump_id_fault, 'tank_id_fault': tank_id_fault})
 
 
 def purchase_delete(request, id):
@@ -1461,12 +1719,14 @@ def service(request):
                 id_fault = "Please write a positive integer for id"
                 error_occured = True
             else:
-                all_contracts = Contract.allContractIds()
+                all_services = Service.allServiceIds()
                 id = int(id)
-                check_contract = (id, )
-                # check if contract id already exists when trying to add new contract
-                if (check_contract in all_contracts and "add_contract" in request.POST):
-                    id_fault = "Please write a positive integer for id. Contract id already exists"
+                check_service = (id, )
+                if (id < 0):
+                    id_fault = "Please write a positive integer for id"
+                    error_occured = True
+                if (check_service in all_services and "add_service" in request.POST):
+                    id_fault = "Please write a positive integer for id. Service id already exists"
                     error_occured = True
 
         if (name != False):
@@ -1496,13 +1756,13 @@ def service(request):
 
         if (corresponding_points != False):
             corresponding_points = corresponding_points.strip()
-            if (not corresponding_points.replace('.', '', 1).isdigit()):
-                corresponding_points_fault = "Please write a integer between 0 and 999 for Corresponding Points"
+            if (not corresponding_points.isdigit()):
+                corresponding_points_fault = "Please write a integer between 0 and 990 for Corresponding Points"
                 error_occured = True
             else:
                 corresponding_points = int(corresponding_points)
-                if (corresponding_points > 999 or corresponding_points < 0):
-                    corresponding_points_fault = "Please write a integer between 0 and 999 for Corresponding Points"
+                if (corresponding_points > 990 or corresponding_points < 0):
+                    corresponding_points_fault = "Please write a integer between 0 and 990 for Corresponding Points"
                     error_occured = True
 
         if (not error_occured):
@@ -1557,7 +1817,7 @@ def sign(request):
             essn_check = ''.join(essn.split('-'))
             all_ssn = Employee.allSsn()
             if (not essn_check.isdigit() or len(essn_check) != 9):
-                essn_fault = "Please write a valid ssn with 9 digits"
+                essn_fault = "Please write a valid ssn with 9 digits with this format 'xxx-xx-xxxx'"
                 error_occured = True
             elif (essn not in all_ssn):
                 essn_fault = "Please write a valid ssn. This employee does not exist"
@@ -1570,7 +1830,7 @@ def sign(request):
                 contract_id_fault = "Please write a positive integer for Contact ID"
                 error_occured = True
             elif (contract_id not in all_contract_id and "search_contract" not in request.POST):
-                contract_id_fault = "Please write a contract id. This contract id does not exist"
+                contract_id_fault = "Please write a contract id. Contract id does not exist"
                 error_occured = True
             else:
                 contract_id = int(contract_id)
@@ -1601,7 +1861,7 @@ def sign(request):
             signs = Signs.retrieveAllColumns()
     else:
         signs = Signs.retrieveAllColumns()
-    return render(request, 'signs.html', {'signs': signs})
+    return render(request, 'signs.html', {'signs': signs, 'essn_fault': essn_fault, 'contract_id_fault': contract_id_fault})
 
 
 def sign_delete(request, essn_contract):
@@ -1627,15 +1887,6 @@ def supplier(request):
 
         error_occured = False
 
-        if (email != False):
-            email = email.strip()
-            try:
-                validation = validate_email(email)
-                email = validation.email
-            except EmailNotValidError as e:
-                email_fault = str(e)
-                error_occured = True
-
         if (first_name != False):
             first_name = first_name.strip()
             if (not first_name.isalpha()):
@@ -1643,6 +1894,25 @@ def supplier(request):
                 error_occured = True
             else:
                 first_name = first_name.capitalize()
+
+        if (email != False):
+            email = email.strip()
+            try:
+                validation = validate_email(email)
+                email = validation.email
+                # check if the email belongs to another supplier
+                if (not error_occured):
+                    all_supplier_emails = Supplier.allSupplierEmails()
+                    check_supplier_emails = (email, )
+                    all_supplier_names = Supplier.allSupplierNames()
+                    first_name = first_name.strip()
+                    check_supplier_names = (first_name, )
+                    if ((check_supplier_emails in all_supplier_emails) and (check_supplier_names not in all_supplier_names) and ("add_supplier" in request.POST)):
+                        email_fault = "Please write a valid email. This email belongs to another supplier"
+                    error_occured = True
+            except EmailNotValidError as e:
+                email_fault = str(e)
+                error_occured = True
 
         if (last_name != False):
             last_name = last_name.strip()
@@ -1748,14 +2018,99 @@ def supply(request):
 
     if request.method == "POST":
         id = request.POST.get('id', False)
-        expected_arrival_date = request.POST.get(
-            'expected-arrival-date', False)
+        expected_arrival_date = request.POST.get('expected-arrival-date', False)
         real_arrival_date = request.POST.get('real-arrival-date', False)
         sup_email = request.POST.get('sup-email', False)
         gs_longitude = request.POST.get('gs-longitude', False)
         gs_latitude = request.POST.get('gs-latitude', False)
 
         error_occured = False
+
+        if (id != False):
+            id = id.strip()
+            if (not id.isdigit()):
+                id_fault = "Please write a positive integer for id"
+                error_occured = True
+            else:
+                all_supplies = Supply.allSupplyIds()
+                id = int(id)
+                check_supply = (id, )
+                if (id < 0):
+                    id_fault = "Please write a positive integer for id"
+                    error_occured = True
+                # check if supply id already exists when trying to add new supply
+                if (check_supply in all_supplies and "add_supply" in request.POST):
+                    id_fault = "Please write a valid id. Supply id already exists"
+                    error_occured = True
+
+        if (sup_email != False):
+            sup_email = sup_email.strip()
+            try:
+                validation = validate_email(sup_email)
+                sup_email = validation.sup_email
+            except EmailNotValidError as e:
+                sup_email_fault = str(e)
+                error_occured = True
+
+        if (expected_arrival_date != False):
+            expected_arrival_date = expected_arrival_date.strip()
+            expected_arrival_date = expected_arrival_date.split('-')
+            expected_arrival_date = '/'.join(expected_arrival_date[::-1])
+            if (not expected_arrival_date.replace('/', '', 2).isdigit()):
+                expected_arrival_date_fault = "Please write a valid Expected Arrival Date"
+                error_occured = True
+
+        if (real_arrival_date != False):
+            real_arrival_date = real_arrival_date.strip()
+            real_arrival_date = real_arrival_date.split('-')
+            real_arrival_date = '/'.join(real_arrival_date[::-1])
+            if (not real_arrival_date.replace('/', '', 2).isdigit()):
+                real_arrival_date_fault = "Please write a valid Real Arrival Date"
+                error_occured = True
+            elif (expected_arrival_date != False):
+                ead_date = expected_arrival_date.split('/')
+                ead_date = datetime(int(ead_date[2]), int(ead_date[1]), int(ead_date[0]))
+
+                rad_date = real_arrival_date.split('/')
+                rad_date = datetime(int(rad_date[2]), int(rad_date[1]), int(rad_date[0]))
+
+                if (ead_date.date() > rad_date.date()):
+                    real_arrival_date_fault = "Real Arrival Date should be greater than or equal to Expected Arrival Date"
+                    error_occured = True
+
+        if (gs_longitude != False):
+            gs_longitude = gs_longitude.strip()
+            if (not gs_longitude.replace('.', '', 1).isdigit()):
+                gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                error_occured = True
+            else:
+                gs_longitude = float(gs_longitude)
+                if (gs_longitude > 99.999999 or gs_longitude < 0):
+                    gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_longitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_longitude_fault = "Please write a float number between 00.000000 and 99.999999 with 6 decimal places for GS Longitude"
+                        error_occured = True
+
+        if (gs_latitude != False):
+            gs_latitude = gs_latitude.strip()
+            if (not gs_latitude.replace('.', '', 1).isdigit()):
+                gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                error_occured = True
+            else:
+                gs_latitude = float(gs_latitude)
+                if (gs_latitude > 999.999999 or gs_latitude < 0):
+                    gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                    error_occured = True
+                else:
+                    numbers = str(gs_latitude).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 6):
+                        gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
+                        error_occured = True
 
         if (not error_occured):
             if "add_supply" in request.POST:
@@ -1794,7 +2149,7 @@ def supply_delete(request, id):
 
 
 def tank(request):
-    tank_id_fault = False
+    id_fault = False
     last_check_up_fault = False
     capacity_fault = False
     quantity_fault = False
@@ -1803,7 +2158,7 @@ def tank(request):
     gs_latitude_fault = False
 
     if request.method == "POST":
-        tank_id = request.POST.get('id', False)
+        id = request.POST.get('id', False)
         last_check_up = request.POST.get('last-check-up', False)
         capacity = request.POST.get('capacity', False)
         quantity = request.POST.get('quantity', False)
@@ -1813,70 +2168,22 @@ def tank(request):
 
         error_occured = False
 
-        if (tank_id != False):
-            tank_id = tank_id.strip()
-            if (not tank_id.isdigit()):
-                tank_id_fault = "Please write a positive integer for Tank ID"
+        if (id != False):
+            id = id.strip()
+            if (not id.isdigit()):
+                id_fault = "Please write a positive integer for id"
                 error_occured = True
             else:
-                tank_id = int(tank_id)
-
-        if (last_check_up != False):
-            last_check_up = last_check_up.strip()
-            last_check_up = last_check_up.split('-')
-            last_check_up = '/'.join(last_check_up[::-1])
-            if (not last_check_up.replace('/', '', 2).isdigit()):
-                last_check_up_fault = "Please write a valid Start Date"
-                error_occured = True
-            lcu_date = last_check_up.split('/')
-            lcu_date = datetime(int(lcu_date[2]), int(
-                lcu_date[1]), int(lcu_date[0]))
-
-            if (lcu_date.date() > datetime.today().date()):
-                end_date_fault = "Start Date should be lesser than today"
-                error_occured = True
-
-        if (capacity != False):
-            capacity = capacity.strip()
-            if (not capacity.replace('.', '', 1).isdigit()):
-                capacity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for Capacity"
-                error_occured = True
-            else:
-                capacity = float(capacity)
-                if (capacity > 99999.999 or capacity < 0):
-                    capacity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for Capacity"
+                all_tanks = Tank.allTankIds()
+                id = int(id)
+                check_tank = (id, )
+                if (id < 0):
+                    id_fault = "Please write a positive integer for id"
                     error_occured = True
-                else:
-                    numbers = str(capacity).split('.')
-                    decimal_part = numbers[1]
-                    if (len(decimal_part) > 3):
-                        capacity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for Capacity"
-                        error_occured = True
-
-        if (quantity != False):
-            quantity = quantity.strip()
-            if (not quantity.replace('.', '', 1).isdigit()):
-                quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
-                error_occured = True
-            else:
-                quantity = float(quantity)
-                if (quantity > 99999.999 or quantity < 0):
-                    quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
+                # check if tank id already exists when trying to add new tank
+                if (check_tank in all_tanks and "add_tank" in request.POST):
+                    id_fault = "Please write a valid id. Tank id already exists"
                     error_occured = True
-                else:
-                    numbers = str(quantity).split('.')
-                    decimal_part = numbers[1]
-                    if (len(decimal_part) > 3):
-                        quantity_fault = "Please write a float number between 0 and 100000 with 3 decimal places for quantity"
-                        error_occured = True
-
-        if (prod_id != False):
-            prod_id = prod_id.strip()
-            if (not prod_id.isdigit()):
-                prod_id_fault = "Please write a positive integer for Product ID"
-                error_occured = True
-            else:
-                prod_id = int(prod_id)
 
         if (gs_longitude != False):
             gs_longitude = gs_longitude.strip()
@@ -1912,10 +2219,67 @@ def tank(request):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                         error_occured = True
 
+        if (last_check_up != False):
+            last_check_up = last_check_up.strip()
+            last_check_up = last_check_up.split('-')
+            last_check_up = '/'.join(last_check_up[::-1])
+            if (not last_check_up.replace('/', '', 2).isdigit()):
+                last_check_up_fault = "Please write a valid Start Date"
+                error_occured = True
+            lcu_date = last_check_up.split('/')
+            lcu_date = datetime(int(lcu_date[2]), int(
+                lcu_date[1]), int(lcu_date[0]))
+
+            if (lcu_date.date() > datetime.today().date()):
+                end_date_fault = "Start Date should be lesser than today"
+                error_occured = True
+
+        if (capacity != False):
+            capacity = capacity.strip()
+            if (not capacity.replace('.', '', 1).isdigit()):
+                capacity_fault = "The capacity is 15000.000 for all the tanks in the Gas Station"
+                error_occured = True
+            else:
+                capacity = float(capacity)
+                if (capacity != 15000):
+                    capacity_fault = "The capacity is 15000.000 for all the tanks in the Gas Station"
+                    error_occured = True
+                else:
+                    numbers = str(capacity).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 3):
+                        capacity_fault = "The capacity is 15000.000 for all the tanks in the Gas Station"
+                        error_occured = True
+
+        if (quantity != False):
+            quantity = quantity.strip()
+            if (not quantity.replace('.', '', 1).isdigit()):
+                quantity_fault = "Please write a float number between 0 and 15000 (Tank Capacity) with 3 decimal places for quantity"
+                error_occured = True
+            else:
+                quantity = float(quantity)
+                if (quantity > 15000 or quantity < 0):
+                    quantity_fault = "Please write a float number between 0 and 15000 (Tank Capacity) with 3 decimal places for quantity"
+                    error_occured = True
+                else:
+                    numbers = str(quantity).split('.')
+                    decimal_part = numbers[1]
+                    if (len(decimal_part) > 3):
+                        quantity_fault = "Please write a float number between 0 and 15000 (Tank Capacity) with 3 decimal places for quantity"
+                        error_occured = True
+
+        if (prod_id != False):
+            prod_id = prod_id.strip()
+            if (not prod_id.isdigit()):
+                prod_id_fault = "Please write a positive integer for Product ID"
+                error_occured = True
+            else:
+                prod_id = int(prod_id)
+
         if (not error_occured):
             if "add_tank" in request.POST:
                 try:
-                    Tank.insertInto(int(tank_id), last_check_up, float(capacity), float(
+                    Tank.insertInto(int(id), last_check_up, float(capacity), float(
                         quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
                     return redirect(tank)
                 except Exception as e:
@@ -1923,14 +2287,14 @@ def tank(request):
                     print(e)
             elif "search_tank" in request.POST:
                 try:
-                    tanks = Tank.searchBy(int(tank_id), last_check_up, float(capacity), float(
+                    tanks = Tank.searchBy(int(id), last_check_up, float(capacity), float(
                         quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
                 except Exception as e:
                     print("View exception")
                     print(e)
             else:
                 try:
-                    Tank.update(int(tank_id), last_check_up, float(capacity), float(
+                    Tank.update(int(id), last_check_up, float(capacity), float(
                         quantity), int(prod_id), float(gs_longitude), float(gs_latitude))
                     return redirect(tank)
                 except Exception as e:
@@ -1940,7 +2304,7 @@ def tank(request):
             tanks = Tank.retrieveAllColumns()
     else:
         tanks = Tank.retrieveAllColumns()
-    return render(request, 'tank.html', {'tanks': tanks, 'tank_id_fault': tank_id_fault, 'last_check_up_fault': last_check_up_fault, 'capacity_fault': capacity_fault, 'quantity_fault': quantity_fault, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
+    return render(request, 'tank.html', {'tanks': tanks, 'id_fault': id_fault, 'last_check_up_fault': last_check_up_fault, 'capacity_fault': capacity_fault, 'quantity_fault': quantity_fault, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
 def tank_delete(request, id_longitude_latitude):

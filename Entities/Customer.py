@@ -140,7 +140,23 @@ def retrieveAllColumns():
     conn.close()
     return data
 
-def allPhoneNumbers():
+def allCustomerEmails():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Email from CUSTOMER")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def allCustomerNames():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Name from CUSTOMER")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def allCustomerPhoneNumbers():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     c.execute("select Phone_Number from CUSTOMER")

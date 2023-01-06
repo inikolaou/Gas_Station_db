@@ -133,3 +133,19 @@ def allPhoneNumbers():
     data = c.fetchall()
     conn.close()
     return data
+
+def allSupplierNames():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Name from SUPPLIER")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+def allSupplierEmails():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Email from SUPPLIER")
+    data = c.fetchall()
+    conn.close()
+    return data

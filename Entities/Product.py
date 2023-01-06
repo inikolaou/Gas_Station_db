@@ -148,3 +148,11 @@ def allProductIds():
     data = c.fetchall()
     conn.close()
     return data
+
+def allTypesOfProduct():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select Type from PRODUCT")
+    data = c.fetchall()
+    conn.close()
+    return data

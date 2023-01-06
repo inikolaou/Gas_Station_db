@@ -141,7 +141,7 @@
         <button id="add-input-button" onclick="addInput()">Add Input</button>
         <form id="searchContractForm" method="POST">
             {% csrf_token %}
-            <input type="submit" id="submit-search-contract" name="search_contract" value="submit" />
+            <input type="submit" id="submit-search-contract" name="search_contract" value="submit" disabled />
         </form>
     </div>
     <div id="add_contract" style="display: none">
@@ -203,7 +203,6 @@
         search_contract.style.display = "block";
         const add_contract = document.getElementById("add_contract");
         add_contract.style.display = "none";
-        document.getElementById("submit-search-contract").disabled = true;
     }
 
     function AddContract() {
@@ -214,9 +213,7 @@
         const add_contract = document.getElementById("add_contract");
         add_contract.style.display = "block";
         const id_field = document.getElementById("id");
-        const table_row = document.getElementsByTagName("tr");
-        const index = document.getElementsByTagName("tr").length - 1;
-        id_field.value = parseInt(table_row[index].id) + 1;
+        id_field.value = parseInt('{{number_of_contracts}}') + 1;
     }
 
     function addInput() {

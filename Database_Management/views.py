@@ -129,7 +129,13 @@ def contract(request):
                 id_fault = "Please write a positive integer for id"
                 error_occured = True
             else:
+                all_contracts = Contract.allContractIds()
                 id = int(id)
+                check_contract = (id, )
+                # check if contract id already exists when trying to add new contract
+                if (check_contract in all_contracts and "add_contract" in request.POST):
+                    id_fault = "Please write a positive integer for id. Contract id already exists"
+                    error_occured = True
 
         if (start_date != False):
             start_date = start_date.strip()
@@ -205,7 +211,9 @@ def contract(request):
             contracts = Contract.retrieveAllColumns()
     else:
         contracts = Contract.retrieveAllColumns()
-    return render(request, 'contract.html', {'contracts': contracts, 'id_fault': id_fault, 'start_date_fault': start_date_fault, 'end_date_fault': end_date_fault, 'salary_fault': salary_fault})
+
+    all_contracts = Contract.retrieveAllColumns()
+    return render(request, 'contract.html', {'contracts': contracts, 'number_of_contracts': len(all_contracts), 'id_fault': id_fault, 'start_date_fault': start_date_fault, 'end_date_fault': end_date_fault, 'salary_fault': salary_fault})
 
 
 def contract_delete(request, id):
@@ -234,6 +242,31 @@ def customer(request):
         remaining_points = request.POST.get('remaining-points', False)
 
         error_occured = False
+
+        if (email != False):
+            email = email.strip()
+            try:
+                validation = validate_email(email)
+                email = validation.email
+            except EmailNotValidError as e:
+                email_fault = str(e)
+                error_occured = True
+
+        if (first_name != False):
+            first_name = first_name.strip()
+            if (not first_name.isalpha()):
+                first_name_fault = "Please write a valid first name"
+                error_occured = True
+            else:
+                first_name = first_name.capitalize()
+
+        if (last_name != False):
+            last_name = last_name.strip()
+            if (not last_name.isalpha()):
+                last_name_fault = "Please write a valid last name"
+                error_occured = True
+            else:
+                last_name = last_name.capitalize()
 
         if (birth_date != False):
             birth_date = birth_date.strip()
@@ -388,7 +421,7 @@ def employee(request):
                 error_occured = True
             all_ssn = Employee.allSsn()
             ssn_check = (ssn, )
-            if (ssn in all_ssn and "add_employee" in request.POST):
+            if ((ssn_check in all_ssn) and ("add_employee" in request.POST)):
                 ssn_fault = "Ssn already exists"
                 error_occured = True
 
@@ -710,6 +743,13 @@ def gasStation(request):
                         latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
                         error_occured = True
 
+        if (type_of_service != False):
+            type_of_service = type_of_service.strip()
+            all_type_of_service = GasStation.allRoles()
+            if (type_of_service not in all_type_of_service and "search_gas_station" not in request.POST):
+                type_of_service_fault = "Please write a valid type of service"
+                error_occured = True
+
         if (start_date != False):
             start_date = start_date.strip()
             start_date = start_date.split('-')
@@ -734,6 +774,19 @@ def gasStation(request):
                 if (minimarket > 1 or minimarket < 0):
                     minimarket_fault = "Please write a integer between 0(false) and 1(true) for the existence of a Minimarket"
                     error_occured = True
+
+        if (mgr_ssn != False):
+            mgr_ssn = mgr_ssn.strip()
+            mgr_ssn_check = ''.join(mgr_ssn.split('-'))
+            all_ssn = Employee.allSsn()
+            if (mgr_ssn == 'NULL'):
+                pass
+            elif (not mgr_ssn_check.isdigit() or len(mgr_ssn) != 9):
+                mgr_ssn_fault = "Please write a valid manager ssn with 9 digits"
+                error_occured = True
+            elif (mgr_ssn not in all_ssn):
+                mgr_ssn_fault = "Please write a valid manager ssn. This employee doesn't exist"
+                error_occured = True
 
         if (not error_occured):
             if "add_gas_station" in request.POST:
@@ -871,6 +924,19 @@ def isAssignedTo(request):
                 error_occured = True
             else:
                 service_id = int(service_id)
+
+        if (essn != False):
+            essn = essn.strip()
+            essn_check = ''.join(essn.split('-'))
+            all_ssn = Employee.allSsn()
+            if (essn == 'NULL'):
+                pass
+            elif (not essn_check.isdigit() or len(essn) != 9):
+                essn_fault = "Please write a valid ssn with 9 digits"
+                error_occured = True
+            elif (essn not in all_ssn):
+                essn_fault = "Please write a valid ssn. This employee doesn't exist"
+                error_occured = True
 
         if (not error_occured):
             if "add_assignment" in request.POST:
@@ -1019,14 +1085,14 @@ def offer_delete(request, prodid_longitude_latitude):
 def product(request):
     id_fault = False
     name_fault = False
-    type_fault = False
+    type_of_product_fault = False
     price_fault = False
     corresponding_points_fault = False
 
     if request.method == "POST":
         id = request.POST.get('id', False)
         name = request.POST.get('name', False)
-        type = request.POST.get('type', False)
+        type_of_product = request.POST.get('type', False)
         price = request.POST.get('price', False)
         corresponding_points = request.POST.get('corresponding-points', False)
 
@@ -1039,6 +1105,21 @@ def product(request):
                 error_occured = True
             else:
                 id = int(id)
+
+        if (name != False):
+            name = name.strip()
+            if (not name.isalpha()):
+                name_fault = "Please write a valid product name"
+                error_occured = True
+            else:
+                name = name.capitalize()
+
+        if (type_of_product != False):
+            type_of_product = type_of_product.strip()
+            all_types_of_product = Product.allTypesOfProduct()
+            if (type_of_product not in all_types_of_product and "search_product" not in request.POST):
+                type_of_product_fault = "Please write a valid type of product"
+                error_occured = True
 
         if (price != False):
             price = price.strip()
@@ -1096,7 +1177,7 @@ def product(request):
             products = Product.retrieveAllColumns()
     else:
         products = Product.retrieveAllColumns()
-    return render(request, 'product.html', {'products': products, 'id_fault': id_fault, 'name_fault': name_fault, 'type_fault': type_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
+    return render(request, 'product.html', {'products': products, 'id_fault': id_fault, 'name_fault': name_fault, 'type_of_product_fault': type_of_product_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
 
 
 def product_delete(request, id):
@@ -1315,6 +1396,14 @@ def service(request):
             else:
                 id = int(id)
 
+        if (name != False):
+            name = name.strip()
+            if (not name.isalpha()):
+                name_fault = "Please write a valid first name"
+                error_occured = True
+            else:
+                name = name.capitalize()
+
         if (price != False):
             price = price.strip()
             if (not price.replace('.', '', 1).isdigit()):
@@ -1390,10 +1479,25 @@ def sign(request):
 
         error_occured = False
 
+        if (essn != False):
+            essn = essn.strip()
+            essn_check = ''.join(essn.split('-'))
+            all_ssn = Employee.allSsn()
+            if (not essn_check.isdigit() or len(essn_check) != 9):
+                essn_fault = "Please write a valid ssn with 9 digits"
+                error_occured = True
+            elif (essn not in all_ssn):
+                essn_fault = "Please write a valid ssn. This employee doesn't exist"
+                error_occured = True
+
         if (contract_id != False):
             contract_id = contract_id.strip()
+            all_contract_id = Contract.allContracts()
             if (not contract_id.isdigit()):
                 contract_id_fault = "Please write a positive integer for Contact ID"
+                error_occured = True
+            elif (contract_id not in all_contract_id and "search_contract" not in request.POST):
+                contract_id_fault = "Please write a contract id. This contract id doesn't exist"
                 error_occured = True
             else:
                 contract_id = int(contract_id)
@@ -1449,6 +1553,31 @@ def supplier(request):
         latitude = request.POST.get('latitude', False)
 
         error_occured = False
+
+        if (email != False):
+            email = email.strip()
+            try:
+                validation = validate_email(email)
+                email = validation.email
+            except EmailNotValidError as e:
+                email_fault = str(e)
+                error_occured = True
+
+        if (first_name != False):
+            first_name = first_name.strip()
+            if (not first_name.isalpha()):
+                first_name_fault = "Please write a valid first name"
+                error_occured = True
+            else:
+                first_name = first_name.capitalize()
+
+        if (last_name != False):
+            last_name = last_name.strip()
+            if (not last_name.isalpha()):
+                last_name_fault = "Please write a valid last name"
+                error_occured = True
+            else:
+                last_name = last_name.capitalize()
 
         if (phone_number != False):
             phone_number = phone_number.strip()

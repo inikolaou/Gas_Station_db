@@ -1,6 +1,29 @@
 import sqlite3
 import csv
+import pandas as pd
 
+df = pd.read_csv("Datasets/tank.csv")
+li = []
+for date in df['Last_Check_Up']:
+    numbers = date.split('/')
+    if (len(numbers[0]) == 1):
+        if (len(numbers[1]) == 1):
+            day = '0' + numbers[0]
+            month = '0' + numbers[1]
+        else:
+            day = '0' + numbers[0]
+            month = numbers[1]
+    else:
+        if (len(numbers[1]) == 1):
+            day = numbers[0]
+            month = '0' + numbers[1]
+        else:
+            day = numbers[0]
+            month = numbers[1]
+    correct_date = '/'.join([day, month, numbers[2]])
+    li.append(correct_date)
+df['Last_Check_Up'] = li
+df.to_csv("Datasets/tank.csv", index=False)
 
 def createTankTable():
     conn = sqlite3.connect("Gas_Station.db")

@@ -1287,6 +1287,7 @@ def product(request):
             products = Product.retrieveAllColumns()
     else:
         products = Product.retrieveAllColumns()
+    all_products = Product.retrieveAllColumns()
     return render(request, 'product.html', {'products': products, 'number_of_products': len(all_products), 'id_fault': id_fault, 'name_fault': name_fault, 'type_of_product_fault': type_of_product_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
 
 
@@ -1552,6 +1553,7 @@ def pump(request):
             pumps = Pump.retrieveAllColumns()
     else:
         pumps = Pump.retrieveAllColumns()
+    all_pumps = Pump.retrieveAllColumns()
     return render(request, 'pump.html', {'pumps': pumps, 'number_of_pumps': len(all_pumps),  'id_fault': id_fault, 'tank_id_fault': tank_id_fault, 'tank_gs_longitude_fault': tank_gs_longitude_fault, 'tank_gs_latitude_fault': tank_gs_latitude_fault, 'current_state_fault': current_state_fault, 'current_state_fault': current_state_fault, 'last_check_up_fault': last_check_up_fault, 'nozzle_last_check_up_fault': nozzle_last_check_up_fault, 'product_quantity_fault': product_quantity_fault})
 
 
@@ -1716,6 +1718,7 @@ def purchase(request):
             purchases = Purchase.retrieveAllColumns()
     else:
         purchases = Purchase.retrieveAllColumns()
+    all_purchases = Purchase.retrieveAllColumns()
     return render(request, 'purchase.html', {'purchases': purchases, 'number_of_purchases': len(all_purchases),  'id_fault': id_fault, 'purchase_date_fault': purchase_date_fault, 'type_of_payment_fault': type_of_payment_fault, 'customer_email_fault': customer_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault, 'pump_id_fault': pump_id_fault, 'tank_id_fault': tank_id_fault})
 
 
@@ -1818,6 +1821,7 @@ def service(request):
             services = Service.retrieveAllColumns()
     else:
         services = Service.retrieveAllColumns()
+    all_services = Service.retrieveAllColumns()
     return render(request, 'service.html', {'services': services, 'number_of_services': len(all_services), 'id_fault': id_fault, 'name_fault': name_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
 
 
@@ -2168,6 +2172,7 @@ def supply(request):
             supplies = Supply.retrieveAllColumns()
     else:
         supplies = Supply.retrieveAllColumns()
+    all_supplies = Supply.retrieveAllColumns()
     return render(request, 'supply.html', {'supplies': supplies, 'number_of_supplies': len(all_supplies), 'id_fault': id_fault, 'expected_arrival_date_fault': expected_arrival_date_fault, 'real_arrival_date_fault': real_arrival_date_fault, 'sup_email_fault': sup_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
@@ -2332,6 +2337,7 @@ def tank(request):
             tanks = Tank.retrieveAllColumns()
     else:
         tanks = Tank.retrieveAllColumns()
+    all_tanks = Tank.retrieveAllColumns()
     return render(request, 'tank.html', {'tanks': tanks, 'number_of_tanks': len(all_tanks), 'id_fault': id_fault, 'last_check_up_fault': last_check_up_fault, 'capacity_fault': capacity_fault, 'quantity_fault': quantity_fault, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 

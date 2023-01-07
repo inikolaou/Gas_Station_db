@@ -694,10 +694,129 @@ def retrieveAllColumns():
     conn.close()
     return data
 
+
 def allPurchaseIds():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     c.execute("select Id from PURCHASE")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allPurchaseinfo():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT PUR.ID, PUR.GS_Longitude, PUR.GS_Latitude, P.Name, P.Price * I.Quantity
+                FROM PURCHASE as PUR, INVOLVES as I, PRODUCT as P
+                WHERE PUR.ID = I.Pur_Id AND I.Prod_Id = P.ID
+                GROUP BY PUR.GS_Longitude, PUR.GS_Longitude, I.Prod_Id
+                UNION
+                SELECT PUR.ID, PUR.GS_Longitude, PUR.GS_Latitude, S.Name, S.Price
+                FROM PURCHASE AS PUR, ENTAILS as E, SERVICE as S
+                WHERE PUR.ID = E.Pur_Id AND E.Serv_Id = S.ID
+                GROUP BY PUR.GS_Longitude, PUR.GS_Longitude, E.Serv_Id
+                ORDER BY PUR.GS_Longitude, PUR.GS_Longitude
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allSuppliesinfo():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT S.GS_Longitude, S.GS_Latitude, sum(C.Cost)
+                FROM SUPPLY AS S, CONSISTS_OF AS C, PRODUCT AS P
+                WHERE S.ID = C.Supply_Id AND C.Prod_Id = P.ID
+                    AND (S.GS_Longitude, S.GS_Latitude) IN
+                    (
+                            SELECT Longitude, Latitude
+                            FROM GAS_STATION
+                    )
+                GROUP BY S.GS_Longitude, S.GS_Latitude
+                ORDER BY S.GS_Longitude, S.GS_Latitude
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def groupByGSCoords():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT PUR.GS_Longitude, PUR.GS_Latitude, sum(P.Price * I.Quantity)
+                FROM PURCHASE as PUR, INVOLVES as I, PRODUCT as P
+                WHERE PUR.ID = I.Pur_Id AND I.Prod_Id = P.ID
+                GROUP BY PUR.GS_Longitude, PUR.GS_Longitude, I.Prod_Id
+                UNION
+                SELECT PUR.GS_Longitude, PUR.GS_Latitude, sum(S.Price)
+                FROM PURCHASE AS PUR, ENTAILS as E, SERVICE as S
+                WHERE PUR.ID = E.Pur_Id AND E.Serv_Id = S.ID
+                GROUP BY PUR.GS_Longitude, PUR.GS_Longitude, E.Serv_Id
+                ORDER BY PUR.GS_Longitude, PUR.GS_Longitude
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def groupByGSCoordsAllProducts():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT PUR.GS_Longitude, PUR.GS_Latitude, sum(P.Price * I.Quantity)
+                FROM PURCHASE as PUR, INVOLVES as I, PRODUCT as P
+                WHERE PUR.ID = I.Pur_Id AND I.Prod_Id = P.ID
+                GROUP BY PUR.GS_Longitude, PUR.GS_Longitude
+                ORDER BY PUR.GS_Longitude, PUR.GS_Longitude
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def groupByGSCoordsAllServices():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT PUR.GS_Longitude, PUR.GS_Latitude, sum(S.Price)
+                FROM PURCHASE AS PUR, ENTAILS as E, SERVICE as S
+                WHERE PUR.ID = E.Pur_Id AND E.Serv_Id = S.ID
+                GROUP BY PUR.GS_Longitude, PUR.GS_Longitude
+                ORDER BY PUR.GS_Longitude, PUR.GS_Longitude
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def productAnalysis():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT P.Name, sum(P.Price * I.Quantity), count(PUR.ID)
+                FROM PURCHASE as PUR, INVOLVES as I, PRODUCT as P
+                WHERE PUR.ID = I.Pur_Id AND I.Prod_Id = P.ID
+                GROUP BY I.Prod_Id
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def serviceAnalysis():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT S.Name, sum(S.Price), count(PUR.ID)
+                FROM PURCHASE as PUR, ENTAILS as E, SERVICE as S
+                WHERE PUR.ID = E.Pur_Id AND E.Serv_Id = S.ID
+                GROUP BY E.Serv_Id
+            ''')
     data = c.fetchall()
     conn.close()
     return data

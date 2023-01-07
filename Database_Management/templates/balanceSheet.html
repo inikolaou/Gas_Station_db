@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <title>Index</title>
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        a {
+            color: #0066c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #003399;
+        }
+
+        /* Add some padding around the chart */
+        #myChart {
+            padding: 20px;
+        }
+
+        /* Use a custom font for the chart labels */
+        #myChart .chartjs-legend {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Use a custom color for the bar backgrounds */
+        #myChart .bar {
+            background-color: #3498db;
+        }
+
+        /* Add a hover effect for the bars */
+        #myChart .bar:hover {
+            opacity: 0.7;
+        }
+
+        /* Use a custom color for the data labels */
+        #myChart .chartjs-tooltip-key {
+            color: #e74c3c;
+        }
+
+        /* Add a custom font for the data labels */
+        #myChart .chartjs-tooltip-text {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Add some custom styles for the data labels */
+        #myChart .chartjs-tooltip-text {
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Balance Sheet</h1>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a id="show_balance_sheet_nav" onclick="ShowBalanceSheet()">Balance Sheet Detailed</a>
+        <a id="product_analysis_nav" onclick="ProductAnalysis()">Product Analysis</a>
+        <a id="service_analysis_nav" onclick="ServiceAnalysis()">Service Analysis</a>
+    </nav>
+    <!-- <table>
+        <thead>
+            <tr>
+                <th>Purchase Id</th>
+                <th>GS Longitude</th>
+                <th>GS Latitude</th>
+                <th>Product Or Service Name</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase_id in revenue %}
+            <tr id={{purchase_id.0}}>
+                <td class="a">{{purchase_id.0}}</td>
+                <td class="b" id="{{purchase_id.1}}">{{purchase_id.1}}</td>
+                <td class="c" id="{{purchase_id.2}}">{{purchase_id.2}}</td>
+                <td class="d" id="{{purchase_id.3}}">{{purchase_id.3}}</td>
+                <td class="e" id="{{purchase_id.4}}">{{purchase_id.4}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table> -->
+    <canvas id="balance_sheet" width="50" style="display: block;"></canvas>
+    <canvas id="products_review" width="50" style="display: none;"></canvas>
+    <canvas id="services_review" width="50" style="display: none;"></canvas>
+
+</body>
+
+<script>
+    function ShowBalanceSheet() {
+        const balance_sheet = document.getElementById("balance_sheet");
+        balance_sheet.style.display = "block";
+        const products_review = document.getElementById("products_review");
+        products_review.style.display = "none";
+        const services_review = document.getElementById("services_review");
+        services_review.style.display = "none";
+        window.location.href = '/balance_sheet/';
+    }
+
+    function ProductAnalysis() {
+        const balance_sheet = document.getElementById("balance_sheet");
+        balance_sheet.style.display = "none";
+        const products_review = document.getElementById("products_review");
+        products_review.style.display = "block";
+        const services_review = document.getElementById("services_review");
+        services_review.style.display = "none";
+    }
+
+    function ServiceAnalysis() {
+        const balance_sheet = document.getElementById("balance_sheet");
+        balance_sheet.style.display = "none";
+        const products_review = document.getElementById("products_review");
+        products_review.style.display = "none";
+        const services_review = document.getElementById("services_review");
+        services_review.style.display = "block";
+    }
+</script>
+
+
+<script>
+    var gs_products = [];
+    var revenue_products = [];
+    var revenue_services = [];
+    var supplies_cost = [];
+    var prod_name = [];
+    var prod_revenue = [];
+    var prod_count = [];
+    var serv_name = [];
+    var serv_revenue = [];
+    var serv_count = [];
+</script>
+
+{% for item in revenue_of_products %}
+<script>
+    gs_products.push(['{{item.0}}', '{{item.1}}']);
+    revenue_products.push('{{item.2}}');
+</script>
+{% endfor %}
+
+{% for item in revenue_of_services %}
+<script>
+    revenue_services.push('{{item.2}}');
+</script>
+{% endfor %}
+
+{% for item in supplies_cost %}
+<script>
+    supplies_cost.push('{{item.2}}');
+</script>
+{% endfor %}
+
+{% for item in all_product_analysis %}
+<script>
+    prod_name.push('{{item.0}}');
+    prod_revenue.push('{{item.1}}');
+    prod_count.push('{{item.2}}');
+</script>
+{% endfor %}
+
+{% for item in all_service_analysis %}
+<script>
+    serv_name.push('{{item.0}}');
+    serv_revenue.push('{{item.1}}');
+    serv_count.push('{{item.2}}');
+</script>
+{% endfor %}
+
+<script>
+    var ctx = document.getElementById('balance_sheet').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+            labels: gs_products,
+            datasets: [{
+                label: 'Product Revenue',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: revenue_products
+            },
+            {
+                label: 'Service Revenue',
+                backgroundColor: 'rgb(100, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: revenue_services
+            },
+            {
+                label: 'Product Cost',
+                backgroundColor: 'rgb(100, 99, 20)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: supplies_cost
+            }
+            ]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+</script>
+
+<script>
+    var ctx = document.getElementById('products_review').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'pie',
+
+        // The data for our dataset
+        data: {
+            labels: prod_name,
+            datasets: [{
+                label: 'Each Product Revenue',
+                backgroundColor: [
+                    "#000080", //# Navy blue
+                    "#808000", //# Olive green
+                    "#FF7F50", //# Coral
+                    "#E6E6FA", //# Lavender
+                    "#ADD8E6", //# Light blue
+                    "#D2B48C", //# Tan
+                    "#8B0000", //# Burgundy
+                    "#90EE90", //# Light green
+                    "#FFC0CB", //# Pink
+                    "#D3D3D3", //# Light grey
+                    "#8B0000", //# Dark red
+                    "#A52A2A", //# Light brown
+                    "#008080", //# Teal
+                    "#9400D3", //# Dark purple
+                    "#FF7F50", //# Coral
+                    "#696969", //# Dark grey
+                    "#006400", //# Dark green
+                    "#FFD700", //# Mustard yellow
+                    "#87CEEB", //# Sky blue
+                    "#800000", //# Maroon
+                    "#40E0D0", //# Turquoise
+                    "#FF7F50", //# Coral
+                    "#800080", //# Purple
+                    "#FF00FF", //# Magenta
+                    "#FFA500", //# Orange
+                    "#228B22", //# Forest green
+                    "#FFDAB9", //# Peach
+                    "#4169E1", //# Royal blue
+                    "#B7410E",  //# Rusty red
+                    "#A6230F"
+                ],
+                borderColor: 'rgb(255, 99, 132)',
+                data: prod_revenue
+            },
+            {
+                label: 'Product Preference',
+                backgroundColor: [
+                    "#000080", //# Navy blue
+                    "#808000", //# Olive green
+                    "#FF7F50", //# Coral
+                    "#E6E6FA", //# Lavender
+                    "#ADD8E6", //# Light blue
+                    "#D2B48C", //# Tan
+                    "#8B0000", //# Burgundy
+                    "#90EE90", //# Light green
+                    "#FFC0CB", //# Pink
+                    "#D3D3D3", //# Light grey
+                    "#8B0000", //# Dark red
+                    "#A52A2A", //# Light brown
+                    "#008080", //# Teal
+                    "#9400D3", //# Dark purple
+                    "#FF7F50", //# Coral
+                    "#696969", //# Dark grey
+                    "#006400", //# Dark green
+                    "#FFD700", //# Mustard yellow
+                    "#87CEEB", //# Sky blue
+                    "#800000", //# Maroon
+                    "#40E0D0", //# Turquoise
+                    "#FF7F50", //# Coral
+                    "#800080", //# Purple
+                    "#FF00FF", //# Magenta
+                    "#FFA500", //# Orange
+                    "#228B22", //# Forest green
+                    "#FFDAB9", //# Peach
+                    "#4169E1", //# Royal blue
+                    "#B7410E",  //# Rusty red
+                    "#A6230F"
+                ],
+                borderColor: 'rgb(255, 99, 132)',
+                data: prod_count
+            }
+            ]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+</script>
+
+<script>
+    var ctx = document.getElementById('services_review').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'pie',
+
+        // The data for our dataset
+        data: {
+            labels: serv_name,
+            datasets: [{
+                label: 'Each Service Revenue',
+                backgroundColor: [
+                    "#000080", //# Navy blue
+                    "#808000", //# Olive green
+                    "#FF7F50", //# Coral
+                    "#E6E6FA", //# Lavender
+                    "#ADD8E6", //# Light blue
+                    "#D2B48C", //# Tan
+                    "#8B0000", //# Burgundy
+                    "#90EE90", //# Light green
+                    "#FFC0CB", //# Pink
+                    "#D3D3D3", //# Light grey
+                    "#8B0000", //# Dark red
+                    "#A52A2A", //# Light brown
+                    "#008080", //# Teal
+                    "#9400D3", //# Dark purple
+                    "#FF7F50", //# Coral
+                    "#696969", //# Dark grey
+                    "#006400", //# Dark green
+                    "#FFD700", //# Mustard yellow
+                    "#87CEEB", //# Sky blue
+                    "#800000", //# Maroon
+                    "#40E0D0", //# Turquoise
+                    "#FF7F50", //# Coral
+                    "#800080", //# Purple
+                    "#FF00FF", //# Magenta
+                    "#FFA500", //# Orange
+                    "#228B22", //# Forest green
+                    "#FFDAB9", //# Peach
+                    "#4169E1", //# Royal blue
+                    "#B7410E",  //# Rusty red
+                    "#A6230F"
+                ],
+                borderColor: 'rgb(255, 99, 132)',
+                data: serv_revenue
+            },
+            {
+                label: 'Service Preference',
+                backgroundColor: [
+                    "#000080", //# Navy blue
+                    "#808000", //# Olive green
+                    "#FF7F50", //# Coral
+                    "#E6E6FA", //# Lavender
+                    "#ADD8E6", //# Light blue
+                    "#D2B48C", //# Tan
+                    "#8B0000", //# Burgundy
+                    "#90EE90", //# Light green
+                    "#FFC0CB", //# Pink
+                    "#D3D3D3", //# Light grey
+                    "#8B0000", //# Dark red
+                    "#A52A2A", //# Light brown
+                    "#008080", //# Teal
+                    "#9400D3", //# Dark purple
+                    "#FF7F50", //# Coral
+                    "#696969", //# Dark grey
+                    "#006400", //# Dark green
+                    "#FFD700", //# Mustard yellow
+                    "#87CEEB", //# Sky blue
+                    "#800000", //# Maroon
+                    "#40E0D0", //# Turquoise
+                    "#FF7F50", //# Coral
+                    "#800080", //# Purple
+                    "#FF00FF", //# Magenta
+                    "#FFA500", //# Orange
+                    "#228B22", //# Forest green
+                    "#FFDAB9", //# Peach
+                    "#4169E1", //# Royal blue
+                    "#B7410E",  //# Rusty red
+                    "#A6230F"
+                ],
+                borderColor: 'rgb(255, 99, 132)',
+                data: serv_count
+            }
+            ]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+</script>
+
+</html>

@@ -8,6 +8,20 @@ def index(request):
     return render(request, 'index.html')
 
 
+def balanceSheet(request):
+    revenue = Purchase.allPurchaseinfo()
+    supplies_cost = Purchase.allSuppliesinfo()
+    revenue_of_products = Purchase.groupByGSCoordsAllProducts()
+    revenue_of_services = Purchase.groupByGSCoordsAllServices()
+
+    all_product_analysis = Purchase.productAnalysis()
+    all_service_analysis = Purchase.serviceAnalysis()
+
+    context = {"revenue": revenue, "revenue_of_products": revenue_of_products,
+               "revenue_of_services": revenue_of_services, "supplies_cost": supplies_cost, "all_product_analysis": all_product_analysis, "all_service_analysis": all_service_analysis}
+    return render(request, 'balanceSheet.html', context)
+
+
 def consistOf(request):
     supply_id_fault = False
     prod_id_fault = False
@@ -889,7 +903,7 @@ def gasStation(request):
                     GasStation.insertInto(longitude, latitude, type_of_service, start_date,
                                           minimarket, mgr_ssn)
                     Employee.updateManagerGSCoords(
-                        new_mgr_ssn[0][0], longitude, latitude)
+                        mgr_ssn, longitude, latitude)
                     return redirect(gasStation)
                 except Exception as e:
                     print("View exception")

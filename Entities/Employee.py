@@ -25,6 +25,7 @@ def createEmployeeTable():
                         FOREIGN KEY (Super_Ssn)    REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL,
                         FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE SET NULL
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()
@@ -305,6 +306,7 @@ def orderEmployeesBySalaryByGasStation(salary):
     data = c.fetchall()
     conn.close()
     return data
+
 
 def allPhoneNumbers():
     conn = sqlite3.connect("Gas_Station.db")

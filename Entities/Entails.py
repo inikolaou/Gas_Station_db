@@ -14,6 +14,7 @@ def createEntailsTable():
                         FOREIGN KEY (Serv_Id) REFERENCES SERVICE(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Pur_Id) REFERENCES PURCHASE(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

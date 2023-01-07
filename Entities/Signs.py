@@ -14,6 +14,7 @@ def createSignsTable():
                         FOREIGN KEY (Essn)  REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Contract_Id) REFERENCES CONTRACT(Id) ON UPDATE CASCADE ON DELETE SET DEFAULT
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

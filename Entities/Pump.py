@@ -19,6 +19,7 @@ def createPumpTable():
                         PRIMARY KEY (Id, Tank_Id, T_GS_Longitude, T_GS_Latitude),
                         FOREIGN KEY (Tank_Id, T_GS_Longitude, T_GS_Latitude) REFERENCES TANK(Id, GS_Longitude, GS_Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()
@@ -270,6 +271,7 @@ def retrieveAllColumns():
     data = c.fetchall()
     conn.close()
     return data
+
 
 def allPumpIds():
     conn = sqlite3.connect("Gas_Station.db")

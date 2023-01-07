@@ -15,6 +15,7 @@ def createProductTable():
                         Corresponding_Points        INTEGER     NOT NULL,
                         PRIMARY KEY (Id))
                         ;''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

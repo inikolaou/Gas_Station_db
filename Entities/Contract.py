@@ -14,6 +14,7 @@ def createContractTable():
                         Salary          REAL        NOT NULL,
                         PRIMARY KEY (Id))
                         ;''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

@@ -16,6 +16,7 @@ def createConsistsOfTable():
                         FOREIGN KEY (Supply_Id) REFERENCES SUPPLY(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Prod_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

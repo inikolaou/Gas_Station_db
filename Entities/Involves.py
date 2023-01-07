@@ -15,6 +15,7 @@ def createInvolvesTable():
                         FOREIGN KEY (Prod_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Pur_Id) REFERENCES PURCHASE(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
+            insertFromCsv()
         except Exception as e:
             pass
     conn.close()

@@ -2384,27 +2384,3 @@ if __name__ == 'Database_Management.views':
     IsAssignedTo.createIsAssignedToTable()
     Offers.createOffersTable()
     Provides.createProvidesTable()
-
-    Contract.insertFromCsv()
-    Customer.insertFromCsv()
-    Supplier.insertFromCsv()
-    Product.insertFromCsv()
-    Service.insertFromCsv()
-
-    GasStation.insertFromCsv()
-    Employee.insertFromCsv()
-
-    Tank.insertFromCsv()
-    Pump.insertFromCsv()
-
-    Signs.insertFromCsv()
-    Supply.insertFromCsv()
-
-    Purchase.insertFromCsv()
-    Involves.insertFromCsv()
-    Entails.insertFromCsv()
-
-    ConsistsOf.insertFromCsv()
-    IsAssignedTo.insertFromCsv()
-    Offers.insertFromCsv()
-    Provides.insertFromCsv()

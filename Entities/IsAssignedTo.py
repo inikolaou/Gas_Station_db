@@ -14,6 +14,7 @@ def createIsAssignedToTable():
                         FOREIGN KEY (Serv_Id)       REFERENCES SERVICE(Id)   ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Essn)          REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

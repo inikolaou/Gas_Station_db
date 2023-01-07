@@ -18,6 +18,7 @@ def createCustomerTable():
                         Remaining_Points    INTEGER     DEFAULT 0,
                         PRIMARY KEY (Email)
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

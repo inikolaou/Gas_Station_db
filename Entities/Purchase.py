@@ -21,6 +21,7 @@ def createPurchaseTable():
                         FOREIGN KEY (Pump_Id, Tank_Id, GS_Longitude, GS_Latitude) REFERENCES PUMP(Id, Tank_Id, T_GS_Longitude, T_GS_Latitude)
                                     ON UPDATE CASCADE ON DELETE SET NULL
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

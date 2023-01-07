@@ -19,6 +19,7 @@ def createTankTable():
                         FOREIGN KEY (Prod_Id)     REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE SET NULL,
                         FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()
@@ -225,6 +226,7 @@ def retrieveAllColumns():
     data = c.fetchall()
     conn.close()
     return data
+
 
 def allTankIds():
     conn = sqlite3.connect("Gas_Station.db")

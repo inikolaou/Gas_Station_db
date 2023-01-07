@@ -16,6 +16,7 @@ def createSupplierTable():
                         Latitude        REAL    NOT NULL,
                         PRIMARY KEY (Email))
                         ;''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

@@ -17,6 +17,7 @@ def createGasStationTable():
                         PRIMARY KEY (Longitude, Latitude),
                         FOREIGN KEY (Mgr_Ssn) REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL
                         );''')
+            insertFromCsv()
         except Exception as e:
             print(e)
     conn.close()

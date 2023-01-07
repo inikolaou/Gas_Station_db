@@ -147,17 +147,42 @@
     <form id="addServiceForm" method="POST">
       {% csrf_token %}
       <label for="id">ID:</label><br>
-      <input type="number" step="1" min="1" id="id" name="id"><br>
+      <input type="number" step="1" min="1" id="id" name="id" required><br>
       <label for="name">Name:</label><br>
-      <input type="text" id="name" name="name"><br>
+      <input type="text" maxlength="60" id="name" name="name" required><br>
       <label for="price">Price:</label><br>
-      <input type="number" step="any" min="0" id="price" name="price"><br>
+      <input type="number" step=".01" min="0" max="9999.99" id="price" name="price" required><br>
       <label for="corresponding-points">Corresponding Points:</label><br>
-      <input type="number" step="10" min="0" id="corresponding-points" name="corresponding-points"><br>
+      <input type="number" step="10" min="0" max="990" id="corresponding-points" name="corresponding-points" required><br>
       <input type="submit" id="submit-add-service" name="add_service" value="submit" />
     </form>
   </div>
 </body>
+
+{% if id_fault %}
+<script>
+    alert('{{id_fault}}');
+</script>
+{% endif %}
+
+{% if name_fault %}
+<script>
+    alert('{{name_fault}}');
+</script>
+{% endif %}
+
+{% if price_fault %}
+<script>
+    alert('{{price_fault}}');
+</script>
+{% endif %}
+
+{% if corresponding_points_fault %}
+<script>
+    alert('{{corresponding_points_fault}}');
+</script>
+{% endif %}
+
 
 <script>
   function ShowServices() {
@@ -188,7 +213,7 @@
     const add_service = document.getElementById("add_service");
     add_service.style.display = "block";
     const id_field = document.getElementById("id");
-    id_field.value = document.getElementsByTagName("tr").length;
+    id_field.value = parseInt('{{number_of_services}}') + 1;
   }
 
   function addInput() {
@@ -196,9 +221,15 @@
     // Get selected option value
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
+    
+    if (typeof addInput.counter == 'undefined') {
+        addInput.counter = 0;
+    }
+    addInput.counter++;
     dropdown.selectedIndex++;
-    if (dropdown.selectedIndex === -1) {
-      document.getElementById("add-input-button").disabled = true;
+
+    if (addInput.counter === 3) {
+        document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;
@@ -210,16 +241,19 @@
         break;
       case "name":
         type = "text";
+        maxlength = "60";
         break;
       case "price":
         type = "number";
-        step = "any";
+        step = ".01";
         min = "0";
+        max = "9999.99";
         break;
       case "corresponding-points":
         type = "number";
         step = "10";
         min = "0";
+        max = "990";
         break;
       default:
         type = "text";
@@ -262,9 +296,9 @@
 
     // Replace the cell elements with form inputs
     cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${service_id}" readonly="readonly">`;
-    cells[1].innerHTML = `<input type="text" name="name" value="${name}">`;
-    cells[2].innerHTML = `<input type="number" step="any" min="0" name="price" value="${price}">`;
-    cells[3].innerHTML = `<input type="number" step="10" min="0" name="corresponding-points" value="${corresponding_points}">`;
+    cells[1].innerHTML = `<input type="text" maxlength="60" name="name" value="${name}">`;
+    cells[2].innerHTML = `<input type="number" step=".01" min="0" max="9999.99" name="price" value="${price}">`;
+    cells[3].innerHTML = `<input type="number" step="10" min="0" max="990" name="corresponding-points" value="${corresponding_points}">`;
     cells[4].innerHTML = `<a onclick="saveService('${service_id}')">Save</a>`;
   }
 

@@ -148,17 +148,42 @@
     <form id="addConsistsOfForm" method="POST">
       {% csrf_token %}
       <label for="supply-id">Supply ID:</label><br>
-      <input type="number" step="1" min="1" id="supply-id" name="supply-id"><br>
+      <input type="number" step="1" min="1" id="supply-id" name="supply-id" required><br>
       <label for="prod-id">Product ID:</label><br>
-      <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
+      <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
       <label for="cost">Cost:</label><br>
-      <input type="number" step="any" min="0" id="cost" name="cost"><br>
+      <input type="number" step=".01" min="0" max="99999.99" id="cost" name="cost" required><br>
       <label for="quantity">Quantity:</label><br>
-      <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
+      <input type="number" step=".001" min="0" max="15000.000" id="quantity" name="quantity" required><br>
       <input type="submit" id="submit-add-consists-of" name="add_consists_of" value="submit">
     </form>
   </div>
 </body>
+
+{% if supply_id_fault %}
+<script>
+    alert('{{supply_id_fault}}');
+</script>
+{% endif %}
+
+{% if prod_id_fault %}
+<script>
+    alert('{{prod_id_fault}}');
+</script>
+{% endif %}
+
+{% if cost_fault %}
+<script>
+    alert('{{cost_fault}}');
+</script>
+{% endif %}
+
+{% if quantity_fault %}
+<script>
+    alert('{{quantity_fault}}');
+</script>
+{% endif %}
+
 
 <script>
   function ShowConsistsOf() {
@@ -195,9 +220,15 @@
     // Get selected option value
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
+    
+    if (typeof addInput.counter == 'undefined') {
+        addInput.counter = 0;
+    }
+    addInput.counter++;
     dropdown.selectedIndex++;
-    if (dropdown.selectedIndex === -1) {
-      document.getElementById("add-input-button").disabled = true;
+
+    if (addInput.counter === 4) {
+        document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;
@@ -208,17 +239,21 @@
         min = "1";
         break;
       case "prod-id":
-        type = "date";
+        type = "number";
+        step = "1";
+        min = "1";
         break;
       case "cost":
         type = "number";
-        step = "any";
+        step = ".01";
         min = "0";
+        max = "99999.99";
         break;
       case "quantity":
         type = "number";
-        step = "any";
+        step = ".001";
         min = "0";
+        min = "15000.000";
         break;
       default:
         type = "text";
@@ -260,11 +295,11 @@
     const quantity = cells[3].textContent;
 
     // Replace the cell elements with form inputs
-    cells[0].innerHTML = `<input type="number" step="1" min="1" name="supply-id" value="${supply_id}" readonly="readonly">`;
-    cells[1].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">
-                            <input type="hidden" name="previous-prod-id" value="${prod_id}">`;
-    cells[2].innerHTML = `<input type="number" step="any" min="0" name="cost" value="${cost}">`;
-    cells[3].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
+    cells[0].innerHTML = `<input type="number" step="1" min="1" name="supply-id" value="${supply_id}" readonly="readonly" required>`;
+    cells[1].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}" required>
+                            <input type="hidden" name="previous-prod-id" value="${prod_id}" required>`;
+    cells[2].innerHTML = `<input type="number" step=".01" min="0" max="99999.99" name="cost" value="${cost}" required>`;
+    cells[3].innerHTML = `<input type="number" step=".001" min="0" max="15000.000" name="quantity" value="${quantity}" required>`;
     cells[4].innerHTML = `<a onclick="saveConsistsOf('${id}')">Save</a>`;
   }
 

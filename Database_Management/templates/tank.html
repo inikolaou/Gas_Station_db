@@ -157,23 +157,68 @@
         <form id="addTankForm" method="POST">
             {% csrf_token %}
             <label for="id">Id:</label><br>
-            <input type="number" step="1" min="1" id="id" name="id"><br>
+            <input type="number" step="1" min="1" id="id" name="id" required><br>
             <label for="last-check-up">Last Check Up:</label><br>
-            <input type="text" id="last-check-up" name="last-check-up"><br>
+            <input type="date" id="last-check-up" name="last-check-up"><br>
             <label for="capacity">Capacity:</label><br>
-            <input type="number" step="any" min="0" id="capacity" name="capacity"><br>
+            <input type="number" value="15000" id="capacity" name="capacity" required><br>
             <label for="quantity">Quantity:</label><br>
-            <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
+            <input type="number" step=".001" min="0" max="15000" id="quantity" name="quantity" required><br>
             <label for="prod-id">Product Id:</label><br>
-            <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
-            <label for="gs-longitude">GS Longitude:</label><br>
-            <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
-            <label for="gs-latitude">GS Latitude:</label><br>
-            <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+            <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
+            <label for="gs-longitude">GS_Longitude:</label><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude"
+                name="gs-longitude" required><br>
+            <label for="gs-latitude">GS_Latitude:</label><br>
+            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude"
+                name="gs-latitude" required><br>
             <input type="submit" id="submit-add-tank" name="add_tank" value="submit" />
         </form>
     </div>
 </body>
+
+{% if id_fault %}
+<script>
+    alert('{{id_fault}}');
+</script>
+{% endif %}
+
+{% if last_check_up_fault %}
+<script>
+    alert('{{last_check_up_fault}}');
+</script>
+{% endif %}
+
+{% if capacity_fault %}
+<script>
+    alert('{{capacity_fault}}');
+</script>
+{% endif %}
+
+{% if quantity_fault %}
+<script>
+    alert('{{quantity_fault}}');
+</script>
+{% endif %}
+
+{% if prod_id_fault %}
+<script>
+    alert('{{prod_id_fault}}');
+</script>
+{% endif %}
+
+{% if gs_longitude_fault %}
+<script>
+    alert('{{gs_longitude_fault}}');
+</script>
+{% endif %}
+
+{% if gs_latitude_fault %}
+<script>
+    alert('{{gs_latitude_fault}}');
+</script>
+{% endif %}
+
 
 <script>
     function ShowTank() {
@@ -203,6 +248,8 @@
         search_tank.style.display = "none";
         const add_tank = document.getElementById("add_tank");
         add_tank.style.display = "block";
+        const id_field = document.getElementById("id");
+        id_field.value = parseInt('{{number_of_tanks}}') + 1;
     }
 
     function addInput() {
@@ -210,8 +257,14 @@
         // Get selected option value
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
+        
+        if (typeof addInput.counter == 'undefined') {
+            addInput.counter = 0;
+        }
+        addInput.counter++;
         dropdown.selectedIndex++;
-        if (dropdown.selectedIndex === -1) {
+
+        if (addInput.counter === 7) {
             document.getElementById("add-input-button").disabled = true;
         }
         // Set input type based on selected option
@@ -223,17 +276,17 @@
                 min = "1";
                 break;
             case "last-check-up":
-                type = "text";
+                type = "date";
                 break;
             case "capacity":
                 type = "text";
-                step = "any";
-                min = "0";
+                value = "15000";
                 break;
             case "quantity":
                 type = "number";
-                step = "any";
+                step = ".001";
                 min = "0";
+                max = "15000";
                 break;
             case "prod-id":
                 type = "number";
@@ -242,11 +295,15 @@
                 break;
             case "gs-longitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "99.999999"
                 break;
             case "gs-latitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "999.999999"
                 break;
             default:
                 type = "text";
@@ -287,21 +344,24 @@
         // Get the values of the cell elements
         const cells = row.querySelectorAll("td");
         const tank_id = cells[0].textContent;
-        const last_check_up = cells[1].textContent;
+        var last_check_up = cells[1].textContent;
         const capacity = cells[2].textContent;
         const quantity = cells[3].textContent;
         const prod_id = cells[4].textContent;
         const gs_longitude = cells[5].textContent;
         const gs_latitude = cells[6].textContent;
 
+        last_check_up = last_check_up.split('/')
+        last_check_up = last_check_up[2] + "-" + last_check_up[1] + "-" + last_check_up[0];
+
         // Replace the cell elements with form inputs
         cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${tank_id}" readonly="readonly">`;
-        cells[1].innerHTML = `<input type="text" name="last-check-up" value="${last_check_up}">`;
-        cells[2].innerHTML = `<input type="number" step="any" min="0" name="capacity" value="${capacity}">`;
-        cells[3].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
+        cells[1].innerHTML = `<input type="date" name="last-check-up" value="${last_check_up}">`;
+        cells[2].innerHTML = `<input type="number" value="15000" name="capacity" value="${capacity}">`;
+        cells[3].innerHTML = `<input type="number" step=".001" min="0" max="15000" name="quantity" value="${quantity}">`;
         cells[4].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">`;
-        cells[5].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
-        cells[6].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
+        cells[5].innerHTML = `<input type="number" min="0" max="99.999999" step="0.000001" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
+        cells[6].innerHTML = `<input type="number" min="0" max="999.999999" step="0.000001" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
         cells[7].innerHTML = `<a onclick="saveTank('${id}')">Save</a>`;
     }
 

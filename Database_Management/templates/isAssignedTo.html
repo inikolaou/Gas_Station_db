@@ -143,13 +143,25 @@
         <form id="addAssignmentForm" method="POST">
             {% csrf_token %}
             <label for="essn">Essn:</label><br>
-            <input type="text" id="essn" name="essn"><br>
+            <input type="text" maxlength="12" id="essn" name="essn" required><br>
             <label for="service-id">Service Id:</label><br>
-            <input type="number" step="1" min="1" id="service-id" name="service-id"><br>
+            <input type="number" step="1" min="1" id="service-id" name="service-id" required><br>
             <input type="submit" id="submit-add-assignment" name="add_assignment" value="submit" />
         </form>
     </div>
 </body>
+
+{% if essn_fault %}
+<script>
+    alert('{{essn_fault}}');
+</script>
+{% endif %}
+
+{% if service_id_fault %}
+<script>
+    alert('{{service_id_fault}}');
+</script>
+{% endif %}
 
 <script>
     function ShowAssignments() {
@@ -186,8 +198,14 @@
         // Get selected option value
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
+
+        if (typeof addInput.counter == 'undefined') {
+            addInput.counter = 0;
+        }
+        addInput.counter++;
         dropdown.selectedIndex++;
-        if (dropdown.selectedIndex === -1) {
+
+        if (addInput.counter === 2) {
             document.getElementById("add-input-button").disabled = true;
         }
         // Set input type based on selected option
@@ -195,6 +213,7 @@
         switch (selectedOption) {
             case "essn":
                 type = "text";
+                maxlength = "12";
                 break;
             case "service-id":
                 type = "number";
@@ -239,7 +258,7 @@
         const service_id = cells[1].textContent;
 
         // Replace the cell elements with form inputs
-        cells[0].innerHTML = `<input type="text" name="essn" value="${essn}" readonly="readonly">`;
+        cells[0].innerHTML = `<input type="text" maxlength="12" name="essn" value="${essn}" readonly="readonly">`;
         cells[1].innerHTML = `<input type="number" step="1" min="1" name="service-id" value="${service_id}">
                               <input type="hidden" name="previous-service-id" value="${service_id}">`;
         cells[2].innerHTML = `<a onclick="saveAssignment('${id}')">Save</a>`;

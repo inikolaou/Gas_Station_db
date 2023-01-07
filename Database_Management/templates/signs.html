@@ -142,13 +142,25 @@
     <form id="addSignForm" method="POST">
       {% csrf_token %}
       <label for="essn">Essn:</label><br>
-      <input type="text" id="essn" name="essn"><br>
+      <input type="text" maxlength="12" id="essn" name="essn" required><br>
       <label for="contract-id">Contract Id:</label><br>
-      <input type="number" step="1" min="1" id="contract-id" name="contract-id"><br>
+      <input type="number" step="1" min="1" id="contract-id" name="contract-id" required><br>
       <input type="submit" id="submit-add-sign" name="add_sign" value="submit" />
     </form>
   </div>
 </body>
+
+{% if essn_fault %}
+<script>
+    alert('{{essn_fault}}');
+</script>
+{% endif %}
+
+{% if contract_id_fault %}
+<script>
+    alert('{{contract_id_fault}}');
+</script>
+{% endif %}
 
 <script>
   function ShowSigns() {
@@ -185,15 +197,22 @@
     // Get selected option value
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
+
+    if (typeof addInput.counter == 'undefined') {
+        addInput.counter = 0;
+    }
+    addInput.counter++;
     dropdown.selectedIndex++;
-    if (dropdown.selectedIndex === -1) {
-      document.getElementById("add-input-button").disabled = true;
+
+    if (addInput.counter === 2) {
+        document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;
     switch (selectedOption) {
       case "essn":
         type = "text";
+        maxlength = "12";
         break;
       case "contract-id":
         type = "number";
@@ -238,7 +257,7 @@
     const contract_id = cells[1].textContent;
 
     // Replace the cell elements with form inputs
-    cells[0].innerHTML = `<input type="text" name="essn" value="${essn}" readonly="readonly">`;
+    cells[0].innerHTML = `<input type="text" maxlength="12" name="essn" value="${essn}" readonly="readonly">`;
     cells[1].innerHTML = `<input type="number" step="1" min="1" name="contract-id" value="${contract_id}">
                               <input type="hidden" name="previous-contract-id" value="${contract_id}">`;
     cells[2].innerHTML = `<a onclick="saveSign('${id}')">Save</a>`;

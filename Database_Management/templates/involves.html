@@ -145,15 +145,33 @@
     <form id="addInvolvesForm" method="POST">
       {% csrf_token %}
       <label for="prod-id">Product ID:</label><br>
-      <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
+      <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
       <label for="pur-id">Purchase Id:</label><br>
-      <input type="number" step="1" min="1" id="pur-id" name="pur-id"><br>
+      <input type="number" step="1" min="1" id="pur-id" name="pur-id" required><br>
       <label for="quantity">Quantity:</label><br>
-      <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
+      <input type="number" step=".001" min="0" max="15000" id="quantity" name="quantity" required><br>
       <input type="submit" id="submit-add-involves" name="add_involves" value="submit" />
     </form>
   </div>
 </body>
+
+{% if prod_id_fault %}
+<script>
+    alert('{{prod_id_fault}}');
+</script>
+{% endif %}
+
+{% if pur_id_fault %}
+<script>
+    alert('{{pur_id_fault}}');
+</script>
+{% endif %}
+
+{% if quantity_fault %}
+<script>
+    alert('{{quantity_fault}}');
+</script>
+{% endif %}
 
 <script>
   function ShowInvolves() {
@@ -190,9 +208,15 @@
     // Get selected option value
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
+
+    if (typeof addInput.counter == 'undefined') {
+        addInput.counter = 0;
+    }
+    addInput.counter++;
     dropdown.selectedIndex++;
-    if (dropdown.selectedIndex === -1) {
-      document.getElementById("add-input-button").disabled = true;
+
+    if (addInput.counter === 3) {
+        document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;
@@ -209,8 +233,9 @@
         break;
       case "quantity":
         type = "number";
-        step = "any";
+        step = ".001";
         min = "0";
+        max = "15000";
         break;
       default:
         type = "text";
@@ -254,7 +279,7 @@
     cells[0].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">
                             <input type="hidden" name="previous-prod-id" value="${prod_id}">`;
     cells[1].innerHTML = `<input type="number" step="1" min="1" name="pur-id" value="${pur_id}" readonly="readonly">`;
-    cells[2].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
+    cells[2].innerHTML = `<input type="number" step=".001" min="0" max="15000" name="quantity" value="${quantity}">`;
     cells[3].innerHTML = `<a onclick="saveInvolves('${id}')">Save</a>`;
   }
 

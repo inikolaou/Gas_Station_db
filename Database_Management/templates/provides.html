@@ -146,15 +146,33 @@
     <form id="addProvidesForm" method="POST">
       {% csrf_token %}
       <label for="serv-id">Service ID:</label><br>
-      <input type="number" step="1" min="1" id="serv-id" name="serv-id"><br>
+      <input type="number" step="1" min="1" id="serv-id" name="serv-id" required><br>
       <label for="gs-longitude">GS_Longitude:</label><br>
-      <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
+      <input type="number" step="any" id="gs-longitude" name="gs-longitude" required><br>
       <label for="gs-latitude">GS_Latitude:</label><br>
-      <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+      <input type="number" step="any" id="gs-latitude" name="gs-latitude" required><br>
       <input type="submit" id="submit-add-provides" name="add_provides" value="submit" />
     </form>
   </div>
 </body>
+
+{% if serv_id_fault %}
+<script>
+    alert('{{serv_id_fault}}');
+</script>
+{% endif %}
+
+{% if gs_longitude_fault %}
+<script>
+    alert('{{gs_longitude_fault}}');
+</script>
+{% endif %}
+
+{% if gs_latitude_fault %}
+<script>
+    alert('{{gs_latitude_fault}}');
+</script>
+{% endif %}
 
 <script>
   function ShowProvides() {
@@ -191,9 +209,15 @@
     // Get selected option value
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
+
+    if (typeof addInput.counter == 'undefined') {
+        addInput.counter = 0;
+    }
+    addInput.counter++;
     dropdown.selectedIndex++;
-    if (dropdown.selectedIndex === -1) {
-      document.getElementById("add-input-button").disabled = true;
+
+    if (addInput.counter === 3) {
+        document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;
@@ -204,13 +228,17 @@
         min = "1";
         break;
       case "gs-longitude":
-        type = "number";
-        step = "any";
-        break;
+          type = "number";
+          step = "0.000001";
+          min = "0";
+          max = "99.999999"
+          break;
       case "gs-latitude":
-        type = "number";
-        step = "any";
-        break;
+          type = "number";
+          step = "0.000001";
+          min = "0";
+          max = "999.999999"
+          break;
       default:
         type = "text";
     }
@@ -252,8 +280,8 @@
     // Replace the cell elements with form inputs
     cells[0].innerHTML = `<input type="number" step="1" min="1" name="serv-id" value="${serv_id}">
                             <input type="hidden" name="previous-serv-id" value="${serv_id}">`;
-    cells[1].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
-    cells[2].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
+    cells[1].innerHTML = `<input type="number" min="0" max="99.999999" step="0.000001" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
+    cells[2].innerHTML = `<input type="number" min="0" max="999.999999" step="0.000001" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
     cells[3].innerHTML = `<a onclick="saveProvides('${id}')">Save</a>`;
   }
 

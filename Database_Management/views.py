@@ -821,7 +821,7 @@ def gasStation(request):
             type_of_service = type_of_service.strip()
             all_type_of_service = GasStation.allRoles()
             if (type_of_service not in all_type_of_service and "search_gas_station" not in request.POST):
-                type_of_service_fault = "Please write a valid type of service"
+                type_of_service_fault = "Please write a valid type of service. The types of service are Full Service and Self Service"
                 error_occured = True
 
         if (start_date != False):
@@ -1264,7 +1264,7 @@ def product(request):
             products = Product.retrieveAllColumns()
     else:
         products = Product.retrieveAllColumns()
-    return render(request, 'product.html', {'products': products, 'id_fault': id_fault, 'name_fault': name_fault, 'type_of_product_fault': type_of_product_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
+    return render(request, 'product.html', {'products': products, 'number_of_products': len(all_products), 'id_fault': id_fault, 'name_fault': name_fault, 'type_of_product_fault': type_of_product_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
 
 
 def product_delete(request, id):
@@ -1273,9 +1273,9 @@ def product_delete(request, id):
 
 
 def provide(request):
-    serv_id = request.POST.get('serv-id', False)
-    gs_longitude = request.POST.get('gs-longitude', False)
-    gs_latitude = request.POST.get('gs-latitude', False)
+    serv_id_fault = False
+    gs_longitude_fault = False
+    gs_latitude_fault = False
 
     if request.method == "POST":
         serv_id = request.POST.get('serv-id', False)
@@ -1355,7 +1355,7 @@ def provide(request):
             provides = Provides.retrieveAllColumns()
     else:
         provides = Provides.retrieveAllColumns()
-    return render(request, 'provides.html', {'provides': provides, 'serv_id': serv_id, 'gs_longitude': gs_longitude, 'gs_latitude': gs_latitude})
+    return render(request, 'provides.html', {'provides': provides, 'serv_id_fault': serv_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
 def provides_delete(request, serv_gslong_lat):
@@ -1527,7 +1527,7 @@ def pump(request):
             pumps = Pump.retrieveAllColumns()
     else:
         pumps = Pump.retrieveAllColumns()
-    return render(request, 'pump.html', {'pumps': pumps, 'id_fault': id_fault, 'tank_id_fault': tank_id_fault, 'tank_gs_longitude_fault': tank_gs_longitude_fault, 'tank_gs_latitude_fault': tank_gs_latitude_fault, 'current_state_fault': current_state_fault, 'current_state_fault': current_state_fault, 'last_check_up_fault': last_check_up_fault, 'nozzle_last_check_up_fault': nozzle_last_check_up_fault, 'product_quantity_fault': product_quantity_fault})
+    return render(request, 'pump.html', {'pumps': pumps, 'number_of_pumps': len(all_pumps),  'id_fault': id_fault, 'tank_id_fault': tank_id_fault, 'tank_gs_longitude_fault': tank_gs_longitude_fault, 'tank_gs_latitude_fault': tank_gs_latitude_fault, 'current_state_fault': current_state_fault, 'current_state_fault': current_state_fault, 'last_check_up_fault': last_check_up_fault, 'nozzle_last_check_up_fault': nozzle_last_check_up_fault, 'product_quantity_fault': product_quantity_fault})
 
 
 def pump_delete(request, id_tankId_tankLongitude_tankLatitude):
@@ -1691,7 +1691,7 @@ def purchase(request):
             purchases = Purchase.retrieveAllColumns()
     else:
         purchases = Purchase.retrieveAllColumns()
-    return render(request, 'purchase.html', {'purchases': purchases, 'id_fault': id_fault, 'purchase_date_fault': purchase_date_fault, 'type_of_payment_fault': type_of_payment_fault, 'customer_email_fault': customer_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault, 'pump_id_fault': pump_id_fault, 'tank_id_fault': tank_id_fault})
+    return render(request, 'purchase.html', {'purchases': purchases, 'number_of_purchases': len(all_purchases),  'id_fault': id_fault, 'purchase_date_fault': purchase_date_fault, 'type_of_payment_fault': type_of_payment_fault, 'customer_email_fault': customer_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault, 'pump_id_fault': pump_id_fault, 'tank_id_fault': tank_id_fault})
 
 
 def purchase_delete(request, id):
@@ -1793,7 +1793,7 @@ def service(request):
             services = Service.retrieveAllColumns()
     else:
         services = Service.retrieveAllColumns()
-    return render(request, 'service.html', {'services': services, 'id_fault': id_fault, 'name_fault': name_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
+    return render(request, 'service.html', {'services': services, 'number_of_services': len(all_services), 'id_fault': id_fault, 'name_fault': name_fault, 'price_fault': price_fault, 'corresponding_points_fault': corresponding_points_fault})
 
 
 def service_delete(request, id):
@@ -2140,7 +2140,7 @@ def supply(request):
             supplies = Supply.retrieveAllColumns()
     else:
         supplies = Supply.retrieveAllColumns()
-    return render(request, 'supply.html', {'supplies': supplies, 'id_fault': id_fault, 'expected_arrival_date_fault': expected_arrival_date_fault, 'real_arrival_date_fault': real_arrival_date_fault, 'sup_email_fault': sup_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
+    return render(request, 'supply.html', {'supplies': supplies, 'number_of_supplies': len(all_supplies), 'id_fault': id_fault, 'expected_arrival_date_fault': expected_arrival_date_fault, 'real_arrival_date_fault': real_arrival_date_fault, 'sup_email_fault': sup_email_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
 def supply_delete(request, id):
@@ -2304,7 +2304,7 @@ def tank(request):
             tanks = Tank.retrieveAllColumns()
     else:
         tanks = Tank.retrieveAllColumns()
-    return render(request, 'tank.html', {'tanks': tanks, 'id_fault': id_fault, 'last_check_up_fault': last_check_up_fault, 'capacity_fault': capacity_fault, 'quantity_fault': quantity_fault, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
+    return render(request, 'tank.html', {'tanks': tanks, 'number_of_tanks': len(all_tanks), 'id_fault': id_fault, 'last_check_up_fault': last_check_up_fault, 'capacity_fault': capacity_fault, 'quantity_fault': quantity_fault, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
 def tank_delete(request, id_longitude_latitude):

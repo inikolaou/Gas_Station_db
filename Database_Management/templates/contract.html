@@ -247,8 +247,9 @@
                 break;
             case "salary":
                 type = "number";
-                step = "any";
+                step = ".01";
                 min = "0";
+                max = "99999.99";
             default:
                 type = "text";
         }
@@ -298,7 +299,7 @@
         cells[0].innerHTML = `<input type="number" step="1" min="1" name="id" value="${contract_id}" readonly="readonly">`;
         cells[1].innerHTML = `<input type="date" name="start-date" value="${start_date}" required>`;
         cells[2].innerHTML = `<input type="date" name="end-date" value="${end_date}" required>`;
-        cells[3].innerHTML = `<input type="number" step="any" min="0" name="salary" value="${salary}" required>`;
+        cells[3].innerHTML = `<input type="number" step=".01" min="0" max="99999.99" name="salary" value="${salary}" required>`;
         cells[4].innerHTML = `<a onclick="saveContract('${contract_id}')">Save</a>`;
     }
 

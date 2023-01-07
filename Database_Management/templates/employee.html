@@ -166,7 +166,7 @@
         <form id="addEmployeeForm" method="POST">
             {% csrf_token %}
             <label for="ssn">Ssn:</label><br>
-            <input type="text" id="ssn" name="ssn" required><br>
+            <input type="text" maxlength="12" id="ssn" name="ssn" required><br>
             <label for="first-name">First Name:</label><br>
             <input type="text" maxlength="30" id="first-name" name="first-name" required><br>
             <label for="last-name">Last Name:</label><br>
@@ -174,7 +174,7 @@
             <label for="birth-date">Birth Date:</label><br>
             <input type="date" id="birth-date" name="birth-date" required><br>
             <label for="phone-number">Phone Number:</label><br>
-            <input type="number" min="6900000000" max="6999999999" id="phone-number" name="phone-number" required><br>
+            <input type="number" step="1" min="6900000000" max="6999999999" id="phone-number" name="phone-number" required><br>
             <label for="email">Email:</label><br>
             <input type="email" id="email" name="email" required><br>
             <label for="longitude">Longitude:</label><br>
@@ -182,16 +182,16 @@
             <label for="latitude">Latitude:</label><br>
             <input type="number" min="0" max="999.999999" step="0.000001" id="latitude" name="latitude" required><br>
             <label for="role">Role:</label><br>
-            <input type="text" id="role" name="role" required><br>
+            <input type="text" maxlength="20" id="role" name="role" required><br>
             <label for="hours">Hours:</label><br>
-            <input type="number" min="1" max="167" id="hours" name="hours" required><br>
+            <input type="number" step="1" min="1" max="167" id="hours" name="hours" required><br>
             <label for="super-ssn">Super_ssn:</label><br>
-            <input type="text" id="super-ssn" name="super-ssn"><br>
+            <input type="text" maxlength="12" id="super-ssn" name="super-ssn"><br>
             <label for="gs-longitude">GS_Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" step="any" id="gs-longitude"
+            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude"
                 name="gs-longitude"><br>
             <label for="gs-latitude">GS_Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" step="any" id="gs-latitude"
+            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude"
                 name="gs-latitude"><br>
             <input type="submit" id="submit-add-employee" name="add_employee" value="submit">
         </form>
@@ -327,20 +327,39 @@
         switch (selectedOption) {
             case "ssn":
                 type = "text";
+                maxlength = "12";
                 break;
             case "role":
                 type = "text";
+                maxlength = "20";
                 break;
             case "super-ssn":
                 type = "text";
+                maxlength = "12";
+                break;
+            case "longitude":
+                type = "number";
+                step = "0.000001";
+                min = "0";
+                max = "99.999999"
+                break;
+            case "latitude":
+                type = "number";
+                step = "0.000001";
+                min = "0";
+                max = "999.999999"
                 break;
             case "gs-longitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "99.999999"
                 break;
             case "gs-latitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "999.999999"
                 break;
             default:
                 type = "text";
@@ -394,19 +413,19 @@
         birth_date = birth_date[2] + "-" + birth_date[1] + "-" + birth_date[0];
 
         // Replace the cell elements with form inputs
-        cells[0].innerHTML = `<input type="text" name="ssn" value="${ssn}" readonly="readonly">`;
-        cells[1].innerHTML = `<input type="text" name="first-name" value="${first_name}">`;
-        cells[2].innerHTML = `<input type="text" name="last-name" value="${last_name}">`;
+        cells[0].innerHTML = `<input type="text" maxlength="12" name="ssn" value="${ssn}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="text" maxlength="30" name="first-name" value="${first_name}">`;
+        cells[2].innerHTML = `<input type="text" maxlength="30" name="last-name" value="${last_name}">`;
         cells[3].innerHTML = `<input type="date" name="birth-date" value="${birth_date}">`;
-        cells[4].innerHTML = `<input type="number" step="1" name="phone-number" value="${phone_number}">`
+        cells[4].innerHTML = `<input type="number" step="1" min="6900000000" max="6999999999" name="phone-number" value="${phone_number}">`
         cells[5].innerHTML = `<input type="email" name="email" value="${email}">`;
-        cells[6].innerHTML = `<input type="number" step="any" name="longitude" value="${longitude}">`;
-        cells[7].innerHTML = `<input type="number" step="any" name="latitude" value="${latitude}">`;
-        cells[8].innerHTML = `<input type="text" name="role" value="${role}">`;
-        cells[9].innerHTML = `<input type="number" name="hours" value="${hours}">`;
-        cells[10].innerHTML = `<input type="text" name="super-ssn" value="${super_ssn}">`;
-        cells[11].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}">`;
-        cells[12].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}">`;
+        cells[6].innerHTML = `<input type="number" min="0" max="99.999999" step="0.000001" name="longitude" value="${longitude}">`;
+        cells[7].innerHTML = `<input type="number" min="0" max="999.999999" step="0.000001" name="latitude" value="${latitude}">`;
+        cells[8].innerHTML = `<input type="text" maxlength="20" name="role" value="${role}">`;
+        cells[9].innerHTML = `<input type="number" step="1" min="1" max="167" name="hours" value="${hours}">`;
+        cells[10].innerHTML = `<input type="text" maxlength="12" name="super-ssn" value="${super_ssn}">`;
+        cells[11].innerHTML = `<input type="number" min="0" max="99.999999" step="0.000001" name="gs-longitude" value="${gs_longitude}">`;
+        cells[12].innerHTML = `<input type="number" min="0" max="999.999999" step="0.000001" name="gs-latitude" value="${gs_latitude}">`;
         cells[13].innerHTML = `<a onclick="saveEmployee('${id}')">Save</a>`;
     }
 

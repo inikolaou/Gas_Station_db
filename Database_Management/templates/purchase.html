@@ -161,25 +161,75 @@
         <form id="addPurchaseForm" method="POST">
             {% csrf_token %}
             <label for="purchase-id">Purchase Id:</label><br>
-            <input type="number" id="purchase-id" name="purchase-id" readonly="readonly"><br>
+            <input type="number" step="1" min="1" id="purchase-id" name="purchase-id" readonly="readonly" required><br>
             <label for="purchase-date">Purchase Date:</label><br>
-            <input type="text" id="purchase-date" name="purchase-date"><br>
+            <input type="date" id="purchase-date" name="purchase-date" required><br>
             <label for="type-of-payment">Type of Payment:</label><br>
-            <input type="text" id="type-of-payment" name="type-of-payment"><br>
+            <input type="text" maxlength="30" id="type-of-payment" name="type-of-payment" required><br>
             <label for="customer-email">Customer Email:</label><br>
             <input type="email" id="customer-email" name="customer-email"><br>
-            <label for="gs-longitude">GS Longitude:</label><br>
-            <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
-            <label for="gs-latitude">GS Latitude:</label><br>
-            <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+            <label for="gs-longitude">GS_Longitude:</label><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude"
+                name="gs-longitude" required><br>
+            <label for="gs-latitude">GS_Latitude:</label><br>
+            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude"
+                name="gs-latitude" required><br>
             <label for="pump-id">Pump Id:</label><br>
-            <input type="number" min="1" id="pump-id" name="pump-id"><br>
+            <input type="number" step="1" min="1" id="pump-id" name="pump-id"><br>
             <label for="tank-id">Tank Id:</label><br>
-            <input type="number" min="1" id="tank-id" name="tank-id"><br>
+            <input type="number" step="1" min="1" id="tank-id" name="tank-id"><br>
             <input type="submit" id="submit-add-purchase" name="add_purchase" value="submit" />
         </form>
     </div>
 </body>
+
+{% if id_fault %}
+<script>
+    alert('{{id_fault}}');
+</script>
+{% endif %}
+
+{% if purchase_date_fault %}
+<script>
+    alert('{{purchase_date_fault}}');
+</script>
+{% endif %}
+
+{% if type_of_payment_fault %}
+<script>
+    alert('{{type_of_payment_fault}}');
+</script>
+{% endif %}
+
+{% if customer_email_fault %}
+<script>
+    alert('{{customer_email_fault}}');
+</script>
+{% endif %}
+
+{% if gs_longitude_fault %}
+<script>
+    alert('{{gs_longitude_fault}}');
+</script>
+{% endif %}
+
+{% if gs_latitude_fault %}
+<script>
+    alert('{{gs_latitude_fault}}');
+</script>
+{% endif %}
+
+{% if pump_id_fault %}
+<script>
+    alert('{{pump_id_fault}}');
+</script>
+{% endif %}
+
+{% if tank_id_fault %}
+<script>
+    alert('{{tank_id_fault}}');
+</script>
+{% endif %}
 
 <script>
     function ShowPurchase() {
@@ -209,8 +259,8 @@
         search_purchase.style.display = "none";
         const add_purchase = document.getElementById("add_purchase");
         add_purchase.style.display = "block";
-        const new_purchase_id = document.getElementById("purchase-id");
-        new_purchase_id.value = document.getElementsByTagName("tr").length;
+        const id_field = document.getElementById("id");
+        id_field.value = parseInt('{{number_of_purchases}}') + 1;
     }
 
     function addInput() {
@@ -218,8 +268,14 @@
         // Get selected option value
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
+
+        if (typeof addInput.counter == 'undefined') {
+            addInput.counter = 0;
+        }
+        addInput.counter++;
         dropdown.selectedIndex++;
-        if (dropdown.selectedIndex === -1) {
+
+        if (addInput.counter === 8) {
             document.getElementById("add-input-button").disabled = true;
         }
         // Set input type based on selected option
@@ -228,31 +284,39 @@
             case "purchase-id":
                 type = "number";
                 step = "1";
+                min = "1";
                 break;
             case "purchase-date":
-                type = "text";
+                type = "date";
                 break;
             case "type-of-payment":
                 type = "text";
+                maxlength="30"
                 break;
             case "customer-email":
                 type = "email";
                 break;
             case "gs-longitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "99.999999"
                 break;
             case "gs-latitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "999.999999"
                 break;
             case "pump-id":
                 type = "number";
                 step = "1";
+                min = "1";
                 break;
             case "tank-id":
                 type = "number";
                 step = "1";
+                min = "1";
                 break;
             default:
                 type = "text";
@@ -289,7 +353,7 @@
         // Get the values of the cell elements
         const cells = row.querySelectorAll("td");
         const purchase_id = cells[0].textContent;
-        const purchase_date = cells[1].textContent;
+        var purchase_date = cells[1].textContent;
         const type_of_payment = cells[2].textContent;
         const customer_email = cells[3].textContent;
         const gs_longitude = cells[4].textContent;
@@ -297,15 +361,18 @@
         const pump_id = cells[6].textContent;
         const tank_id = cells[7].textContent;
 
+        purchase_date = purchase_date.split('/')
+        purchase_date = purchase_date[2] + "-" + purchase_date[1] + "-" + purchase_date[0];
+
         // Replace the cell elements with form inputs
-        cells[0].innerHTML = `<input type="number" name="purchase-id" value="${purchase_id}" readonly="readonly">`;
-        cells[1].innerHTML = `<input type="text" name="purchase-date" value="${purchase_date}">`;
-        cells[2].innerHTML = `<input type="text" name="type-of-payment" value="${type_of_payment}">`;
+        cells[0].innerHTML = `<input type="number" step="1" min="1" name="purchase-id" value="${purchase_id}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="date" name="purchase-date" value="${purchase_date}">`;
+        cells[2].innerHTML = `<input type="text" maxlength="30" name="type-of-payment" value="${type_of_payment}">`;
         cells[3].innerHTML = `<input type="email" name="customer-email" value="${customer_email}">`;
-        cells[4].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}">`;
-        cells[5].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}">`;
-        cells[6].innerHTML = `<input type="number" name="pump-id" value="${pump_id}">`;
-        cells[7].innerHTML = `<input type="number" name="tank-id" value="${tank_id}">`;
+        cells[4].innerHTML = `<input type="number" min="0" max="99.999999" step="0.000001" name="gs-longitude" value="${gs_longitude}">`;
+        cells[5].innerHTML = `<input type="number" min="0" max="999.999999" step="0.000001" name="gs-latitude" value="${gs_latitude}">`;
+        cells[6].innerHTML = `<input type="number" step="1" min="1" name="pump-id" value="${pump_id}">`;
+        cells[7].innerHTML = `<input type="number" step="1" min="1" name="tank-id" value="${tank_id}">`;
         cells[8].innerHTML = `<a onclick="savePurchase('${id}')">Save</a>`;
     }
 

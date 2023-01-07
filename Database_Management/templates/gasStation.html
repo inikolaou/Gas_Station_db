@@ -153,21 +153,57 @@
         <form id="addGasStationForm" method="POST">
             {% csrf_token %}
             <label for="longitude">Longitude:</label><br>
-            <input type="number" step="any" id="longitude" name="longitude"><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" id="longitude" name="longitude" required><br>
             <label for="latitude">Latitude:</label><br>
-            <input type="number" step="any" id="latitude" name="latitude"><br>
+            <input type="number" min="0" max="999.999999" step="0.000001" id="latitude" name="latitude" required><br>
             <label for="type-of-service">Type of Service:</label><br>
-            <input type="text" id="type-of-service" name="type-of-service"><br>
+            <input type="text" maxlength="20" id="type-of-service" name="type-of-service" required><br>
             <label for="start-date">Start Date:</label><br>
             <input type="date" id="start-date" name="start-date"><br>
             <label for="minimarket">Minimarket:</label><br>
-            <input type="number" min="0" max="1" id="minimarket" name="minimarket"><br>
+            <input type="number" step="1" min="0" max="1" id="minimarket" name="minimarket" required><br>
             <label for="mgr-ssn">Manager Ssn:</label><br>
-            <input type="text" id="mgr-ssn" name="mgr-ssn"><br>
+            <input type="text" maxlength="12" id="mgr-ssn" name="mgr-ssn"><br>
             <input type="submit" id="submit-add-gas-station" name="add_gas_station" value="submit" />
         </form>
     </div>
 </body>
+
+{% if longitude_fault %}
+<script>
+    alert('{{longitude_fault}}');
+</script>
+{% endif %}
+
+{% if latitude_fault %}
+<script>
+    alert('{{latitude_fault}}');
+</script>
+{% endif %}
+
+{% if type_of_service_fault %}
+<script>
+    alert('{{type_of_service_fault}}');
+</script>
+{% endif %}
+
+{% if start_date_fault %}
+<script>
+    alert('{{start_date_fault}}');
+</script>
+{% endif %}
+
+{% if minimarket_fault %}
+<script>
+    alert('{{minimarket_fault}}');
+</script>
+{% endif %}
+
+{% if mgr_ssn_fault %}
+<script>
+    alert('{{mgr_ssn_fault}}');
+</script>
+{% endif %}
 
 <script>
     function ShowGasStation() {
@@ -204,8 +240,14 @@
         // Get selected option value
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
+
+        if (typeof addInput.counter == 'undefined') {
+            addInput.counter = 0;
+        }
+        addInput.counter++;
         dropdown.selectedIndex++;
-        if (dropdown.selectedIndex === -1) {
+
+        if (addInput.counter === 5) {
             document.getElementById("add-input-button").disabled = true;
         }
         // Set input type based on selected option
@@ -213,14 +255,19 @@
         switch (selectedOption) {
             case "longitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "99.999999"
                 break;
             case "latitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "999.999999"
                 break;
             case "type-of-service":
                 type = "text";
+                maxlength = "20";
                 break;
             case "minimarket":
                 type = "number";
@@ -230,6 +277,11 @@
                 break;
             case "mgr-ssn":
                 type = "text";
+                maxlength = "12"
+                break;
+            case "start-date":
+                type = "date";
+                break;
             default:
                 type = "text";
         }
@@ -271,17 +323,20 @@
         const longitude = cells[0].textContent;
         const latitude = cells[1].textContent;
         const type_of_service = cells[2].textContent;
-        const start_date = cells[3].textContent;
+        var start_date = cells[3].textContent;
         const minimarket = cells[4].textContent;
         const mgr_ssn = cells[5].textContent;
 
+        start_date = start_date.split('/')
+        start_date = start_date[2] + "-" + start_date[1] + "-" + start_date[0];
+
         // Replace the cell elements with form inputs
-        cells[0].innerHTML = `<input type="number" name="longitude" value="${longitude}" readonly="readonly">`;
-        cells[1].innerHTML = `<input type="number" name="latitude" value="${latitude}" readonly="readonly">`;
-        cells[2].innerHTML = `<input type="text" name="type-of-service" value="${type_of_service}">`;
+        cells[0].innerHTML = `<input type="number" min="0" max="99.999999" step="0.000001" name="longitude" value="${longitude}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="number" min="0" max="999.999999" step="0.000001" name="latitude" value="${latitude}" readonly="readonly">`;
+        cells[2].innerHTML = `<input type="text" maxlength="20" name="type-of-service" value="${type_of_service}">`;
         cells[3].innerHTML = `<input type="date" name="start-date" value="${start_date}">`;
-        cells[4].innerHTML = `<input type="number" min="0" max="1" name="minimarket" value="${minimarket}">`;
-        cells[5].innerHTML = `<input type="text" name="mgr-ssn" value="${mgr_ssn}">`;
+        cells[4].innerHTML = `<input type="number" step="1" min="0" max="1" name="minimarket" value="${minimarket}">`;
+        cells[5].innerHTML = `<input type="text" maxlength="12" name="mgr-ssn" value="${mgr_ssn}">`;
         cells[6].innerHTML = `<a onclick="saveGasStation('${id}')">Save</a>`;
     }
 

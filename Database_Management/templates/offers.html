@@ -149,17 +149,43 @@
         <form id="addOffersForm" method="POST">
             {% csrf_token %}
             <label for="prod-id">Id:</label><br>
-            <input type="number" step="1" min="1" id="prod-id" name="prod-id"><br>
-            <label for="gs-longitude">GS Longitude:</label><br>
-            <input type="number" step="any" id="gs-longitude" name="gs-longitude"><br>
-            <label for="gs-latitude">GS Latitude:</label><br>
-            <input type="number" step="any" id="gs-latitude" name="gs-latitude"><br>
+            <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
+            <label for="gs-longitude">GS_Longitude:</label><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude"
+                name="gs-longitude" required><br>
+            <label for="gs-latitude">GS_Latitude:</label><br>
+            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude"
+                name="gs-latitude" required><br>
             <label for="quantity">Quantity:</label><br>
-            <input type="number" step="any" min="0" id="quantity" name="quantity"><br>
+            <input type="number" step=".001" min="0" max="15000" id="quantity" name="quantity" required><br>
             <input type="submit" id="submit-add-offers" name="add_offers" value="submit" />
         </form>
     </div>
 </body>
+
+{% if prod_id_fault %}
+<script>
+    alert('{{prod_id_fault}}');
+</script>
+{% endif %}
+
+{% if gs_longitude_fault %}
+<script>
+    alert('{{gs_longitude_fault}}');
+</script>
+{% endif %}
+
+{% if gs_latitude_fault %}
+<script>
+    alert('{{gs_latitude_fault}}');
+</script>
+{% endif %}
+
+{% if quantity_fault %}
+<script>
+    alert('{{quantity_fault}}');
+</script>
+{% endif %}
 
 <script>
     function ShowOffers() {
@@ -196,8 +222,14 @@
         // Get selected option value
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
+        
+        if (typeof addInput.counter == 'undefined') {
+            addInput.counter = 0;
+        }
+        addInput.counter++;
         dropdown.selectedIndex++;
-        if (dropdown.selectedIndex === -1) {
+
+        if (addInput.counter === 4) {
             document.getElementById("add-input-button").disabled = true;
         }
         // Set input type based on selected option
@@ -210,16 +242,21 @@
                 break;
             case "gs-longitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "99.999999"
                 break;
             case "gs-latitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "999.999999"
                 break;
             case "quantity":
                 type = "number";
-                step = "any";
+                step = ".001";
                 min = "0";
+                max = "15000";
                 break;
             default:
                 type = "text";
@@ -263,14 +300,12 @@
         const gs_latitude = cells[2].textContent;
         const quantity = cells[3].textContent;
 
-
-
         // Replace the cell elements with form inputs
         cells[0].innerHTML = `<input type="number" step="1" min="1" name="prod-id" value="${prod_id}">
                               <input type="hidden" name="previous-prod-id" value="${prod_id}">`;
-        cells[1].innerHTML = `<input type="number" step="any" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
-        cells[2].innerHTML = `<input type="number" step="any" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
-        cells[3].innerHTML = `<input type="number" step="any" min="0" name="quantity" value="${quantity}">`;
+        cells[1].innerHTML = `<input type="number" min="0" max="99.999999" step="0.000001" name="gs-longitude" value="${gs_longitude}" readonly="readonly">`;
+        cells[2].innerHTML = `<input type="number" min="0" max="999.999999" step="0.000001" name="gs-latitude" value="${gs_latitude}" readonly="readonly">`;
+        cells[3].innerHTML = `<input type="number" step=".001" min="0" max="15000" name="quantity" value="${quantity}">`;
         cells[4].innerHTML = `<a onclick="saveOffers('${id}')">Save</a>`;
     }
 

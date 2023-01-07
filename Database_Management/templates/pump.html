@@ -161,26 +161,75 @@
         <form id="addPumpForm" method="POST">
             {% csrf_token %}
             <label for="pump-id">Pump Id:</label><br>
-            <input type="number" step="1" id="pump-id" name="pump-id"><br>
+            <input type="number" step="1" min="1" id="pump-id" name="pump-id" required><br>
             <label for="tank-id">Tank Id:</label><br>
-            <input type="number" step="1" id="tank-id" name="tank-id"><br>
+            <input type="number" step="1" min="1" id="tank-id" name="tank-id" required><br>
             <label for="tank-gs-longitude">Tank GS Longitude:</label><br>
-            <input type="number" step="any" id="tank-gs-longitude" name="tank-gs-longitude"><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" id="tank-gs-longitude" name="tank-gs-longitude" required><br>
             <label for="tank-gs-latitude">Tank GS Latitude:</label><br>
-            <input type="number" step="any" id="tank-gs-latitude" name="tank-gs-latitude"><br>
+            <input type="number" min="0" max="999.999999" step="0.000001" id="tank-gs-latitude" name="tank-gs-latitude" required><br>
             <label for="current-state">Current State:</label><br>
             <input type="number" step="1" min="0" max="1" id="current-state" name="current-state"><br>
             <label for="last-check-up">Last Check Up:</label><br>
-            <input type="text" id="last-check-up" name="last-check-up"><br>
+            <input type="date" id="last-check-up" name="last-check-up"><br>
             <label for="nozzle-last-check-up">Nozzle Last Check Up Id:</label><br>
-            <input type="text" id="nozzle-last-check-up" name="nozzle-last-check-up"><br>
+            <input type="date" id="nozzle-last-check-up" name="nozzle-last-check-up"><br>
             <label for="product-quantity">Product Quantity:</label><br>
-            <input type="number" step="any" id="product-quantity" name="product-quantity"><br>
+            <input type="number" step=".001" min="0" max="5000" id="product-quantity" name="product-quantity" required><br>
 
             <input type="submit" id="submit-add-pump" name="add_pump" value="submit" />
         </form>
     </div>
 </body>
+
+{% if id_fault %}
+<script>
+    alert('{{id_fault}}');
+</script>
+{% endif %}
+
+{% if tank_id_fault %}
+<script>
+    alert('{{tank_id_fault}}');
+</script>
+{% endif %}
+
+{% if tank_gs_longitude_fault %}
+<script>
+    alert('{{tank_gs_longitude_fault}}');
+</script>
+{% endif %}
+
+{% if tank_gs_latitude_fault %}
+<script>
+    alert('{{tank_gs_latitude_fault}}');
+</script>
+{% endif %}
+
+{% if current_state_fault %}
+<script>
+    alert('{{current_state_fault}}');
+</script>
+{% endif %}
+
+{% if last_check_up_fault %}
+<script>
+    alert('{{last_check_up_fault}}');
+</script>
+{% endif %}
+
+{% if nozzle_last_check_up_fault %}
+<script>
+    alert('{{nozzle_last_check_up_fault}}');
+</script>
+{% endif %}
+
+{% if product_quantity_fault %}
+<script>
+    alert('{{product_quantity_fault}}');
+</script>
+{% endif %}
+
 
 <script>
     function ShowPump() {
@@ -210,6 +259,8 @@
         search_pump.style.display = "none";
         const add_pump = document.getElementById("add_pump");
         add_pump.style.display = "block";
+        const id_field = document.getElementById("id");
+        id_field.value = parseInt('{{number_of_pumps}}') + 1;
     }
 
     function addInput() {
@@ -217,8 +268,14 @@
         // Get selected option value
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
+
+        if (typeof addInput.counter == 'undefined') {
+            addInput.counter = 0;
+        }
+        addInput.counter++;
         dropdown.selectedIndex++;
-        if (dropdown.selectedIndex === -1) {
+
+        if (addInput.counter === 8) {
             document.getElementById("add-input-button").disabled = true;
         }
         // Set input type based on selected option
@@ -227,18 +284,24 @@
             case "pump-id":
                 type = "number";
                 step = "1";
+                min = "1";
                 break;
             case "tank-id":
                 type = "number";
                 step = "1";
+                min = "1";
                 break;
             case "tank-gs-longitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "99.999999"
                 break;
             case "tank-gs-latitude":
                 type = "number";
-                step = "any";
+                step = "0.000001";
+                min = "0";
+                max = "999.999999"
                 break;
             case "current-state":
                 type = "number";
@@ -247,14 +310,16 @@
                 max = "1";
                 break;
             case "last-check-up":
-                type = "text";
+                type = "date";
                 break;
             case "nozzle-last-check-up":
-                type = "text";
+                type = "date";
                 break;
             case "product-quantity":
                 type = "number";
-                step = "1";
+                step = ".001";
+                min = "0";
+                max = "5000";
                 break;
             default:
                 type = "text";
@@ -299,19 +364,25 @@
         const tank_gs_longitude = cells[2].textContent;
         const tank_gs_latitude = cells[3].textContent;
         const current_state = cells[4].textContent;
-        const last_check_up = cells[5].textContent;
-        const nozzle_last_check_up = cells[6].textContent;
+        var last_check_up = cells[5].textContent;
+        var nozzle_last_check_up = cells[6].textContent;
         const product_quantity = cells[7].textContent;
 
+        last_check_up = last_check_up.split('/')
+        last_check_up = last_check_up[2] + "-" + last_check_up[1] + "-" + last_check_up[0];
+
+        nozzle_last_check_up = nozzle_last_check_up.split('/')
+        nozzle_last_check_up = nozzle_last_check_up[2] + "-" + nozzle_last_check_up[1] + "-" + nozzle_last_check_up[0];
+
         // Replace the cell elements with form inputs
-        cells[0].innerHTML = `<input type="number" name="pump-id" value="${pump_id}" readonly="readonly">`;
-        cells[1].innerHTML = `<input type="number" name="tank-id" value="${tank_id}" readonly="readonly">`;
-        cells[2].innerHTML = `<input type="number" step="any" name="tank-gs-longitude" value="${tank_gs_longitude}" readonly="readonly">`;
-        cells[3].innerHTML = `<input type="number" step="any" name="tank-gs-latitude" value="${tank_gs_latitude}" readonly="readonly">`;
+        cells[0].innerHTML = `<input type="number" step="1" min="1" name="pump-id" value="${pump_id}" readonly="readonly">`;
+        cells[1].innerHTML = `<input type="number" step="1" min="1" name="tank-id" value="${tank_id}" readonly="readonly">`;
+        cells[2].innerHTML = `<input type="number" min="0" max="99.999999" step="0.000001" name="tank-gs-longitude" value="${tank_gs_longitude}" readonly="readonly">`;
+        cells[3].innerHTML = `<input type="number" min="0" max="999.999999" step="0.000001" name="tank-gs-latitude" value="${tank_gs_latitude}" readonly="readonly">`;
         cells[4].innerHTML = `<input type="number" step="1" min="0" max="1" name="current-state" value="${current_state}">`;
-        cells[5].innerHTML = `<input type="text" name="last-check-up" value="${last_check_up}">`;
-        cells[6].innerHTML = `<input type="text" name="nozzle-last-check-up" value="${nozzle_last_check_up}">`;
-        cells[7].innerHTML = `<input type="number" step="any" name="product-quantity" value="${product_quantity}">`;
+        cells[5].innerHTML = `<input type="date" name="last-check-up" value="${last_check_up}">`;
+        cells[6].innerHTML = `<input type="date" name="nozzle-last-check-up" value="${nozzle_last_check_up}">`;
+        cells[7].innerHTML = `<input type="number" step=".001" min="0" max="5000" name="product-quantity" value="${product_quantity}">`;
         cells[8].innerHTML = `<a onclick="savePump('${id}')">Save</a>`;
     }
 

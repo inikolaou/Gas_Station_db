@@ -142,13 +142,25 @@
     <form id="addEntailsForm" method="POST">
       {% csrf_token %}
       <label for="serv-id">Service ID:</label><br>
-      <input type="number" step="1" min="1" id="serv-id" name="serv-id"><br>
+      <input type="number" step="1" min="1" id="serv-id" name="serv-id" required><br>
       <label for="pur-id">Purchase Id:</label><br>
-      <input type="number" step="1" min="1" id="pur-id" name="pur-id"><br>
+      <input type="number" step="1" min="1" id="pur-id" name="pur-id" required><br>
       <input type="submit" id="submit-add-entails" name="add_entails" value="submit" />
     </form>
   </div>
 </body>
+
+{% if serv_id_fault %}
+<script>
+    alert('{{serv_id_fault}}');
+</script>
+{% endif %}
+
+{% if pur_id_fault %}
+<script>
+    alert('{{pur_id_fault}}');
+</script>
+{% endif %}
 
 <script>
   function ShowEntails() {
@@ -185,9 +197,15 @@
     // Get selected option value
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
+
+    if (typeof addInput.counter == 'undefined') {
+        addInput.counter = 0;
+    }
+    addInput.counter++;
     dropdown.selectedIndex++;
-    if (dropdown.selectedIndex === -1) {
-      document.getElementById("add-input-button").disabled = true;
+
+    if (addInput.counter === 2) {
+        document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;

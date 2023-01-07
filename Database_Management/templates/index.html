@@ -25,23 +25,52 @@
             margin: 0;
         }
 
-        .nav {
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #eee;
-            padding: 20px;
+            background-color: #333;
+            color: #fff;
         }
 
-        .nav a {
-            color: #333;
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            position: relative;
+        }
+
+        nav ul li a {
+            display: block;
+            color: #fff;
             text-decoration: none;
-            font-size: 18px;
-            margin: 0 10px;
+            padding: 10px 20px;
         }
 
-        .nav a:hover {
-            color: #ffa500;
+        nav ul li a:hover,
+        nav ul li a:active {
+            background-color: #444;
+        }
+
+        nav ul li ul {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1;
+            display: none;
+            flex-direction: column;
+        }
+
+        nav ul li:hover ul {
+            display: flex;
+        }
+
+        nav ul li ul li a {
+            background-color: #333;
         }
 
         .main {
@@ -49,6 +78,7 @@
             flex-wrap: wrap;
             justify-content: space-around;
             margin: 20px;
+            min-height: 100vh;
         }
 
         .card {
@@ -93,10 +123,6 @@
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
-            position: absolute;
-            top: 72%;
-            left: 50%;
-            transform: translateX(-50%);
         }
 
         .card button:hover {
@@ -112,6 +138,8 @@
             color: white;
             padding: 20px;
             text-align: center;
+            position: sticky;
+            bottom: 0;
         }
 
         .footer p {
@@ -124,18 +152,48 @@
     <div class="header">
         <h1>Welcome to Your Gas Station</h1>
     </div>
-    <div class="nav">
-        <a href="employee/">Employees</a>
-        <a href="tank/">Tanks</a>
-        <a href="supplier/">Suppliers</a>
-    </div>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li>
+                <a href="employee/">Employees</a>
+                <ul>
+                    <li><a href="contract/">Contracts</a></li>
+                    <li><a href="signs/">Signs</a></li>
+                    <li><a href="is_assigned_to/">Assigments</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="gas_stations/">Gas Stations</a>
+                <ul>
+                    <li><a href="tanks/">Tanks</a></li>
+                    <li><a href="pump/">Pumps</a></li>
+                    <li><a href="offers/">Offers</a></li>
+                    <li><a href="provides/">Provides</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="supplier/">Suppliers</a>
+                <ul>
+                    <li><a href="supply/">Supplies</a></li>
+                    <li><a href="consists_of/">Content Inside</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="purchases/">Purchases</a>
+                <ul>
+                    <li><a href="involves/">Products Inside</a></li>
+                    <li><a href="entails/">Services Inside</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
     <div class="main">
         <div class="card">
-            <img src="https://img.freepik.com/premium-vector/red-bright-gas-station-pump-with-fuel-nozzle-petrol-pump-realistic-vector-illustration-isolated-white_149267-1769.jpg?w=2000"
-                alt="Gas Pump">
-            <h3>Fuel</h3>
-            <p>We offer a variety of fuel options, including regular, premium, and diesel.</p>
-            <button onclick="visitPumps()">Visit Pumps</button>
+            <img src="https://media.sproutsocial.com/uploads/2018/05/Customers_Part_of_Company_Blog.png" alt="Gas Pump">
+            <h3>Customers</h3>
+            <p>At our gas station, we value our customers and offer loyalty rewards and promotions</p>
+            <button onclick="visitCustomers()">Visit Customers</button>
         </div>
         <div class="card">
             <img src="https://miro.medium.com/max/800/1*dqHEW9iqxYQCTzTY22axfg.png" alt="Convenience Store">
@@ -157,8 +215,8 @@
     </div>
 </body>
 <script>
-    function visitPumps() {
-        window.location = "pump/";
+    function visitCustomers() {
+        window.location = "customers/";
     }
     function visitProducts() {
         window.location = "product/";

@@ -21,13 +21,13 @@ def createPurchaseTable():
                         FOREIGN KEY (Pump_Id, Tank_Id, GS_Longitude, GS_Latitude) REFERENCES PUMP(Id, Tank_Id, T_GS_Longitude, T_GS_Latitude)
                                     ON UPDATE CASCADE ON DELETE SET NULL
                         );''')
-            insertFromCsv("Datasets/purchase.csv")
         except Exception as e:
-            pass
+            print(e)
     conn.close()
 
 
-def insertFromCsv(fileName):
+def insertFromCsv():
+    fileName = "Datasets/purchase.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)

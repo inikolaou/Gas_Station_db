@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createEntailsTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -13,18 +14,20 @@ def createEntailsTable():
                         FOREIGN KEY (Serv_Id) REFERENCES SERVICE(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Pur_Id) REFERENCES PURCHASE(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
-            insertFromCsv("Datasets/entails.csv")
         except Exception as e:
-            pass
+            print(e)
     conn.close()
 
-def insertFromCsv(fileName):
+
+def insertFromCsv():
+    fileName = "Datasets/entails.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
             insertInto(tuple['Serv_ID'], tuple['Pur_ID'], conn)
     conn.close()
+
 
 def insertInto(serv_id, pur_id, conn=False):
     if (conn == False):
@@ -35,7 +38,7 @@ def insertInto(serv_id, pur_id, conn=False):
                 c.execute('''INSERT INTO ENTAILS
                             VALUES (?,?);''', (serv_id, pur_id))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -44,7 +47,9 @@ def insertInto(serv_id, pur_id, conn=False):
                 c.execute('''INSERT INTO ENTAILS
                             VALUES (?,?);''', (serv_id, pur_id))
             except Exception as e:
-                pass
+                print("ENTAILS")
+                print(e)  # tuple already added
+
 
 def searchBy(serv_id, pur_id):
     conn = sqlite3.connect("Gas_Station.db")
@@ -55,16 +60,17 @@ def searchBy(serv_id, pur_id):
                 SELECT * 
                 FROM ENTAILS
                 WHERE Pur_Id = ?''',
-                (pur_id, ))
+                      (pur_id, ))
         elif (serv_id):
             c.execute('''
                 SELECT * 
                 FROM ENTAILS
                 WHERE Serv_Id = ?''',
-                (serv_id, ))
+                      (serv_id, ))
     data = c.fetchall()
     conn.close()
     return data
+
 
 def update(serv_id, pur_id, previous_serv_id):
     conn = sqlite3.connect("Gas_Station.db")
@@ -74,12 +80,13 @@ def update(serv_id, pur_id, previous_serv_id):
         try:
             c.execute('''UPDATE ENTAILS
                         SET Serv_Id = ?
-                        WHERE Pur_Id = ? AND Serv_Id = ?''', 
-                        (serv_id, pur_id, previous_serv_id))
+                        WHERE Pur_Id = ? AND Serv_Id = ?''',
+                      (serv_id, pur_id, previous_serv_id))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(serv_pur):
     serv_pur = serv_pur.split('_')
@@ -92,10 +99,11 @@ def delete(serv_pur):
         try:
             c.execute('''DELETE FROM ENTAILS
                         WHERE Serv_Id = ? AND Pur_Id = ?''',
-                        (serv_id, pur_id))
+                      (serv_id, pur_id))
         except Exception as e:
             print(e)
     conn.close()
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

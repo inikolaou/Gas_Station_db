@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createConsistsOfTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -15,18 +16,21 @@ def createConsistsOfTable():
                         FOREIGN KEY (Supply_Id) REFERENCES SUPPLY(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Prod_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
-            insertFromCsv("Datasets/consists_of.csv")
         except Exception as e:
-            pass
+            print(e)
     conn.close()
 
-def insertFromCsv(fileName):
+
+def insertFromCsv():
+    fileName = "Datasets/consists_of.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
-            insertInto(tuple['Supply_ID'], tuple['Prod_ID'], tuple['Cost'], tuple['Quantity'], conn)
+            insertInto(tuple['Supply_ID'], tuple['Prod_ID'],
+                       tuple['Cost'], tuple['Quantity'], conn)
     conn.close()
+
 
 def insertInto(supply_id, prod_id, cost, quantity, conn=False):
     if (conn == False):
@@ -37,7 +41,7 @@ def insertInto(supply_id, prod_id, cost, quantity, conn=False):
                 c.execute('''INSERT INTO CONSISTS_OF
                             VALUES (?,?,?,?);''', (supply_id, prod_id, cost, quantity))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -46,7 +50,10 @@ def insertInto(supply_id, prod_id, cost, quantity, conn=False):
                 c.execute('''INSERT INTO CONSISTS_OF
                             VALUES (?,?,?,?);''', (supply_id, prod_id, cost, quantity))
             except Exception as e:
-                pass
+                print("CONSISTS OF")
+                print(e)  # tuple already added
+                print(supply_id, prod_id, cost, quantity)
+
 
 def searchBy(supply_id, prod_id, cost, quantity):
     conn = sqlite3.connect("Gas_Station.db")
@@ -58,13 +65,13 @@ def searchBy(supply_id, prod_id, cost, quantity):
                     SELECT * 
                     FROM CONSISTS_OF
                     WHERE Supply_Id = ? AND Prod_Id = ?''',
-                    (supply_id, prod_id))
+                          (supply_id, prod_id))
             else:
                 c.execute('''
                     SELECT * 
                     FROM CONSISTS_OF
                     WHERE Supply_Id = ?''',
-                    (supply_id, ))
+                          (supply_id, ))
         elif (prod_id):
             if (cost):
                 if (quantity):
@@ -72,42 +79,43 @@ def searchBy(supply_id, prod_id, cost, quantity):
                         SELECT * 
                         FROM CONSISTS_OF
                         WHERE Prod_Id = ? AND Cost = ? AND Quantity = ?''',
-                        (prod_id, cost, quantity))
+                              (prod_id, cost, quantity))
                 else:
                     c.execute('''
                         SELECT * 
                         FROM CONSISTS_OF
                         WHERE Prod_Id = ? AND Cost = ?''',
-                        (prod_id, cost))
+                              (prod_id, cost))
             else:
                 c.execute('''
                     SELECT * 
                     FROM CONSISTS_OF
                     WHERE Prod_Id = ?''',
-                    (prod_id, ))
+                          (prod_id, ))
         elif (cost):
             if (quantity):
                 c.execute('''
                     SELECT * 
                     FROM CONSISTS_OF
                     WHERE Cost = ? AND Quantity = ?''',
-                    (cost, quantity))
+                          (cost, quantity))
             else:
                 c.execute('''
                     SELECT * 
                     FROM CONSISTS_OF
                     WHERE Cost = ?''',
-                    (cost, ))
+                          (cost, ))
         elif (quantity):
             c.execute('''
                 SELECT * 
                 FROM CONSISTS_OF
                 WHERE Quantity = ?''',
-                (quantity, ))
+                      (quantity, ))
 
     data = c.fetchall()
     conn.close()
     return data
+
 
 def update(supply_id, prod_id, cost, quantity, previous_prod_id):
     conn = sqlite3.connect("Gas_Station.db")
@@ -117,12 +125,13 @@ def update(supply_id, prod_id, cost, quantity, previous_prod_id):
         try:
             c.execute('''UPDATE CONSISTS_OF
                         SET Prod_Id = ?, Cost = ?, Quantity = ?
-                        WHERE Supply_Id = ? AND Prod_Id = ?''', 
-                        (prod_id, cost, quantity, supply_id, previous_prod_id))
+                        WHERE Supply_Id = ? AND Prod_Id = ?''',
+                      (prod_id, cost, quantity, supply_id, previous_prod_id))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(supply_prod):
     supply_prod = supply_prod.split('_')
@@ -135,10 +144,11 @@ def delete(supply_prod):
         try:
             c.execute('''DELETE FROM CONSISTS_OF
                         WHERE Supply_Id = ? AND Prod_Id = ?''',
-                        (supply_id, prod_id))
+                      (supply_id, prod_id))
         except Exception as e:
             print(e)
     conn.close()
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

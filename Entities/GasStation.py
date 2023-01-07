@@ -17,13 +17,13 @@ def createGasStationTable():
                         PRIMARY KEY (Longitude, Latitude),
                         FOREIGN KEY (Mgr_Ssn) REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL
                         );''')
-            insertFromCsv("Datasets/gas_station.csv")
         except Exception as e:
-            pass  # Database created
+            print(e)
     conn.close()
 
 
-def insertFromCsv(fileName):
+def insertFromCsv():
+    fileName = "Datasets/gas_station.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
@@ -52,8 +52,10 @@ def insertInto(longitude, latitude, type_of_service, start_date, minimarket, mgr
                 c.execute('''INSERT INTO GAS_STATION
                             VALUES (?,?,?,?,?,?);''', (longitude, latitude, type_of_service,
                                                        start_date, minimarket, mgr_ssn))
-            except Exception:
-                pass
+            except Exception as e:
+                print("GAS STATION")
+                print(longitude, latitude)
+                print(e)  # tuple already added
 
 
 def searchBy(longitude, latitude, type_of_service, minimarket, mgr_ssn):
@@ -118,7 +120,6 @@ def searchBy(longitude, latitude, type_of_service, minimarket, mgr_ssn):
 
 def update(longitude, latitude, type_of_service, start_date, minimarket, mgr_ssn):
     conn = sqlite3.connect("Gas_Station.db")
-    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:
@@ -163,6 +164,15 @@ def allGSLongitudesLatitudes():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     c.execute("select Longitude, Latitude from GAS_STATION")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allTypesOfService():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute("select DISTINCT Type_of_Service from GAS_STATION")
     data = c.fetchall()
     conn.close()
     return data

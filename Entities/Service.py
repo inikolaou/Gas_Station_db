@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createServiceTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -13,19 +14,21 @@ def createServiceTable():
                         Corresponding_Points        INTEGER     NOT NULL,
                         PRIMARY KEY (Id))
                         ;''')
-            insertFromCsv("Datasets/service.csv")
         except Exception as e:
-            pass # Database created
+            print(e)
     conn.close()
 
-def insertFromCsv(fileName):
+
+def insertFromCsv():
+    fileName = "Datasets/service.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
             insertInto(tuple['ID'], tuple['Name'],
-                        tuple['Price'], tuple['Corresponding_Points'], conn)
+                       tuple['Price'], tuple['Corresponding_Points'], conn)
     conn.close()
+
 
 def insertInto(id, name, price, points, conn=False):
     if (conn == False):
@@ -35,9 +38,9 @@ def insertInto(id, name, price, points, conn=False):
             try:
                 c.execute('''INSERT INTO SERVICE
                             VALUES (?,?,?,?);''', (id, name,
-                            price, points))
+                                                   price, points))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -45,9 +48,10 @@ def insertInto(id, name, price, points, conn=False):
             try:
                 c.execute('''INSERT INTO SERVICE
                             VALUES (?,?,?,?);''', (id, name,
-                            price, points))
+                                                   price, points))
             except Exception:
                 pass
+
 
 def searchBy(id, price, points):
     conn = sqlite3.connect("Gas_Station.db")
@@ -58,29 +62,30 @@ def searchBy(id, price, points):
                 SELECT * 
                 FROM SERVICE
                 WHERE Id = ?''',
-                (id, ))
+                      (id, ))
         elif (price):
             if (points):
                 c.execute('''
                     SELECT * 
                     FROM SERVICE
                     WHERE Price = ? AND Corresponding_Points = ?''',
-                    (price, points))
+                          (price, points))
             else:
                 c.execute('''
                     SELECT * 
                     FROM SERVICE
                     WHERE Price = ?''',
-                    (price, ))
+                          (price, ))
         elif (points):
             c.execute('''
                 SELECT * 
                 FROM SERVICE
                 WHERE Corresponding_Points = ?''',
-                (points, ))
+                      (points, ))
     data = c.fetchall()
     conn.close()
     return data
+
 
 def update(id, name, price, points):
     conn = sqlite3.connect("Gas_Station.db")
@@ -91,11 +96,12 @@ def update(id, name, price, points):
             c.execute('''UPDATE SERVICE
                         SET Name = ?, Price = ?, Corresponding_Points = ?
                         WHERE Id = ?''',
-                        (name, price, points, id))
+                      (name, price, points, id))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(id):
     conn = sqlite3.connect("Gas_Station.db")
@@ -110,6 +116,7 @@ def delete(id):
             print(e)
     conn.close()
 
+
 def searchByName():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -117,6 +124,7 @@ def searchByName():
     data = c.fetchall()
     conn.close()
     return data
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

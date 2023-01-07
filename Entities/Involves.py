@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createInvolvesTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -14,18 +15,21 @@ def createInvolvesTable():
                         FOREIGN KEY (Prod_Id) REFERENCES PRODUCT(Id) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Pur_Id) REFERENCES PURCHASE(Id) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
-            insertFromCsv("Datasets/involves.csv")
         except Exception as e:
             pass
     conn.close()
 
-def insertFromCsv(fileName):
+
+def insertFromCsv():
+    fileName = "Datasets/involves.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
-            insertInto(tuple['Prod_ID'], tuple['Pur_ID'], tuple['Quantity'], conn)
+            insertInto(tuple['Prod_ID'], tuple['Pur_ID'],
+                       tuple['Quantity'], conn)
     conn.close()
+
 
 def insertInto(prod_id, pur_id, quantity, conn=False):
     if (conn == False):
@@ -36,7 +40,7 @@ def insertInto(prod_id, pur_id, quantity, conn=False):
                 c.execute('''INSERT INTO INVOLVES
                             VALUES (?,?,?);''', (prod_id, pur_id, quantity))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -45,7 +49,10 @@ def insertInto(prod_id, pur_id, quantity, conn=False):
                 c.execute('''INSERT INTO INVOLVES
                             VALUES (?,?,?);''', (prod_id, pur_id, quantity))
             except Exception as e:
-                pass
+                print("INVOLVES")
+                print(e)  # tuple already added
+                print(prod_id, pur_id, quantity)
+
 
 def searchBy(prod_id, pur_id, quantity):
     conn = sqlite3.connect("Gas_Station.db")
@@ -56,29 +63,30 @@ def searchBy(prod_id, pur_id, quantity):
                 SELECT * 
                 FROM INVOLVES
                 WHERE Pur_Id = ?''',
-                (pur_id, ))
+                      (pur_id, ))
         elif (prod_id):
             if (quantity):
                 c.execute('''
                     SELECT * 
                     FROM INVOLVES
                     WHERE Prod_Id = ?, Quantity = ?''',
-                    (prod_id, quantity))
+                          (prod_id, quantity))
             else:
                 c.execute('''
                     SELECT * 
                     FROM INVOLVES
                     WHERE Prod_Id = ?''',
-                    (prod_id, ))
+                          (prod_id, ))
         elif (quantity):
             c.execute('''
                 SELECT * 
                 FROM INVOLVES
                 WHERE Quantity = ?''',
-                (quantity, ))
+                      (quantity, ))
     data = c.fetchall()
     conn.close()
     return data
+
 
 def update(prod_id, pur_id, quantity, previous_prod_id):
     conn = sqlite3.connect("Gas_Station.db")
@@ -88,12 +96,13 @@ def update(prod_id, pur_id, quantity, previous_prod_id):
         try:
             c.execute('''UPDATE INVOLVES
                         SET Prod_Id = ?, Quantity = ?
-                        WHERE Prod_Id = ? AND Pur_Id = ?''', 
-                        (prod_id, quantity, previous_prod_id, pur_id))
+                        WHERE Prod_Id = ? AND Pur_Id = ?''',
+                      (prod_id, quantity, previous_prod_id, pur_id))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(prod_pur):
     prod_pur = prod_pur.split('_')
@@ -106,10 +115,11 @@ def delete(prod_pur):
         try:
             c.execute('''DELETE FROM INVOLVES
                         WHERE Prod_Id = ? AND Pur_Id = ?''',
-                        (prod_id, pur_id))
+                      (prod_id, pur_id))
         except Exception as e:
             print(e)
     conn.close()
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

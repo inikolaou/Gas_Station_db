@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createSupplierTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -15,12 +16,13 @@ def createSupplierTable():
                         Latitude        REAL    NOT NULL,
                         PRIMARY KEY (Email))
                         ;''')
-            insertFromCsv("Datasets/supplier.csv")
         except Exception as e:
-            pass # Database created
+            print(e)
     conn.close()
 
-def insertFromCsv(fileName):
+
+def insertFromCsv():
+    fileName = "Datasets/supplier.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
@@ -30,6 +32,7 @@ def insertFromCsv(fileName):
                        tuple['Latitude'], conn)
     conn.close()
 
+
 def insertInto(email, fname, lname, phone_number, longitude, latitude, conn=False):
     if (conn == False):
         conn = sqlite3.connect("Gas_Station.db")
@@ -38,10 +41,10 @@ def insertInto(email, fname, lname, phone_number, longitude, latitude, conn=Fals
             try:
                 c.execute('''INSERT INTO SUPPLIER
                             VALUES (?,?,?,?,?,?);''',
-                            (email, fname, lname, phone_number,
-                             longitude, latitude))
+                          (email, fname, lname, phone_number,
+                           longitude, latitude))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -49,11 +52,12 @@ def insertInto(email, fname, lname, phone_number, longitude, latitude, conn=Fals
             try:
                 c.execute('''INSERT INTO SUPPLIER
                             VALUES (?,?,?,?,?,?);''',
-                            (email, fname, lname, phone_number,
-                             longitude, latitude))
+                          (email, fname, lname, phone_number,
+                           longitude, latitude))
             except Exception:
                 pass
-            
+
+
 def searchBy(email, phone_number, longitude, latitude):
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -63,22 +67,23 @@ def searchBy(email, phone_number, longitude, latitude):
                         SELECT * 
                         FROM SUPPLIER
                         WHERE Email = ?''',
-                        (email, ))
+                      (email, ))
         elif (phone_number):
             c.execute('''
                     SELECT * 
                     FROM SUPPLIER
                     WHERE Phone_Number = ?''',
-                    (phone_number, ))
+                      (phone_number, ))
         elif (longitude and latitude):
             c.execute('''
                     SELECT * 
                     FROM SUPPLIER
                     WHERE Longitude = ? AND Latitude = ?''',
-                    (longitude, latitude))
+                      (longitude, latitude))
     data = c.fetchall()
     conn.close()
     return data
+
 
 def update(email, fname, lname, phone_number, longitude, latitude):
     conn = sqlite3.connect("Gas_Station.db")
@@ -88,13 +93,14 @@ def update(email, fname, lname, phone_number, longitude, latitude):
         try:
             c.execute('''UPDATE SUPPLIER
                         SET Fname = ?, Lname = ?, Phone_Number = ?,
-                        Longitude = ?, Latitude = ? WHERE Email = ?''', 
-                        (fname, lname, phone_number, longitude,
-                         latitude, email))
+                        Longitude = ?, Latitude = ? WHERE Email = ?''',
+                      (fname, lname, phone_number, longitude,
+                       latitude, email))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(email):
     conn = sqlite3.connect("Gas_Station.db")
@@ -110,6 +116,7 @@ def delete(email):
             print(e)
     conn.close()
 
+
 def searchByName():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -117,6 +124,7 @@ def searchByName():
     data = c.fetchall()
     conn.close()
     return data
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

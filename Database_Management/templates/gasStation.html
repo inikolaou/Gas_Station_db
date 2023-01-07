@@ -112,6 +112,7 @@
                     <th>Start Date</th>
                     <th>Minimarket</th>
                     <th>Mgr Ssn</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -146,24 +147,26 @@
         <button id="add-input-button" onclick="addInput()">Add Input</button>
         <form id="searchGasStationForm" method="POST">
             {% csrf_token %}
-            <input type="submit" id="submit-search-gas-station" name="search_gas_station" value="submit" />
+            <input type="submit" id="submit-search-gas-station" name="search_gas_station" value="submit" disabled />
         </form>
     </div>
     <div id="add_gas_station" style="display: none">
         <form id="addGasStationForm" method="POST">
             {% csrf_token %}
             <label for="longitude">Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" id="longitude" name="longitude" required><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" step="any" id="longitude" name="longitude"
+                required><br>
             <label for="latitude">Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" id="latitude" name="latitude" required><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" step="any" id="latitude" name="latitude"
+                required><br>
             <label for="type-of-service">Type of Service:</label><br>
             <input type="text" maxlength="20" id="type-of-service" name="type-of-service" required><br>
             <label for="start-date">Start Date:</label><br>
-            <input type="date" id="start-date" name="start-date"><br>
+            <input type="date" id="start-date" name="start-date" required><br>
             <label for="minimarket">Minimarket:</label><br>
-            <input type="number" step="1" min="0" max="1" id="minimarket" name="minimarket" required><br>
+            <input type="number" min="0" max="1" id="minimarket" name="minimarket" required><br>
             <label for="mgr-ssn">Manager Ssn:</label><br>
-            <input type="text" maxlength="12" id="mgr-ssn" name="mgr-ssn"><br>
+            <input type="text" maxlength="12" id="mgr-ssn" name="mgr-ssn" required><br>
             <input type="submit" id="submit-add-gas-station" name="add_gas_station" value="submit" />
         </form>
     </div>
@@ -223,7 +226,6 @@
         search_gas_station.style.display = "block";
         const add_gas_station = document.getElementById("add_gas_station");
         add_gas_station.style.display = "none";
-        document.getElementById("submit-search-gas-station").disabled = true;
     }
 
     function AddGasStation() {
@@ -250,6 +252,7 @@
         if (addInput.counter === 5) {
             document.getElementById("add-input-button").disabled = true;
         }
+
         // Set input type based on selected option
         var type;
         switch (selectedOption) {

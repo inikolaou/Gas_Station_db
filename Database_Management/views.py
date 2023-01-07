@@ -574,7 +574,7 @@ def employee(request):
             all_mgr_ssn = Employee.allMgrSsn()
             if (super_ssn != 'NULL'):
                 if (not ''.join(super_ssn_check).isdigit() or len(super_ssn_check[0]) != 3 or len(super_ssn_check[1]) != 2 or len(super_ssn_check[2]) != 4):
-                    ssn_fault = "Please write a valid super ssn with this format 'xxx-xx-xxxx'"
+                    ssn_fault = "Please write a valid super ssn with this format: xxx-xx-xxxx"
                     error_occured = True
                 else:
                     super_ssn_check = (super_ssn, )
@@ -613,6 +613,8 @@ def employee(request):
                 if ((role != 'Manager') and (super_ssn != 'NULL') and ("search_employee" not in request.POST)):
                     gs_longitude_fault = "Gas station longitude cannot have NULL value if the employee is not a manager"
                     error_occured = True
+                else:
+                    gs_longitude = None
 
         if (gs_latitude != False):
             gs_latitude = gs_latitude.strip()
@@ -665,6 +667,8 @@ def employee(request):
                 if ((role != 'Manager') and (super_ssn != 'NULL') and ("search_employee" not in request.POST)):
                     gs_latitude_fault = "Gas station latitude cannot have NULL value if the employee is not a manager"
                     error_occured = True
+                else:
+                    gs_latitude = None
 
         if (not error_occured):
             if "add_employee" in request.POST:
@@ -813,16 +817,28 @@ def gasStation(request):
                 else:
                     numbers = str(latitude).split('.')
                     decimal_part = numbers[1]
+                    longitude_latitude_check = (
+                        longitude, latitude)
+                    all_longitudes_latitudes = GasStation.allGSLongitudesLatitudes()
                     if (len(decimal_part) > 6):
                         latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
+                        error_occured = True
+                    elif ((longitude_latitude_check in all_longitudes_latitudes) and ("search_employee" not in request.POST)):
+                        longitude_fault = "Specify a new gas station longitude"
+                        latitude_fault = "Specify a new gas station latitude"
                         error_occured = True
 
         if (type_of_service != False):
             type_of_service = type_of_service.strip()
-            all_type_of_service = GasStation.allRoles()
-            if (type_of_service not in all_type_of_service and "search_gas_station" not in request.POST):
-                type_of_service_fault = "Please write a valid type of service. The types of service are Full Service and Self Service"
+            if (not type_of_service.replace(' ', '', 1).isalpha()):
+                type_of_service_fault = "Please write a valid type of service"
                 error_occured = True
+            else:
+                all_types_of_service = GasStation.allTypesOfService()
+                type_of_service_check = (type_of_service, )
+                if ((type_of_service_check not in all_types_of_service) and "search_gas_station" not in request.POST):
+                    type_of_service_fault = "Please write a valid type of service"
+                    error_occured = True
 
         if (start_date != False):
             start_date = start_date.strip()
@@ -835,7 +851,7 @@ def gasStation(request):
             s_date = datetime(int(s_date[2]), int(s_date[1]), int(s_date[0]))
 
             if (s_date.date() > datetime.today().date()):
-                end_date_fault = "Start Date should be before today"
+                start_date_fault = "Start Date should be earlier than today"
                 error_occured = True
 
         if (minimarket != False):
@@ -851,22 +867,29 @@ def gasStation(request):
 
         if (mgr_ssn != False):
             mgr_ssn = mgr_ssn.strip()
-            mgr_ssn_check = ''.join(mgr_ssn.split('-'))
-            all_ssn = Employee.allSsn()
-            if (mgr_ssn == 'NULL'):
-                pass
-            elif (not mgr_ssn_check.isdigit() or len(mgr_ssn) != 9):
-                mgr_ssn_fault = "Please write a valid manager ssn with 9 digits with this format 'xxx-xx-xxxx'"
+            mgr_ssn_check = mgr_ssn.split('-')
+            all_mgr_ssn = Employee.allMgrSsn()
+            if (not ''.join(mgr_ssn_check).isdigit() or len(mgr_ssn_check[0]) != 3 or len(mgr_ssn_check[1]) != 2 or len(mgr_ssn_check[2]) != 4):
+                mgr_ssn_fault = "Please write a valid manager ssn with this format: xxx-xx-xxxx"
                 error_occured = True
-            elif (mgr_ssn not in all_ssn):
-                mgr_ssn_fault = "Please write a valid manager ssn. This employee does not exist"
-                error_occured = True
+            else:
+                mgr_ssn_check = (mgr_ssn, )
+                new_mgr_ssn = Employee.newMgrSsns()
+                if ((mgr_ssn_check not in all_mgr_ssn)):
+                    mgr_ssn_fault = "Please write a valid manager ssn. This employee does not exist"
+                    error_occured = True
+                else:
+                    if (len(new_mgr_ssn) == 0):
+                        mgr_ssn_fault = "Please create a manager ssn. This employee does not exist"
+                        error_occured = True
 
         if (not error_occured):
             if "add_gas_station" in request.POST:
                 try:
                     GasStation.insertInto(longitude, latitude, type_of_service, start_date,
                                           minimarket, mgr_ssn)
+                    Employee.updateManagerGSCoords(
+                        new_mgr_ssn[0][0], longitude, latitude)
                     return redirect(gasStation)
                 except Exception as e:
                     print("View exception")
@@ -1462,7 +1485,8 @@ def pump(request):
                 last_check_up_fault = "Please write a valid date for the last check up of the pump"
                 error_occured = True
             lcu_date = last_check_up.split('/')
-            lcu_date = datetime(int(lcu_date[2]), int(lcu_date[1]), int(lcu_date[0]))
+            lcu_date = datetime(int(lcu_date[2]), int(
+                lcu_date[1]), int(lcu_date[0]))
 
             if (lcu_date.date() > datetime.today().date()):
                 last_check_up_fault = "Last Check Up for the pump should be before today"
@@ -1476,7 +1500,8 @@ def pump(request):
                 nozzle_last_check_up_fault = "Please write a valid date for the last check up of the pump nozzle"
                 error_occured = True
             nlcu_date = nozzle_last_check_up.split('/')
-            nlcu_date = datetime(int(nlcu_date[2]), int(nlcu_date[1]), int(nlcu_date[0]))
+            nlcu_date = datetime(int(nlcu_date[2]), int(
+                nlcu_date[1]), int(nlcu_date[0]))
 
             if (nlcu_date.date() > datetime.today().date()):
                 nozzle_last_check_up_fault = "Last Check Up for the pump nozzle should be before today"
@@ -1511,7 +1536,7 @@ def pump(request):
             elif "search_pump" in request.POST:
                 try:
                     pumps = Pump.searchBy(int(id), int(tank_id), float(tank_gs_longitude), float(tank_gs_latitude), int(current_state),
-                                        last_check_up, nozzle_last_check_up, float(product_quantity))
+                                          last_check_up, nozzle_last_check_up, float(product_quantity))
                 except Exception as e:
                     print("View exception")
                     print(e)
@@ -1675,7 +1700,7 @@ def purchase(request):
             elif "search_purchase" in request.POST:
                 try:
                     purchases = Purchase.searchBy(int(id), purchase_date, type_of_payment, customer_email,
-                                                float(gs_longitude), float(gs_latitude), pump_id, tank_id)
+                                                  float(gs_longitude), float(gs_latitude), pump_id, tank_id)
                 except Exception as e:
                     print("View exception")
                     print(e)
@@ -2018,7 +2043,8 @@ def supply(request):
 
     if request.method == "POST":
         id = request.POST.get('id', False)
-        expected_arrival_date = request.POST.get('expected-arrival-date', False)
+        expected_arrival_date = request.POST.get(
+            'expected-arrival-date', False)
         real_arrival_date = request.POST.get('real-arrival-date', False)
         sup_email = request.POST.get('sup-email', False)
         gs_longitude = request.POST.get('gs-longitude', False)
@@ -2069,10 +2095,12 @@ def supply(request):
                 error_occured = True
             elif (expected_arrival_date != False):
                 ead_date = expected_arrival_date.split('/')
-                ead_date = datetime(int(ead_date[2]), int(ead_date[1]), int(ead_date[0]))
+                ead_date = datetime(int(ead_date[2]), int(
+                    ead_date[1]), int(ead_date[0]))
 
                 rad_date = real_arrival_date.split('/')
-                rad_date = datetime(int(rad_date[2]), int(rad_date[1]), int(rad_date[0]))
+                rad_date = datetime(int(rad_date[2]), int(
+                    rad_date[1]), int(rad_date[0]))
 
                 if (ead_date.date() > rad_date.date()):
                     real_arrival_date_fault = "Real Arrival Date should be greater than or equal to Expected Arrival Date"
@@ -2313,21 +2341,50 @@ def tank_delete(request, id_longitude_latitude):
 
 
 if __name__ == 'Database_Management.views':
-    ConsistsOf.createConsistsOfTable()
     Contract.createContractTable()
     Customer.createCustomerTable()
-    Employee.createEmployeeTable()
-    Entails.createEntailsTable()
+    Supplier.createSupplierTable()
+    Product.createProductTable()
+    Service.createServiceTable()
+
     GasStation.createGasStationTable()
+    Employee.createEmployeeTable()
+
+    Tank.createTankTable()
+    Pump.createPumpTable()
+
+    Signs.createSignsTable()
+    Supply.createSupplyTable()
+
+    Purchase.createPurchaseTable()
     Involves.createInvolvesTable()
+    Entails.createEntailsTable()
+
+    ConsistsOf.createConsistsOfTable()
     IsAssignedTo.createIsAssignedToTable()
     Offers.createOffersTable()
-    Product.createProductTable()
     Provides.createProvidesTable()
-    Pump.createPumpTable()
-    Purchase.createPurchaseTable()
-    Service.createServiceTable()
-    Signs.createSignsTable()
-    Supplier.createSupplierTable()
-    Supply.createSupplyTable()
-    Tank.createTankTable()
+
+    Contract.insertFromCsv()
+    Customer.insertFromCsv()
+    Supplier.insertFromCsv()
+    Product.insertFromCsv()
+    Service.insertFromCsv()
+
+    GasStation.insertFromCsv()
+    Employee.insertFromCsv()
+
+    Tank.insertFromCsv()
+    Pump.insertFromCsv()
+
+    Signs.insertFromCsv()
+    Supply.insertFromCsv()
+
+    Purchase.insertFromCsv()
+    Involves.insertFromCsv()
+    Entails.insertFromCsv()
+
+    ConsistsOf.insertFromCsv()
+    IsAssignedTo.insertFromCsv()
+    Offers.insertFromCsv()
+    Provides.insertFromCsv()

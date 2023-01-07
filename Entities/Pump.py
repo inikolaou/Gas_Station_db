@@ -19,13 +19,13 @@ def createPumpTable():
                         PRIMARY KEY (Id, Tank_Id, T_GS_Longitude, T_GS_Latitude),
                         FOREIGN KEY (Tank_Id, T_GS_Longitude, T_GS_Latitude) REFERENCES TANK(Id, GS_Longitude, GS_Latitude) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
-            insertFromCsv("Datasets/pump.csv")
         except Exception as e:
-            pass  # Database created
+            print(e)
     conn.close()
 
 
-def insertFromCsv(fileName):
+def insertFromCsv():
+    fileName = "Datasets/pump.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)

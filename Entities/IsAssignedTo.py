@@ -14,13 +14,13 @@ def createIsAssignedToTable():
                         FOREIGN KEY (Serv_Id)       REFERENCES SERVICE(Id)   ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Essn)          REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE CASCADE
                         );''')
-            insertFromCsv("Datasets/is_assigned_to.csv")
         except Exception as e:
-            pass
+            print(e)
     conn.close()
 
 
-def insertFromCsv(fileName):
+def insertFromCsv():
+    fileName = "Datasets/is_assigned_to.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
@@ -47,7 +47,9 @@ def insertInto(essn, serv_id, conn=False):
                 c.execute('''INSERT INTO IS_ASSIGNED_TO
                             VALUES (?,?);''', (essn, serv_id))
             except Exception as e:
-                pass
+                print("IS ASSIGNED TO")
+                print(e)  # tuple already added
+                print(essn, serv_id)
 
 
 def searchBy(essn, service_id):

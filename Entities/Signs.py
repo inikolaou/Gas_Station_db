@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createSignsTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -13,18 +14,20 @@ def createSignsTable():
                         FOREIGN KEY (Essn)  REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (Contract_Id) REFERENCES CONTRACT(Id) ON UPDATE CASCADE ON DELETE SET DEFAULT
                         );''')
-            insertFromCsv("Datasets/signs.csv")
         except Exception as e:
-            pass # Database created
+            print(e)
     conn.close()
 
-def insertFromCsv(fileName):
+
+def insertFromCsv():
+    fileName = "Datasets/signs.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
             insertInto(tuple['Essn'], tuple['Contract_ID'], conn)
     conn.close()
+
 
 def insertInto(essn, contract_id, conn=False):
     if (conn == False):
@@ -35,7 +38,7 @@ def insertInto(essn, contract_id, conn=False):
                 c.execute('''INSERT INTO SIGNS
                             VALUES (?,?);''', (essn, contract_id))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -45,6 +48,7 @@ def insertInto(essn, contract_id, conn=False):
                             VALUES (?,?);''', (essn, contract_id))
             except Exception:
                 pass
+
 
 def searchBy(essn, contract_id):
     conn = sqlite3.connect("Gas_Station.db")
@@ -56,22 +60,23 @@ def searchBy(essn, contract_id):
                         SELECT * 
                         FROM SIGNS
                         WHERE Essn = ? AND Contract_Id = ?''',
-                        (essn, contract_id))
+                          (essn, contract_id))
             else:
                 c.execute('''
                         SELECT * 
                         FROM SIGNS
                         WHERE Essn = ?''',
-                        (essn, ))
+                          (essn, ))
         else:
             c.execute('''
                     SELECT * 
                     FROM SIGNS
                     WHERE Contract_Id = ?''',
-                    (contract_id, ))
+                      (contract_id, ))
     data = c.fetchall()
     conn.close()
     return data
+
 
 def update(essn, contract_id, previous_contract_id):
     conn = sqlite3.connect("Gas_Station.db")
@@ -81,12 +86,13 @@ def update(essn, contract_id, previous_contract_id):
         try:
             c.execute('''UPDATE SIGNS
                         SET Contract_Id = ?
-                        WHERE Essn = ? AND Contract_Id = ?''', 
-                        (contract_id, essn, previous_contract_id))
+                        WHERE Essn = ? AND Contract_Id = ?''',
+                      (contract_id, essn, previous_contract_id))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(essn_contract):
     essn_contract = essn_contract.split('_')
@@ -99,10 +105,11 @@ def delete(essn_contract):
         try:
             c.execute('''DELETE FROM SIGNS
                         WHERE Essn = ? AND Contract_Id = ?''',
-                        (essn, contract_id))
+                      (essn, contract_id))
         except Exception as e:
             print(e)
     conn.close()
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")

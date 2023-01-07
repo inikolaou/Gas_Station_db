@@ -14,13 +14,13 @@ def createContractTable():
                         Salary          REAL        NOT NULL,
                         PRIMARY KEY (Id))
                         ;''')
-            insertFromCsv("Datasets/contract.csv")
         except Exception as e:
-            pass  # Database created
+            print(e)
     conn.close()
 
 
-def insertFromCsv(fileName):
+def insertFromCsv():
+    fileName = "Datasets/contract.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
@@ -50,7 +50,8 @@ def insertInto(id, start_date, end_date, salary, conn=False):
                             VALUES (?,?,?,?);''', (id, start_date,
                                                    end_date, salary))
             except Exception as e:
-                pass
+                print("CONTRACT")
+                print(e)  # tuple already added
 
 
 def searchBy(id, start_date, end_date, salary):

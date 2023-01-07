@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createProductTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -14,19 +15,21 @@ def createProductTable():
                         Corresponding_Points        INTEGER     NOT NULL,
                         PRIMARY KEY (Id))
                         ;''')
-            insertFromCsv("Datasets/product.csv")
         except Exception as e:
-            pass # Database created
+            print(e)
     conn.close()
 
-def insertFromCsv(fileName):
+
+def insertFromCsv():
+    fileName = "Datasets/product.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
             insertInto(tuple['ID'], tuple['Name'], tuple['Type'],
-                        tuple['Price'], tuple['Corresponding_Points'], conn)
+                       tuple['Price'], tuple['Corresponding_Points'], conn)
     conn.close()
+
 
 def insertInto(id, name, type, price, points, conn=False):
     if (conn == False):
@@ -36,9 +39,9 @@ def insertInto(id, name, type, price, points, conn=False):
             try:
                 c.execute('''INSERT INTO PRODUCT
                             VALUES (?,?,?,?,?);''',
-                            (id, name, type, price, points))
+                          (id, name, type, price, points))
             except Exception:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
@@ -46,10 +49,11 @@ def insertInto(id, name, type, price, points, conn=False):
             try:
                 c.execute('''INSERT INTO PRODUCT
                             VALUES (?,?,?,?,?);''',
-                            (id, name, type, price, points))
+                          (id, name, type, price, points))
             except Exception:
                 pass
-            
+
+
 def searchBy(id, type, price, points):
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -59,7 +63,7 @@ def searchBy(id, type, price, points):
                 SELECT * 
                 FROM PRODUCT
                 WHERE Id = ?''',
-                (id, ))
+                      (id, ))
         elif (type):
             if (price):
                 if (points):
@@ -67,34 +71,35 @@ def searchBy(id, type, price, points):
                         SELECT * 
                         FROM PRODUCT
                         WHERE Type = ? AND Price = ? AND Corresponding_Points = ?''',
-                        (type, price, points))
+                              (type, price, points))
                 else:
                     c.execute('''
                         SELECT * 
                         FROM PRODUCT
                         WHERE Type = ? AND Price = ?''',
-                        (type, price))
+                              (type, price))
             elif (type):
                 c.execute('''
                     SELECT * 
                     FROM PRODUCT
                     WHERE Type = ?''',
-                    (type, ))
+                          (type, ))
         elif (points):
             c.execute('''
                 SELECT * 
                 FROM PRODUCT
                 WHERE Corresponding_Points = ?''',
-                (points, ))
+                      (points, ))
         elif (price):
             c.execute('''
                 SELECT * 
                 FROM PRODUCT
                 WHERE Price = ?''',
-                (price, ))
+                      (price, ))
     data = c.fetchall()
     conn.close()
     return data
+
 
 def update(id, name, type, price, points):
     conn = sqlite3.connect("Gas_Station.db")
@@ -106,11 +111,12 @@ def update(id, name, type, price, points):
                         SET Name = ?, Type = ?,
                         Price = ?, Corresponding_Points = ?
                         WHERE Id = ?''',
-                        (name, type, price, points, id))
+                      (name, type, price, points, id))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(id):
     conn = sqlite3.connect("Gas_Station.db")
@@ -125,6 +131,7 @@ def delete(id):
             print(e)
     conn.close()
 
+
 def searchByName():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -132,6 +139,7 @@ def searchByName():
     data = c.fetchall()
     conn.close()
     return data
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
@@ -141,6 +149,7 @@ def retrieveAllColumns():
     conn.close()
     return data
 
+
 def allProductIds():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -149,6 +158,7 @@ def allProductIds():
     conn.close()
     return data
 
+
 def allTypesOfProduct():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -156,6 +166,7 @@ def allTypesOfProduct():
     data = c.fetchall()
     conn.close()
     return data
+
 
 def allProductNames():
     conn = sqlite3.connect("Gas_Station.db")

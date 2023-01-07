@@ -25,13 +25,13 @@ def createEmployeeTable():
                         FOREIGN KEY (Super_Ssn)    REFERENCES EMPLOYEE(Ssn) ON UPDATE CASCADE ON DELETE SET NULL,
                         FOREIGN KEY (GS_Longitude, GS_Latitude) REFERENCES GAS_STATION(Longitude, Latitude) ON UPDATE CASCADE ON DELETE SET NULL
                         );''')
-            insertFromCsv("Datasets/employee.csv")
         except Exception as e:
-            pass  # Database created
+            print(e)
     conn.close()
 
 
-def insertFromCsv(fileName):
+def insertFromCsv():
+    fileName = "Datasets/employee.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
@@ -69,7 +69,8 @@ def insertInto(ssn, fname, lname, birth_date, phone_number, email, longitude, la
                            longitude, latitude, role, hours, super_ssn,
                            gs_longitude, gs_latitude))
             except Exception as e:
-                pass
+                print("EMPLOYEE")
+                print(e)  # tuple already added
 
 
 def searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude):
@@ -136,7 +137,6 @@ def searchBy(ssn, role, super_ssn, gs_longitude, gs_latitude):
 def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitude,
            role, hours, super_ssn, gs_longitude, gs_latitude):
     conn = sqlite3.connect("Gas_Station.db")
-    conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
     with conn:
         try:
@@ -148,6 +148,20 @@ def update(ssn, fname, lname, email, birth_date, phone_number, longitude, latitu
                       (fname, lname, birth_date, phone_number, email,
                        longitude, latitude, role, hours, super_ssn,
                        gs_longitude, gs_latitude, ssn))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+
+def updateManagerGSCoords(ssn, gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''UPDATE EMPLOYEE
+                        SET GS_Longitude = ?, GS_Latitude = ? WHERE Ssn = ?''',
+                      (gs_longitude, gs_latitude, ssn))
         except Exception as e:
             print("Update exception")
             print(e)
@@ -262,6 +276,19 @@ def hasCashier(gs_longitude, gs_latitude):
         return True
     else:
         return False
+
+
+def newMgrSsns():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Ssn
+                FROM EMPLOYEE
+                WHERE GS_Longitude IS NULL and GS_Latitude IS NULL
+                ''')
+    data = c.fetchall()
+    conn.close()
+    return data
 
 
 def orderEmployeesBySalaryByGasStation(salary):

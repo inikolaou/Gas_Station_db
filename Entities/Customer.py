@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+
 def createCustomerTable():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -17,46 +18,50 @@ def createCustomerTable():
                         Remaining_Points    INTEGER     DEFAULT 0,
                         PRIMARY KEY (Email)
                         );''')
-            insertFromCsv("Datasets/customer.csv")
         except Exception as e:
-            pass # Database created
+            print(e)
     conn.close()
 
-def insertFromCsv(fileName):
+
+def insertFromCsv():
+    fileName = "Datasets/customer.csv"
     conn = sqlite3.connect("Gas_Station.db")
     with open(fileName, newline='', encoding='utf_8_sig') as csvfile:
         spamreader = csv.DictReader(csvfile)
         for tuple in spamreader:
             insertInto(tuple['Email'], tuple['Fname'], tuple['Lname'],
-                       tuple['Birth_Date'],tuple['Phone_Number'],
-                       tuple['Longitude'],tuple['Latitude'],
+                       tuple['Birth_Date'], tuple['Phone_Number'],
+                       tuple['Longitude'], tuple['Latitude'],
                        tuple['Remaining_Points'], conn)
     conn.close()
 
-def insertInto(email, fname, lname, birth_date, phone_number, longitude, latitude, 
-        rem_points, conn=False):
+
+def insertInto(email, fname, lname, birth_date, phone_number, longitude, latitude,
+               rem_points, conn=False):
     if (conn == False):
         conn = sqlite3.connect("Gas_Station.db")
         c = conn.cursor()
         with conn:
             try:
                 c.execute('''INSERT INTO CUSTOMER
-                            VALUES (?,?,?,?,?,?,?,?);''', 
-                            (email, fname, lname, birth_date, phone_number,
-                            longitude, latitude, rem_points))
+                            VALUES (?,?,?,?,?,?,?,?);''',
+                          (email, fname, lname, birth_date, phone_number,
+                           longitude, latitude, rem_points))
             except Exception as e:
-                pass # tuple already added
+                pass  # tuple already added
         conn.close()
     else:
         c = conn.cursor()
         with conn:
             try:
                 c.execute('''INSERT INTO CUSTOMER
-                            VALUES (?,?,?,?,?,?,?,?);''', 
-                            (email, fname, lname, birth_date, phone_number,
-                            longitude, latitude, rem_points))
+                            VALUES (?,?,?,?,?,?,?,?);''',
+                          (email, fname, lname, birth_date, phone_number,
+                           longitude, latitude, rem_points))
             except Exception as e:
-                pass
+                print("CUSTOMER")
+                print(e)  # tuple already added
+
 
 def searchBy(email, phone_number, rem_points):
     conn = sqlite3.connect("Gas_Station.db")
@@ -67,33 +72,34 @@ def searchBy(email, phone_number, rem_points):
                         SELECT * 
                         FROM CUSTOMER
                         WHERE Email = ?''',
-                        (email, ))
+                      (email, ))
         elif (phone_number):
             if (rem_points):
                 c.execute('''
                     SELECT * 
                     FROM CUSTOMER
                     WHERE Phone_Number = ? AND Remaining_Points = ?''',
-                    (phone_number, rem_points))
+                          (phone_number, rem_points))
             else:
                 c.execute('''
                         SELECT * 
                         FROM CUSTOMER
                         WHERE Phone_Number = ?''',
-                        (phone_number, ))
+                          (phone_number, ))
         else:
             c.execute('''
                 SELECT * 
                 FROM CUSTOMER
                 WHERE Remaining_Points = ?''',
-                (rem_points, ))
+                      (rem_points, ))
 
     data = c.fetchall()
     conn.close()
     return data
 
-def update(email, fname, lname, birth_date, phone_number, longitude, latitude, 
-        rem_points):
+
+def update(email, fname, lname, birth_date, phone_number, longitude, latitude,
+           rem_points):
     conn = sqlite3.connect("Gas_Station.db")
     conn.execute("PRAGMA foreign_keys = 1")
     c = conn.cursor()
@@ -102,13 +108,14 @@ def update(email, fname, lname, birth_date, phone_number, longitude, latitude,
             c.execute('''UPDATE CUSTOMER
                         SET Fname = ?, Lname = ?, Birth_Date = ?,
                         Phone_Number = ?, Longitude = ?, Latitude = ?,
-                        Remaining_Points = ? WHERE Email = ?''', 
-                        (fname, lname, birth_date, phone_number, longitude,
-                        latitude, rem_points, email))
+                        Remaining_Points = ? WHERE Email = ?''',
+                      (fname, lname, birth_date, phone_number, longitude,
+                       latitude, rem_points, email))
         except Exception as e:
             print("Update exception")
             print(e)
     conn.close()
+
 
 def delete(email):
     conn = sqlite3.connect("Gas_Station.db")
@@ -124,6 +131,7 @@ def delete(email):
             print(e)
     conn.close()
 
+
 def searchByName():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -131,6 +139,7 @@ def searchByName():
     data = c.fetchall()
     conn.close()
     return data
+
 
 def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
@@ -140,6 +149,7 @@ def retrieveAllColumns():
     conn.close()
     return data
 
+
 def allCustomerEmails():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -148,6 +158,7 @@ def allCustomerEmails():
     conn.close()
     return data
 
+
 def allCustomerNames():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
@@ -155,6 +166,7 @@ def allCustomerNames():
     data = c.fetchall()
     conn.close()
     return data
+
 
 def allCustomerPhoneNumbers():
     conn = sqlite3.connect("Gas_Station.db")

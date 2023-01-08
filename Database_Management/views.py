@@ -259,21 +259,22 @@ def customer(request):
         remaining_points = request.POST.get('remaining-points', False)
 
         error_occured = False
-        
+
         if (email != False):
             email = email.strip()
             try:
                 validation = validate_email(email)
                 email = validation.email
-                # check if the email belongs to another customer
-                all_customer_emails = Customer.allCustomerEmails()
-                check_customer_emails = (email, )
-                if ((check_customer_emails in all_customer_emails) and ("add_customer" in request.POST)):
-                    email_fault = "Please write a valid email. This email belongs to another customer"
-                error_occured = True
             except EmailNotValidError as e:
                 email_fault = str(e)
                 error_occured = True
+            # check if the email belongs to another customer
+            all_customer_emails = Customer.allCustomerEmails()
+            check_customer_emails = (email, )
+            if ((check_customer_emails in all_customer_emails) and ("add_customer" in request.POST)):
+                email_fault = "Please write a valid email. This email belongs to another customer"
+                error_occured = True
+            
 
         if (first_name != False):
             first_name = first_name.strip()
@@ -883,15 +884,16 @@ def gasStation(request):
                 mgr_ssn_fault = "Please write a valid manager ssn with this format: xxx-xx-xxxx"
                 error_occured = True
             else:
-                mgr_ssn_check = (mgr_ssn, )
-                new_mgr_ssn = Employee.newMgrSsns()
-                if ((mgr_ssn_check not in all_mgr_ssn)):
-                    mgr_ssn_fault = "Please write a valid manager ssn. This employee does not exist"
-                    error_occured = True
-                else:
-                    if (len(new_mgr_ssn) == 0):
-                        mgr_ssn_fault = "Please create a manager ssn. This employee does not exist"
+                if ("search_gas_station" not in request.POST):
+                    mgr_ssn_check = (mgr_ssn, )
+                    new_mgr_ssn = Employee.newMgrSsns()
+                    if ((mgr_ssn_check not in all_mgr_ssn)):
+                        mgr_ssn_fault = "Please write a valid manager ssn. This employee does not exist"
                         error_occured = True
+                    else:
+                        if (len(new_mgr_ssn) == 0):
+                            mgr_ssn_fault = "Please create a manager ssn. This employee does not exist"
+                            error_occured = True
 
         if (not error_occured):
             if "add_gas_station" in request.POST:
@@ -1770,6 +1772,10 @@ def purchase(request):
                         gs_latitude_fault = "Specify an existing gas station latitude"
                         error_occured = True
 
+        if ((gs_longitude == False) or (gs_latitude == False) and ("search_purchase" in request.POST)):
+            gs_latitude_fault = "When searching for a gas station location you need to specify both coordinates"
+            error_occured = True
+
         if (tank_id != False):
             tank_id = tank_id.strip()
             if (tank_id == ''):
@@ -2031,21 +2037,22 @@ def supplier(request):
         latitude = request.POST.get('latitude', False)
 
         error_occured = False
-        
+
         if (email != False):
             email = email.strip()
             try:
                 validation = validate_email(email)
                 email = validation.email
-                # check if the email belongs to another supplier
-                all_supplier_emails = Supplier.allSupplierEmails()
-                check_supplier_emails = (email, )
-                if ((check_supplier_emails in all_supplier_emails) and ("add_supplier" in request.POST)):
-                    email_fault = "Please write a valid email. This email belongs to another supplier"
-                error_occured = True
             except EmailNotValidError as e:
                 email_fault = str(e)
                 error_occured = True
+            # check if the email belongs to another supplier
+            all_supplier_emails = Supplier.allSupplierEmails()
+            check_supplier_emails = (email, )
+            if ((check_supplier_emails in all_supplier_emails) and ("add_supplier" in request.POST)):
+                email_fault = "Please write a valid email. This email belongs to another supplier"
+                error_occured = True
+            
 
         if (first_name != False):
             first_name = first_name.strip()

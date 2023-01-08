@@ -856,3 +856,94 @@ def serviceAnalysis():
     data = c.fetchall()
     conn.close()
     return data
+
+def leastWantedProduct():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Name, count(Pur_Id)
+                FROM INVOLVES, PRODUCT
+                WHERE Prod_Id = ID
+                GROUP BY Prod_Id
+                HAVING count(Pur_Id) < 10
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data[0]
+
+def mostFuelPurchase():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT GS_Longitude, GS_Latitude, COUNT(PUR.ID)
+                FROM PURCHASE as PUR, INVOLVES as I, PRODUCT as P
+                WHERE PUR.ID = I.Pur_Id AND I.Prod_Id = P.ID AND P.Type = 'Fuel'
+                GROUP BY PUR.GS_Longitude, PUR.GS_Latitude
+                ORDER BY COUNT(PUR.ID) DESC
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data[0]
+
+def outOfStock():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT COUNT(OF.Prod_Id) AS "Out of stock Products"
+                FROM OFFERS AS OF
+                WHERE OF.Quantity = 0
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data[0]
+
+def emptyPumps():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT COUNT(P.Id) AS "Empty Pumps"
+                FROM PUMP AS P
+                WHERE P.Product_Quantity = 0
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data[0]
+
+def gsWithLeastRegisteredCustomers():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT COUNT(Id), PUR.GS_Longitude, PUR.GS_Latitude
+                FROM CUSTOMER AS CUS JOIN PURCHASE AS PUR ON CUS.Email = PUR.Cus_Email
+                GROUP BY PUR.GS_Longitude, PUR.GS_Latitude
+                HAVING COUNT(Id) <= 3
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data[0]
+
+def purchasesDoneInFullService():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT COUNT(PUR.ID)
+                FROM GAS_STATION AS GS, PURCHASE AS PUR
+                WHERE GS.Longitude = PUR.GS_Longitude AND GS.Latitude = PUR.GS_Latitude
+                AND GS.Type_of_Service = 'Full Service'
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data[0]
+
+def purchasesDoneInSelfService():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT COUNT(PUR.ID)
+                FROM GAS_STATION AS GS, PURCHASE AS PUR
+                WHERE GS.Longitude = PUR.GS_Longitude AND GS.Latitude = PUR.GS_Latitude
+                AND GS.Type_of_Service = 'Self Service'
+            ''')
+    data = c.fetchall()
+    conn.close()
+    return data[0]

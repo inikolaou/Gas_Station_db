@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
     <title>Index</title>
     <style>
         nav {
@@ -103,32 +105,31 @@
         <a id="show_balance_sheet_nav" onclick="ShowBalanceSheet()">Balance Sheet Detailed</a>
         <a id="product_analysis_nav" onclick="ProductAnalysis()">Product Analysis</a>
         <a id="service_analysis_nav" onclick="ServiceAnalysis()">Service Analysis</a>
+        <a id="useuful_queries_nav" onclick="UsefulInformation()">Useful Information</a>
     </nav>
-    <!-- <table>
-        <thead>
-            <tr>
-                <th>Purchase Id</th>
-                <th>GS Longitude</th>
-                <th>GS Latitude</th>
-                <th>Product Or Service Name</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for purchase_id in revenue %}
-            <tr id={{purchase_id.0}}>
-                <td class="a">{{purchase_id.0}}</td>
-                <td class="b" id="{{purchase_id.1}}">{{purchase_id.1}}</td>
-                <td class="c" id="{{purchase_id.2}}">{{purchase_id.2}}</td>
-                <td class="d" id="{{purchase_id.3}}">{{purchase_id.3}}</td>
-                <td class="e" id="{{purchase_id.4}}">{{purchase_id.4}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table> -->
     <canvas id="balance_sheet" width="50" style="display: block;"></canvas>
     <canvas id="products_review" width="50" style="display: none;"></canvas>
     <canvas id="services_review" width="50" style="display: none;"></canvas>
+    <div id="useful queries" style="display: none;">
+        <p>1st Useful Information</p>
+        <p>The least wanted product in the gas stations is {{leastWantedProduct.0}} with a total of
+            {{leastWantedProduct.1}} purchases</p>
+        <p>2nd Useful Information</p>
+        <p>In the Gas Station with coordinates: Longitude({{mostFuelPurchase.0}}) and Latitude ({{mostFuelPurchase.1}})
+            have been done {{mostFuelPurchase.2}} fuel purchases</p>
+        <p>3rd Useful Information</p>
+        <p>The total number of purchases done in full service gas stations are {{purchasesDoneInFullService.0}}</p>
+        <p>The total number of purchases done in self service gas stations are {{purchasesDoneInSelfService.0}}</p>
+        <p>4th Useful Information</p>
+        <p>The Gas Station with coordinates: Longitude({{gsWithLeastRegisteredCustomers.1}}) and Latitude
+            ({{gsWithLeastRegisteredCustomers.1}}) has the least amount of registered customers with a total of
+            {{gsWithLeastRegisteredCustomers.0}}</p>
+        <p>5th Useful Information</p>
+        <p>In the Gas Station there are {{emptyPumps.0}} empty pumps</p>
+        <p>In the Gas Station there are {{outOfStock.0}} products</p>
+
+
+    </div>
 
 </body>
 
@@ -140,6 +141,8 @@
         products_review.style.display = "none";
         const services_review = document.getElementById("services_review");
         services_review.style.display = "none";
+        const useful_queries = document.getElementById("useful queries");
+        useful_queries.style.display = "none";
         window.location.href = '/balance_sheet/';
     }
 
@@ -150,6 +153,8 @@
         products_review.style.display = "block";
         const services_review = document.getElementById("services_review");
         services_review.style.display = "none";
+        const useful_queries = document.getElementById("useful queries");
+        useful_queries.style.display = "none";
     }
 
     function ServiceAnalysis() {
@@ -159,6 +164,19 @@
         products_review.style.display = "none";
         const services_review = document.getElementById("services_review");
         services_review.style.display = "block";
+        const useful_queries = document.getElementById("useful queries");
+        useful_queries.style.display = "none";
+    }
+
+    function UsefulInformation() {
+        const balance_sheet = document.getElementById("balance_sheet");
+        balance_sheet.style.display = "none";
+        const products_review = document.getElementById("products_review");
+        products_review.style.display = "none";
+        const services_review = document.getElementById("services_review");
+        services_review.style.display = "none";
+        const useful_queries = document.getElementById("useful queries");
+        useful_queries.style.display = "block";
     }
 </script>
 

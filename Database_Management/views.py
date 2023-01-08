@@ -17,8 +17,19 @@ def balanceSheet(request):
     all_product_analysis = Purchase.productAnalysis()
     all_service_analysis = Purchase.serviceAnalysis()
 
-    context = {"revenue": revenue, "revenue_of_products": revenue_of_products,
-               "revenue_of_services": revenue_of_services, "supplies_cost": supplies_cost, "all_product_analysis": all_product_analysis, "all_service_analysis": all_service_analysis}
+    leastWantedProduct = Purchase.leastWantedProduct()
+    mostFuelPurchase = Purchase.mostFuelPurchase()
+    emptyPumps = Purchase.emptyPumps()
+    outOfStock = Purchase.outOfStock()
+    gsWithLeastRegisteredCustomers = Purchase.gsWithLeastRegisteredCustomers()
+
+    purchasesDoneInFullService = Purchase.purchasesDoneInFullService()
+    purchasesDoneInSelfService = Purchase.purchasesDoneInSelfService()
+
+    context = {"revenue": revenue, "revenue_of_products": revenue_of_products, "leastWantedProduct": leastWantedProduct, "mostFuelPurchase": mostFuelPurchase,
+               "revenue_of_services": revenue_of_services, "supplies_cost": supplies_cost, "all_product_analysis": all_product_analysis, "all_service_analysis": all_service_analysis,
+               "emptyPumps": emptyPumps, "outOfStock": outOfStock, "gsWithLeastRegisteredCustomers": gsWithLeastRegisteredCustomers,
+               "purchasesDoneInFullService": purchasesDoneInFullService, "purchasesDoneInSelfService": purchasesDoneInSelfService}
     return render(request, 'balanceSheet.html', context)
 
 
@@ -274,7 +285,6 @@ def customer(request):
             if ((check_customer_emails in all_customer_emails) and ("add_customer" in request.POST)):
                 email_fault = "Please write a valid email. This email belongs to another customer"
                 error_occured = True
-            
 
         if (first_name != False):
             first_name = first_name.strip()
@@ -688,7 +698,7 @@ def employee(request):
                     error_occured = True
                 else:
                     gs_latitude = None
-        
+
         if ((gs_longitude == False) or (gs_latitude == False) and ("search_employee" in request.POST)):
             gs_latitude_fault = "When searching for a gas station location you need to specify both coordinates"
             error_occured = True
@@ -2080,7 +2090,6 @@ def supplier(request):
             if ((check_supplier_emails in all_supplier_emails) and ("add_supplier" in request.POST)):
                 email_fault = "Please write a valid email. This email belongs to another supplier"
                 error_occured = True
-            
 
         if (first_name != False):
             first_name = first_name.strip()

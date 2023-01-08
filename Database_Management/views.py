@@ -948,14 +948,6 @@ def involve(request):
 
         error_occured = False
 
-        if (prod_id != False):
-            prod_id = prod_id.strip()
-            if (not prod_id.isdigit()):
-                prod_id_fault = "Please write a positive integer for Product ID"
-                error_occured = True
-            else:
-                prod_id = int(prod_id)
-
         if (pur_id != False):
             pur_id = pur_id.strip()
             if (not pur_id.isdigit()):
@@ -963,8 +955,71 @@ def involve(request):
                 error_occured = True
             else:
                 pur_id = int(pur_id)
+                if (pur_id < 0):
+                    pur_id_fault = "Please write a positive integer for Purchase ID"
+                    error_occured = True
+                else:
+                    all_purchases = Purchase.allPurchaseIds()
+                    check_purchase = (pur_id, )
+                    if ((check_purchase not in all_purchases) and ("add_involves" in request.POST)):
+                        pur_id_fault = "Please write a valid purchase id. Purchase id does not exist"
+                        error_occured = True
 
-        if (quantity != False):
+        if ((prod_id != False) and (error_occured == False)):
+            prod_id = prod_id.strip()
+            if (not prod_id.isdigit()):
+                prod_id_fault = "Please write a positive integer for Product ID"
+                error_occured = True
+            else:
+                all_products = Product.allProductIds()
+                prod_id = int(prod_id)
+                check_product = (prod_id, )
+                if (prod_id < 0):
+                    prod_id_fault = "Please write a positive integer for product id"
+                    error_occured = True
+                # check if product id already exists when trying to add new product
+                elif ((check_product not in all_products) and ("add_involves" in request.POST)):
+                    prod_id_fault = "Please write a positive integer for product id. Product id does not exist"
+                    error_occured = True
+                else:
+                    gs_purchase_info = Purchase.getGSPurchaseInfo(pur_id)
+                    purchase_pump = gs_purchase_info[0][0]
+                    purchase_tank = gs_purchase_info[0][1]
+                    purchase_gs_longitude = gs_purchase_info[0][2]
+                    purchase_gs_latitude = gs_purchase_info[0][3]
+                    gs_products = Offers.allProductIdsGSCoords(
+                        purchase_gs_longitude, purchase_gs_latitude)
+                    gs_fuels = Tank.allFuelIdsGSCoords(
+                        purchase_tank, purchase_gs_longitude, purchase_gs_latitude)
+                    check_prod_id = (prod_id, )
+                    product_type = Product.getProductType(prod_id)
+                    if (purchase_pump == '' or purchase_pump == None):
+                        # check type of product
+                        if (product_type[0][0] == 'Fuel'):
+                            prod_id_fault = "Please write a valid product id. This purchase can contain only non fuel products"
+                            error_occured = True
+                        else:
+                            if ((check_prod_id not in gs_products) and ("add_involves" in request.POST)):
+                                prod_id_fault = "Please write a valid product id. This gas station does not offer this product"
+                                error_occured = True
+                    else:
+                        if (product_type[0][0] == 'Fuel'):
+                            if ((check_prod_id not in gs_fuels) and ("add_involves" in request.POST)):
+                                prod_id_fault = "Please write a valid product id. This gas station does not offer this fuel"
+                                error_occured = True
+                        else:
+                            # check if there is at least one fuel product
+                            purchase_includes_fuel = Involves.isFuelInPurchase(
+                                pur_id)
+                            if (purchase_includes_fuel[0][0] == 0):
+                                prod_id_fault = "Because this purchase includes a pump and tank please first insert a fuel product."
+                                error_occured = True
+                            else:
+                                if ((check_prod_id not in gs_products) and ("add_involves" in request.POST)):
+                                    prod_id_fault = "Please write a valid product id. This gas station does not offer this product"
+                                    error_occured = True
+
+        if ((quantity != False) and (error_occured == False)):
             quantity = quantity.strip()
             if (not quantity.replace('.', '', 1).isdigit()):
                 quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
@@ -980,12 +1035,39 @@ def involve(request):
                     if (len(decimal_part) > 3):
                         quantity_fault = "Please write a float number between 0 and 15000 (Capacity of Tanks) with 3 decimal places for quantity"
                         error_occured = True
+                    else:
+                        if (product_type[0][0] == 'Fuel'):
+                            fuel_quantity = Tank.fuelQuantity(
+                                prod_id, purchase_tank, purchase_gs_longitude, purchase_gs_latitude)
+                            if (quantity > fuel_quantity[0][0]):
+                                quantity_fault = "The specified quantity is larger than the availability of the fuel in the gas station."
+                                error_occured = True
+                        else:
+                            product_quantity = Offers.productQuantity(
+                                prod_id, purchase_gs_longitude, purchase_gs_latitude)
+                            if (quantity > product_quantity[0][0]):
+                                quantity_fault = "The specified quantity is larger than the availability of the product in the gas station."
+                                error_occured = True
 
         if (not error_occured):
             if "add_involves" in request.POST:
                 try:
                     Involves.insertInto(
                         int(prod_id), int(pur_id), float(quantity))
+                    corresponding_points = Product.getCorrespondingPoints(
+                        prod_id)
+                    customer = Purchase.getCustomer(pur_id)
+                    if (product_type[0][0] == 'Fuel'):
+                        Pump.updateQuantity(
+                            purchase_pump, purchase_tank, purchase_gs_longitude, purchase_gs_latitude, quantity)
+                        Tank.updateQuantity(
+                            purchase_tank, purchase_gs_longitude, purchase_gs_latitude, quantity)
+                    else:
+                        Offers.updateQuantity(
+                            prod_id, purchase_gs_longitude, purchase_gs_latitude, quantity)
+                    if (customer[0][0] != '' and customer[0][0] != None):
+                        Customer.updatePoints(
+                            customer[0][0], corresponding_points[0][0])
                     return redirect(involve)
                 except Exception as e:
                     print("View exception")
@@ -1706,7 +1788,7 @@ def purchase(request):
                             gs_longitude, gs_latitude)
                         tank_id = int(tank_id)
                         check_tank_id = (tank_id, )
-                        if ((check_tank_id in all_tank_ids_gs_coords) and ("add_purchase" in request.POST)):
+                        if ((check_tank_id not in all_tank_ids_gs_coords) and ("add_purchase" in request.POST)):
                             tank_id_fault = "Please write an existing tank id with the corresponding gas station coordinates"
                             error_occured = True
 
@@ -1724,7 +1806,7 @@ def purchase(request):
                             tank_id, gs_longitude, gs_latitude)
                         pump_id = int(pump_id)
                         check_pump_id = (pump_id, )
-                        if ((check_pump_id in all_pump_ids_tank_gs_coords) and ("add_purchase" in request.POST)):
+                        if ((check_pump_id not in all_pump_ids_tank_gs_coords) and ("add_purchase" in request.POST)):
                             pump_id_fault = "Please write an existing pump id with the corresponding tank id and gas station coordinates"
                             error_occured = True
 

@@ -51,7 +51,8 @@ def insertInto(id, purchase_date, type_of_payment, cus_email, gs_longitude, gs_l
                             VALUES (?,?,?,?,?,?,?,?);''',
                           (id, purchase_date, type_of_payment, cus_email,
                            gs_longitude, gs_latitude, pump_id, tank_id))
-            except Exception:
+            except Exception as e:
+                print(e)
                 pass  # tuple already added
         conn.close()
     else:
@@ -713,6 +714,32 @@ def allTypeOfPayments():
                 SELECT DISTINCT Type_of_Payment 
                 FROM PURCHASE
             ''')
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def getCustomer(purchase_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Cus_Email
+                FROM PURCHASE
+                WHERE Id = ?
+            ''', (purchase_id, ))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def getGSPurchaseInfo(purchase_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Pump_Id, Tank_Id, GS_Longitude, GS_Latitude
+                FROM PURCHASE
+                WHERE ID = ?
+            ''', (purchase_id, ))
     data = c.fetchall()
     conn.close()
     return data

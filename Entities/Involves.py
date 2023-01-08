@@ -17,8 +17,8 @@ def createInvolvesTable():
                         );''')
             insertFromCsv()
         except Exception as e:
-            #print(e)
-            pass # Table already created and data from csv has been passed to the database
+            # print(e)
+            pass  # Table already created and data from csv has been passed to the database
     conn.close()
 
 
@@ -127,6 +127,19 @@ def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     c.execute("select * from INVOLVES")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def isFuelInPurchase(pur_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT COUNT(*)
+                FROM INVOLVES, PRODUCT
+                WHERE Pur_Id = ? AND Prod_Id = ID AND Type='Fuel'
+            ''', (pur_id, ))
     data = c.fetchall()
     conn.close()
     return data

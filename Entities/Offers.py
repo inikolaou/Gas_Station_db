@@ -18,8 +18,8 @@ def createOffersTable():
                         );''')
             insertFromCsv()
         except Exception as e:
-            #print(e)
-            pass # Table already created and data from csv has been passed to the database
+            # print(e)
+            pass  # Table already created and data from csv has been passed to the database
     conn.close()
 
 
@@ -106,6 +106,24 @@ def update(prod_id, previous_prod_id, gs_longitude, gs_latitude, quantity):
     conn.close()
 
 
+def updateQuantity(id, gs_longitude, gs_latitude, quantity):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''
+                        UPDATE OFFERS
+                        SET Quantity = Quantity - ?
+                        WHERE Prod_Id = ? AND GS_Longitude = ? AND GS_Latitude = ?
+                    ''',
+                      (quantity, id, gs_longitude, gs_latitude))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+
 def delete(prodid_longitude_latitude):
     prodid_longitude_latitude = prodid_longitude_latitude.split('_')
     prod_id = prodid_longitude_latitude[0]
@@ -129,6 +147,32 @@ def retrieveAllColumns():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     c.execute("select * from OFFERS")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allProductIdsGSCoords(gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Prod_Id
+                FROM OFFERS
+                WHERE GS_Longitude = ? AND GS_Latitude = ?
+            ''', (gs_longitude, gs_latitude))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def productQuantity(prod_id, gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Quantity
+                FROM OFFERS
+                WHERE Prod_Id = ? AND GS_Longitude = ? AND GS_Latitude = ?
+            ''', (prod_id, gs_longitude, gs_latitude))
     data = c.fetchall()
     conn.close()
     return data

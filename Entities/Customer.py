@@ -20,8 +20,8 @@ def createCustomerTable():
                         );''')
             insertFromCsv()
         except Exception as e:
-            #print(e)
-            pass # Table already created and data from csv has been passed to the database
+            # print(e)
+            pass  # Table already created and data from csv has been passed to the database
     conn.close()
 
 
@@ -113,6 +113,24 @@ def update(email, fname, lname, birth_date, phone_number, longitude, latitude,
                         Remaining_Points = ? WHERE Email = ?''',
                       (fname, lname, birth_date, phone_number, longitude,
                        latitude, rem_points, email))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+
+def updatePoints(email, points):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''
+                        UPDATE CUSTOMER
+                        SET Remaining_Points = Remaining_Points + ?
+                        WHERE Email = ?
+                    ''',
+                      (points, email))
         except Exception as e:
             print("Update exception")
             print(e)

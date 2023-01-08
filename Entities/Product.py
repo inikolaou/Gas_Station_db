@@ -17,8 +17,8 @@ def createProductTable():
                         ;''')
             insertFromCsv()
         except Exception as e:
-            #print(e)
-            pass # Table already created and data from csv has been passed to the database
+            # print(e)
+            pass  # Table already created and data from csv has been passed to the database
     conn.close()
 
 
@@ -174,6 +174,32 @@ def allProductNames():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     c.execute("select Name from PRODUCT")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def getProductType(prod_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Type
+                FROM PRODUCT
+                WHERE Id = ?
+            ''', (prod_id, ))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def getCorrespondingPoints(prod_id):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Corresponding_Points
+                FROM PRODUCT
+                WHERE Id = ?
+            ''', (prod_id, ))
     data = c.fetchall()
     conn.close()
     return data

@@ -364,6 +364,10 @@ def customer(request):
                         latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
                         error_occured = True
 
+        if ((longitude == False) or (latitude == False) and ("search_customer" in request.POST)):
+            latitude_fault = "When searching for a customer location you need to specify both coordinates"
+            error_occured = True
+
         if (remaining_points != False):
             remaining_points = remaining_points.strip()
             if (not remaining_points.isdigit()):
@@ -554,6 +558,10 @@ def employee(request):
                         latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
                         error_occured = True
 
+        if ((longitude == False) or (latitude == False) and ("search_employee" in request.POST)):
+            latitude_fault = "When searching for an employee location you need to specify both coordinates"
+            error_occured = True
+
         if (role != False):
             role = role.strip()
             if (not role.replace(' ', '', 1).isalpha()):
@@ -680,6 +688,10 @@ def employee(request):
                     error_occured = True
                 else:
                     gs_latitude = None
+        
+        if ((gs_longitude == False) or (gs_latitude == False) and ("search_employee" in request.POST)):
+            gs_latitude_fault = "When searching for a gas station location you need to specify both coordinates"
+            error_occured = True
 
         if (not error_occured):
             if "add_employee" in request.POST:
@@ -838,6 +850,10 @@ def gasStation(request):
                         longitude_fault = "Specify a new gas station longitude"
                         latitude_fault = "Specify a new gas station latitude"
                         error_occured = True
+
+        if ((longitude == False) or (latitude == False) and ("search_gas_station" in request.POST)):
+            latitude_fault = "When searching for a gas station location you need to specify both coordinates"
+            error_occured = True
 
         if (type_of_service != False):
             type_of_service = type_of_service.strip()
@@ -1220,6 +1236,10 @@ def offer(request):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                         error_occured = True
 
+        if ((gs_longitude == False) or (gs_latitude == False) and ("search_offers" in request.POST)):
+            gs_latitude_fault = "When searching for a gas station location you need to specify both coordinates"
+            error_occured = True
+
         if (quantity != False):
             quantity = quantity.strip()
             if (not quantity.replace('.', '', 1).isdigit()):
@@ -1445,6 +1465,10 @@ def provide(request):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                         error_occured = True
 
+        if ((gs_longitude == False) or (gs_latitude == False) and ("search_provides" in request.POST)):
+            gs_latitude_fault = "When searching for a gas station location you need to specify both coordinates"
+            error_occured = True
+
         if (not error_occured):
             if "add_provides" in request.POST:
                 try:
@@ -1560,6 +1584,10 @@ def pump(request):
                     if (len(decimal_part) > 6):
                         tank_gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for the Gas Station Latitude of the Tank"
                         error_occured = True
+
+        if ((tank_gs_longitude == False) or (tank_gs_latitude == False) and ("search_pump" in request.POST)):
+            tank_gs_latitude_fault = "When searching for a gas station location you need to specify both coordinates"
+            error_occured = True
 
         if (current_state != False):
             current_state = current_state.strip()
@@ -2120,6 +2148,10 @@ def supplier(request):
                         latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for Latitude"
                         error_occured = True
 
+        if ((longitude == False) or (latitude == False) and ("search_supplier" in request.POST)):
+            latitude_fault = "When searching for a supplier location you need to specify both coordinates"
+            error_occured = True
+
         if (not error_occured):
             if "add_supplier" in request.POST:
                 try:
@@ -2263,6 +2295,10 @@ def supply(request):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                         error_occured = True
 
+        if ((gs_longitude == False) or (gs_latitude == False) and ("search_supply" in request.POST)):
+            gs_latitude_fault = "When searching for a gas station location you need to specify both coordinates"
+            error_occured = True
+
         if (not error_occured):
             if "add_supply" in request.POST:
                 try:
@@ -2370,6 +2406,10 @@ def tank(request):
                     if (len(decimal_part) > 6):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                         error_occured = True
+
+        if ((gs_longitude == False) or (gs_latitude == False) and ("search_tank" in request.POST)):
+            gs_latitude_fault = "When searching for a gas station location you need to specify both coordinates"
+            error_occured = True
 
         if (last_check_up != False):
             last_check_up = last_check_up.strip()

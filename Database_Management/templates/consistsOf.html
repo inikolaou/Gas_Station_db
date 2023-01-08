@@ -253,7 +253,7 @@
         type = "number";
         step = ".001";
         min = "0";
-        min = "15000.000";
+        min = "15000";
         break;
       default:
         type = "text";
@@ -274,6 +274,10 @@
     input.type = type;
     if (type == "number") {
       input.step = step;
+      input.min = min;
+      if (selectedOption == "quantity" or selectedOption == "cost") {
+        input.max = max;
+      }
     }
     input.name = selectedOption;
     label.setAttribute("for", selectedOption);

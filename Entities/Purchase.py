@@ -24,7 +24,7 @@ def createPurchaseTable():
             insertFromCsv()
         except Exception as e:
             # print(e)
-            pass # Table already created and data from csv has been passed to the database
+            pass  # Table already created and data from csv has been passed to the database
     conn.close()
 
 
@@ -733,11 +733,6 @@ def allSuppliesinfo():
                 SELECT S.GS_Longitude, S.GS_Latitude, sum(C.Cost)
                 FROM SUPPLY AS S, CONSISTS_OF AS C, PRODUCT AS P
                 WHERE S.ID = C.Supply_Id AND C.Prod_Id = P.ID
-                    AND (S.GS_Longitude, S.GS_Latitude) IN
-                    (
-                            SELECT Longitude, Latitude
-                            FROM GAS_STATION
-                    )
                 GROUP BY S.GS_Longitude, S.GS_Latitude
                 ORDER BY S.GS_Longitude, S.GS_Latitude
             ''')

@@ -17,7 +17,8 @@ def createInvolvesTable():
                         );''')
             insertFromCsv()
         except Exception as e:
-            pass
+            #print(e)
+            pass # Table already created and data from csv has been passed to the database
     conn.close()
 
 

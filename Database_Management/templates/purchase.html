@@ -1,187 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Purchase{% endblock %}
+{% block style %}
+<style>
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+    }
 
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-    <style>
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+    nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+    }
 
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-        }
+    nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+    }
 
-        nav a:hover {
-            color: #ccc;
-            cursor: pointer;
-        }
+    a {
+        color: #0066c0;
+        text-decoration: none;
+    }
 
-        a {
-            color: #0066c0;
-            text-decoration: none;
-        }
+    a:hover {
+        color: #003399;
+    }
 
-        a:hover {
-            color: #003399;
-        }
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+    }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 50%;
-            margin: 10px auto;
-            padding: 20px;
-            border: 2px solid #333;
-            border-radius: 5px;
-        }
+    form label {
+        margin-top: 10px;
+        font-size: 18px;
+    }
 
-        form label {
-            margin-top: 10px;
-            font-size: 18px;
-        }
+    form input,
+    form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
 
-        form input,
-        form textarea {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
+    form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-        form #submit {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    form #submit:hover {
+        background-color: #555;
+    }
+</style>
+{% endblock %}
 
-        form #submit:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
+{% block body %}
+<div class="header">
+    <h1>Purchase Handling</h1>
+</div>
+<nav>
+    <a href="/">Home</a>
+    <a id="all_purchase_nav" onclick="ShowPurchase()">Purchases</a>
+    <a id="search_purchase_nav" onclick="SearchPurchase()">Search Purchase</a>
+    <a id="add_purchase_nav" onclick="AddPurchase()">Add Purchase</a>
+</nav>
+<div id="all_purchases" style="display: block">
+    <table>
+        <thead>
+            <tr>
+                <th>Purchase Id</th>
+                <th>Purchase Date</th>
+                <th>Type of Payment</th>
+                <th>Customer Email</th>
+                <th>Gas Station Longitude</th>
+                <th>Gas Station Latitude</th>
+                <th>Pump Id</th>
+                <th>Tank Id</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in purchases %}
+            <tr id="{{purchase.0}}">
+                <td>{{purchase.0}}</td>
+                <td>{{purchase.1}}</td>
+                <td>{{purchase.2}}</td>
+                <td>{{purchase.3}}</td>
+                <td>{{purchase.4}}</td>
+                <td>{{purchase.5}}</td>
+                <td>{{purchase.6}}</td>
+                <td>{{purchase.7}}</td>
+                <td>
+                    <a href="#'{{purchase.0}}'" onclick="editPurchase('{{purchase.0}}')">Edit</a>
+                    |
+                    <a href="{{purchase.0}}/">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div id="search_purchase" style="display: none">
+    <p>Select fields you want to search for</p>
+    <select id="dropdown">
+        <option value="purchase-id">Purchase_Id</option>
+        <option value="purchase-date">Purchase_Date</option>
+        <option value="type-of-payment">Type_Of_Payment</option>
+        <option value="customer-email">Customer_Email</option>
+        <option value="gs-longitude">Gas_Station_Longitude</option>
+        <option value="gs-latitude">Gas_Station_Latitude</option>
+        <option value="pump-id">Pump_Id</option>
+        <option value="tank-id">Tank_Id</option>
 
-<body>
-    <div class="header">
-        <h1>Purchase Handling</h1>
-    </div>
-    <nav>
-        <a href="/">Home</a>
-        <a id="all_purchase_nav" onclick="ShowPurchase()">Purchases</a>
-        <a id="search_purchase_nav" onclick="SearchPurchase()">Search Purchase</a>
-        <a id="add_purchase_nav" onclick="AddPurchase()">Add Purchase</a>
-    </nav>
-    <div id="all_purchases" style="display: block">
-        <table>
-            <thead>
-                <tr>
-                    <th>Purchase Id</th>
-                    <th>Purchase Date</th>
-                    <th>Type of Payment</th>
-                    <th>Customer Email</th>
-                    <th>Gas Station Longitude</th>
-                    <th>Gas Station Latitude</th>
-                    <th>Pump Id</th>
-                    <th>Tank Id</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for purchase in purchases %}
-                <tr id="{{purchase.0}}">
-                    <td>{{purchase.0}}</td>
-                    <td>{{purchase.1}}</td>
-                    <td>{{purchase.2}}</td>
-                    <td>{{purchase.3}}</td>
-                    <td>{{purchase.4}}</td>
-                    <td>{{purchase.5}}</td>
-                    <td>{{purchase.6}}</td>
-                    <td>{{purchase.7}}</td>
-                    <td>
-                        <a href="#'{{purchase.0}}'" onclick="editPurchase('{{purchase.0}}')">Edit</a>
-                        |
-                        <a href="{{purchase.0}}/">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div id="search_purchase" style="display: none">
-        <p>Select fields you want to search for</p>
-        <select id="dropdown">
-            <option value="purchase-id">Purchase_Id</option>
-            <option value="purchase-date">Purchase_Date</option>
-            <option value="type-of-payment">Type_Of_Payment</option>
-            <option value="customer-email">Customer_Email</option>
-            <option value="gs-longitude">Gas_Station_Longitude</option>
-            <option value="gs-latitude">Gas_Station_Latitude</option>
-            <option value="pump-id">Pump_Id</option>
-            <option value="tank-id">Tank_Id</option>
+    </select>
+    <button id="add-input-button" onclick="addInput()">Add Input</button>
+    <form id="searchPurchaseForm" method="POST">
+        {% csrf_token %}
+        <input type="submit" id="submit-search-purchase" name="search_purchase" value="submit" disabled />
+    </form>
+</div>
+<div id="add_purchase" style="display: none">
+    <form id="addPurchaseForm" method="POST">
+        {% csrf_token %}
+        <label for="purchase-id">Purchase Id:</label><br>
+        <input type="number" step="1" min="1" id="purchase-id" name="purchase-id" readonly="readonly"><br>
+        <label for="purchase-date">Purchase Date:</label><br>
+        <input type="date" id="purchase-date" name="purchase-date" required><br>
+        <label for="type-of-payment">Type of Payment:</label><br>
+        <input type="text" maxlength="30" id="type-of-payment" name="type-of-payment" required><br>
+        <label for="customer-email">Customer Email:</label><br>
+        <input type="email" id="customer-email" name="customer-email"><br>
+        <label for="gs-longitude">GS_Longitude:</label><br>
+        <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude" required><br>
+        <label for="gs-latitude">GS_Latitude:</label><br>
+        <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude" required><br>
+        <label for="pump-id">Pump Id:</label><br>
+        <input type="number" step="1" min="1" id="pump-id" name="pump-id"><br>
+        <label for="tank-id">Tank Id:</label><br>
+        <input type="number" step="1" min="1" id="tank-id" name="tank-id"><br>
+        <input type="submit" id="submit-add-purchase" name="add_purchase" value="submit" />
+    </form>
+</div>
+{% endblock %}
 
-        </select>
-        <button id="add-input-button" onclick="addInput()">Add Input</button>
-        <form id="searchPurchaseForm" method="POST">
-            {% csrf_token %}
-            <input type="submit" id="submit-search-purchase" name="search_purchase" value="submit" disabled />
-        </form>
-    </div>
-    <div id="add_purchase" style="display: none">
-        <form id="addPurchaseForm" method="POST">
-            {% csrf_token %}
-            <label for="purchase-id">Purchase Id:</label><br>
-            <input type="number" step="1" min="1" id="purchase-id" name="purchase-id" readonly="readonly"><br>
-            <label for="purchase-date">Purchase Date:</label><br>
-            <input type="date" id="purchase-date" name="purchase-date" required><br>
-            <label for="type-of-payment">Type of Payment:</label><br>
-            <input type="text" maxlength="30" id="type-of-payment" name="type-of-payment" required><br>
-            <label for="customer-email">Customer Email:</label><br>
-            <input type="email" id="customer-email" name="customer-email"><br>
-            <label for="gs-longitude">GS_Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude"
-                required><br>
-            <label for="gs-latitude">GS_Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude"
-                required><br>
-            <label for="pump-id">Pump Id:</label><br>
-            <input type="number" step="1" min="1" id="pump-id" name="pump-id"><br>
-            <label for="tank-id">Tank Id:</label><br>
-            <input type="number" step="1" min="1" id="tank-id" name="tank-id"><br>
-            <input type="submit" id="submit-add-purchase" name="add_purchase" value="submit" />
-        </form>
-    </div>
-</body>
+{% block js %}
 
 {% if id_fault %}
 <script>
@@ -408,4 +403,4 @@
     }
 </script>
 
-</html>
+{% endblock %}

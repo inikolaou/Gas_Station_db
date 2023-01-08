@@ -1,176 +1,173 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Gas Station{% endblock %}
+{% block style %}
+<style>
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+    }
 
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-    <style>
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+    nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+    }
 
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-        }
+    nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+    }
 
-        nav a:hover {
-            color: #ccc;
-            cursor: pointer;
-        }
+    a {
+        color: #0066c0;
+        text-decoration: none;
+    }
 
-        a {
-            color: #0066c0;
-            text-decoration: none;
-        }
+    a:hover {
+        color: #003399;
+    }
 
-        a:hover {
-            color: #003399;
-        }
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+    }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 50%;
-            margin: 10px auto;
-            padding: 20px;
-            border: 2px solid #333;
-            border-radius: 5px;
-        }
+    form label {
+        margin-top: 10px;
+        font-size: 18px;
+    }
 
-        form label {
-            margin-top: 10px;
-            font-size: 18px;
-        }
+    form input,
+    form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
 
-        form input,
-        form textarea {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
+    form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-        form #submit {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    form #submit:hover {
+        background-color: #555;
+    }
+</style>
+{% endblock %}
 
-        form #submit:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
+{% block body %}
+<div class="header">
+    <h1>Gas Station Handling</h1>
+</div>
+<nav>
+    <a href="/">Home</a>
+    <a id="all_gas_station_nav" onclick="ShowGasStation()">Gas Stations</a>
+    <a id="search_gas_station_nav" onclick="SearchGasStation()">Search Gas Stations</a>
+    <a id="add_gas_station_nav" onclick="AddGasStation()">Add Gas Station</a>
+</nav>
+<div id="all_gas_stations" style="display: block">
+    <table>
+        <thead>
+            <tr>
+                <th>Longitude</th>
+                <th>Latitude</th>
+                <th>Type of Service</th>
+                <th>Start Date</th>
+                <th>Minimarket</th>
+                <th>Mgr Ssn</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for gasStation in gasStations %}
+            <tr id="{{gasStation.0}}_{{gasStation.1}}">
+                <td>{{gasStation.0}}</td>
+                <td>{{gasStation.1}}</td>
+                <td>{{gasStation.2}}</td>
+                <td>{{gasStation.3}}</td>
+                <td>{{gasStation.4}}</td>
+                <td>{{gasStation.5}}</td>
+                <td>
+                    <a href="#'{{gasStation.0}}_{{gasStation.1}}'"
+                        onclick="editGasStation('{{gasStation.0}}_{{gasStation.1}}')">Edit</a>
+                    |
+                    <a href="{{gasStation.0}}_{{gasStation.1}}/">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div id="search_gas_station" style="display: none">
+    <p>Select fields you want to search for</p>
+    <select id="dropdown">
+        <option value="longitude">Longitude</option>
+        <option value="latitude">Latitude</option>
+        <option value="type-of-service">Type_of_Service</option>
+        <option value="minimarket">Minimarket</option>
+        <option value="mgr-ssn">Mgr_Ssn</option>
+    </select>
+    <button id="add-input-button" onclick="addInput()">Add Input</button>
+    <form id="searchGasStationForm" method="POST">
+        {% csrf_token %}
+        <input type="submit" id="submit-search-gas-station" name="search_gas_station" value="submit" disabled />
+    </form>
+</div>
+<div id="add_gas_station" style="display: none">
+    <form id="addGasStationForm" method="POST">
+        {% csrf_token %}
+        <label for="longitude">Longitude:</label><br>
+        <input type="number" min="0" max="99.999999" step="0.000001" step="any" id="longitude" name="longitude"
+            required><br>
+        <label for="latitude">Latitude:</label><br>
+        <input type="number" min="0" max="99.999999" step="0.000001" step="any" id="latitude" name="latitude"
+            required><br>
+        <label for="type-of-service">Type of Service:</label><br>
+        <input type="text" maxlength="20" id="type-of-service" name="type-of-service" required><br>
+        <label for="start-date">Start Date:</label><br>
+        <input type="date" id="start-date" name="start-date" required><br>
+        <label for="minimarket">Minimarket:</label><br>
+        <input type="number" min="0" max="1" id="minimarket" name="minimarket" required><br>
+        <label for="mgr-ssn">Manager Ssn:</label><br>
+        <input type="text" maxlength="12" id="mgr-ssn" name="mgr-ssn" required><br>
+        <input type="submit" id="submit-add-gas-station" name="add_gas_station" value="submit" />
+    </form>
+</div>
+{% endblock %}
 
-<body>
-    <div class="header">
-        <h1>Gas Station Handling</h1>
-    </div>
-    <nav>
-        <a href="/">Home</a>
-        <a id="all_gas_station_nav" onclick="ShowGasStation()">Gas Stations</a>
-        <a id="search_gas_station_nav" onclick="SearchGasStation()">Search Gas Stations</a>
-        <a id="add_gas_station_nav" onclick="AddGasStation()">Add Gas Station</a>
-    </nav>
-    <div id="all_gas_stations" style="display: block">
-        <table>
-            <thead>
-                <tr>
-                    <th>Longitude</th>
-                    <th>Latitude</th>
-                    <th>Type of Service</th>
-                    <th>Start Date</th>
-                    <th>Minimarket</th>
-                    <th>Mgr Ssn</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for gasStation in gasStations %}
-                <tr id="{{gasStation.0}}_{{gasStation.1}}">
-                    <td>{{gasStation.0}}</td>
-                    <td>{{gasStation.1}}</td>
-                    <td>{{gasStation.2}}</td>
-                    <td>{{gasStation.3}}</td>
-                    <td>{{gasStation.4}}</td>
-                    <td>{{gasStation.5}}</td>
-                    <td>
-                        <a href="#'{{gasStation.0}}_{{gasStation.1}}'"
-                            onclick="editGasStation('{{gasStation.0}}_{{gasStation.1}}')">Edit</a>
-                        |
-                        <a href="{{gasStation.0}}_{{gasStation.1}}/">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div id="search_gas_station" style="display: none">
-        <p>Select fields you want to search for</p>
-        <select id="dropdown">
-            <option value="longitude">Longitude</option>
-            <option value="latitude">Latitude</option>
-            <option value="type-of-service">Type_of_Service</option>
-            <option value="minimarket">Minimarket</option>
-            <option value="mgr-ssn">Mgr_Ssn</option>
-        </select>
-        <button id="add-input-button" onclick="addInput()">Add Input</button>
-        <form id="searchGasStationForm" method="POST">
-            {% csrf_token %}
-            <input type="submit" id="submit-search-gas-station" name="search_gas_station" value="submit" disabled />
-        </form>
-    </div>
-    <div id="add_gas_station" style="display: none">
-        <form id="addGasStationForm" method="POST">
-            {% csrf_token %}
-            <label for="longitude">Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" step="any" id="longitude" name="longitude"
-                required><br>
-            <label for="latitude">Latitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" step="any" id="latitude" name="latitude"
-                required><br>
-            <label for="type-of-service">Type of Service:</label><br>
-            <input type="text" maxlength="20" id="type-of-service" name="type-of-service" required><br>
-            <label for="start-date">Start Date:</label><br>
-            <input type="date" id="start-date" name="start-date" required><br>
-            <label for="minimarket">Minimarket:</label><br>
-            <input type="number" min="0" max="1" id="minimarket" name="minimarket" required><br>
-            <label for="mgr-ssn">Manager Ssn:</label><br>
-            <input type="text" maxlength="12" id="mgr-ssn" name="mgr-ssn" required><br>
-            <input type="submit" id="submit-add-gas-station" name="add_gas_station" value="submit" />
-        </form>
-    </div>
-</body>
+{% block js %}
 
 {% if longitude_fault %}
 <script>
@@ -370,4 +367,4 @@
     }
 </script>
 
-</html>
+{% endblock %}

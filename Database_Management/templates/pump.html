@@ -1,189 +1,185 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Pump{% endblock %}
+{% block style %}
+<style>
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+    }
 
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-    <style>
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+    nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+    }
 
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-        }
+    nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+    }
 
-        nav a:hover {
-            color: #ccc;
-            cursor: pointer;
-        }
+    a {
+        color: #0066c0;
+        text-decoration: none;
+    }
 
-        a {
-            color: #0066c0;
-            text-decoration: none;
-        }
+    a:hover {
+        color: #003399;
+    }
 
-        a:hover {
-            color: #003399;
-        }
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+    }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 50%;
-            margin: 10px auto;
-            padding: 20px;
-            border: 2px solid #333;
-            border-radius: 5px;
-        }
+    form label {
+        margin-top: 10px;
+        font-size: 18px;
+    }
 
-        form label {
-            margin-top: 10px;
-            font-size: 18px;
-        }
+    form input,
+    form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
 
-        form input,
-        form textarea {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
+    form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-        form #submit {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    form #submit:hover {
+        background-color: #555;
+    }
+</style>
+{% endblock %}
 
-        form #submit:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
+{% block body %}
+<div class="header">
+    <h1>Pump Handling</h1>
+</div>
+<nav>
+    <a href="/">Home</a>
+    <a id="all_pump_nav" onclick="ShowPump()">Pumps</a>
+    <a id="search_pump_nav" onclick="SearchPump()">Search Pump</a>
+    <a id="add_pump_nav" onclick="AddPump()">Add Pump</a>
+</nav>
+<div id="all_pumps" style="display: block">
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Tank Id</th>
+                <th>Tank Gas Station Longitude</th>
+                <th>Tank Gas Station Latitude</th>
+                <th>Current State</th>
+                <th>Last Check Up</th>
+                <th>Nozzle Last Check Up</th>
+                <th>Product Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pump in pumps %}
+            <tr id="{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}">
+                <td>{{pump.0}}</td>
+                <td>{{pump.1}}</td>
+                <td>{{pump.2}}</td>
+                <td>{{pump.3}}</td>
+                <td>{{pump.4}}</td>
+                <td>{{pump.5}}</td>
+                <td>{{pump.6}}</td>
+                <td>{{pump.7}}</td>
+                <td>
+                    <a href="#'{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}'"
+                        onclick="editPump('{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}')">Edit</a>
+                    |
+                    <a href="{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}/">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div id="search_pump" style="display: none">
+    <p>Select fields you want to search for</p>
+    <select id="dropdown">
+        <option value="pump-id">Pump_Id</option>
+        <option value="tank-id">Tank_Id</option>
+        <option value="tank-gs-longitude">Tank_Gas_Station_Longitude</option>
+        <option value="tank-gs-latitude">Tank_Gas_Station_Latitude</option>
+        <option value="current-state">Current_State</option>
+        <option value="last-check-up">Last_Check_Up</option>
+        <option value="nozzle-last-check-up">Nozzle_Last_Check_Up</option>
+        <option value="product-quantity">Product_Quantity</option>
+    </select>
+    <button id="add-input-button" onclick="addInput()">Add Input</button>
+    <form id="searchPumpForm" method="POST">
+        {% csrf_token %}
+        <input type="submit" id="submit-search-pump" name="search_pump" value="submit" disabled />
+    </form>
+</div>
+<div id="add_pump" style="display: none">
+    <form id="addPumpForm" method="POST">
+        {% csrf_token %}
+        <label for="pump-id">Pump Id:</label><br>
+        <input type="number" step="1" min="1" id="pump-id" name="pump-id" required><br>
+        <label for="tank-id">Tank Id:</label><br>
+        <input type="number" step="1" min="1" id="tank-id" name="tank-id" required><br>
+        <label for="tank-gs-longitude">Tank GS Longitude:</label><br>
+        <input type="number" min="0" max="99.999999" step="0.000001" id="tank-gs-longitude" name="tank-gs-longitude"
+            required><br>
+        <label for="tank-gs-latitude">Tank GS Latitude:</label><br>
+        <input type="number" min="0" max="999.999999" step="0.000001" id="tank-gs-latitude" name="tank-gs-latitude"
+            required><br>
+        <label for="current-state">Current State:</label><br>
+        <input type="number" step="1" min="0" max="1" id="current-state" name="current-state"><br>
+        <label for="last-check-up">Last Check Up:</label><br>
+        <input type="date" id="last-check-up" name="last-check-up"><br>
+        <label for="nozzle-last-check-up">Nozzle Last Check Up Id:</label><br>
+        <input type="date" id="nozzle-last-check-up" name="nozzle-last-check-up"><br>
+        <label for="product-quantity">Product Quantity:</label><br>
+        <input type="number" step=".001" min="0" max="5000" id="product-quantity" name="product-quantity" required><br>
 
-<body>
-    <div class="header">
-        <h1>Pump Handling</h1>
-    </div>
-    <nav>
-        <a href="/">Home</a>
-        <a id="all_pump_nav" onclick="ShowPump()">Pumps</a>
-        <a id="search_pump_nav" onclick="SearchPump()">Search Pump</a>
-        <a id="add_pump_nav" onclick="AddPump()">Add Pump</a>
-    </nav>
-    <div id="all_pumps" style="display: block">
-        <table>
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Tank Id</th>
-                    <th>Tank Gas Station Longitude</th>
-                    <th>Tank Gas Station Latitude</th>
-                    <th>Current State</th>
-                    <th>Last Check Up</th>
-                    <th>Nozzle Last Check Up</th>
-                    <th>Product Quantity</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pump in pumps %}
-                <tr id="{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}">
-                    <td>{{pump.0}}</td>
-                    <td>{{pump.1}}</td>
-                    <td>{{pump.2}}</td>
-                    <td>{{pump.3}}</td>
-                    <td>{{pump.4}}</td>
-                    <td>{{pump.5}}</td>
-                    <td>{{pump.6}}</td>
-                    <td>{{pump.7}}</td>
-                    <td>
-                        <a href="#'{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}'"
-                            onclick="editPump('{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}')">Edit</a>
-                        |
-                        <a href="{{pump.0}}_{{pump.1}}_{{pump.2}}_{{pump.3}}/">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div id="search_pump" style="display: none">
-        <p>Select fields you want to search for</p>
-        <select id="dropdown">
-            <option value="pump-id">Pump_Id</option>
-            <option value="tank-id">Tank_Id</option>
-            <option value="tank-gs-longitude">Tank_Gas_Station_Longitude</option>
-            <option value="tank-gs-latitude">Tank_Gas_Station_Latitude</option>
-            <option value="current-state">Current_State</option>
-            <option value="last-check-up">Last_Check_Up</option>
-            <option value="nozzle-last-check-up">Nozzle_Last_Check_Up</option>
-            <option value="product-quantity">Product_Quantity</option>
-        </select>
-        <button id="add-input-button" onclick="addInput()">Add Input</button>
-        <form id="searchPumpForm" method="POST">
-            {% csrf_token %}
-            <input type="submit" id="submit-search-pump" name="search_pump" value="submit" disabled />
-        </form>
-    </div>
-    <div id="add_pump" style="display: none">
-        <form id="addPumpForm" method="POST">
-            {% csrf_token %}
-            <label for="pump-id">Pump Id:</label><br>
-            <input type="number" step="1" min="1" id="pump-id" name="pump-id" required><br>
-            <label for="tank-id">Tank Id:</label><br>
-            <input type="number" step="1" min="1" id="tank-id" name="tank-id" required><br>
-            <label for="tank-gs-longitude">Tank GS Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" id="tank-gs-longitude" name="tank-gs-longitude"
-                required><br>
-            <label for="tank-gs-latitude">Tank GS Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" id="tank-gs-latitude" name="tank-gs-latitude"
-                required><br>
-            <label for="current-state">Current State:</label><br>
-            <input type="number" step="1" min="0" max="1" id="current-state" name="current-state"><br>
-            <label for="last-check-up">Last Check Up:</label><br>
-            <input type="date" id="last-check-up" name="last-check-up"><br>
-            <label for="nozzle-last-check-up">Nozzle Last Check Up Id:</label><br>
-            <input type="date" id="nozzle-last-check-up" name="nozzle-last-check-up"><br>
-            <label for="product-quantity">Product Quantity:</label><br>
-            <input type="number" step=".001" min="0" max="5000" id="product-quantity" name="product-quantity"
-                required><br>
+        <input type="submit" id="submit-add-pump" name="add_pump" value="submit" />
+    </form>
+</div>
+{% endblock %}
 
-            <input type="submit" id="submit-add-pump" name="add_pump" value="submit" />
-        </form>
-    </div>
-</body>
+{% block js %}
 
 {% if id_fault %}
 <script>
@@ -412,4 +408,4 @@
     }
 </script>
 
-</html>
+{% endblock %}

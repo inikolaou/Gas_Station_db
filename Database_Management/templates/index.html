@@ -1,221 +1,218 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+{% block style %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
 
-<head>
-    <meta charset="utf-8">
-    <title>Gas Station</title>
-    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+    .header {
+        background-color: #333;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
 
-        .header {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+    .header h1 {
+        font-size: 32px;
+        margin: 0;
+    }
 
-        .header h1 {
-            font-size: 32px;
-            margin: 0;
-        }
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+    }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: #fff;
-        }
+    nav ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
 
-        nav ul {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
+    nav ul li {
+        position: relative;
+    }
 
-        nav ul li {
-            position: relative;
-        }
+    nav ul li a {
+        display: block;
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 20px;
+    }
 
-        nav ul li a {
-            display: block;
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 20px;
-        }
+    nav ul li a:hover,
+    nav ul li a:active {
+        background-color: #444;
+    }
 
-        nav ul li a:hover,
-        nav ul li a:active {
-            background-color: #444;
-        }
+    nav ul li ul {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1;
+        display: none;
+        flex-direction: column;
+    }
 
-        nav ul li ul {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            z-index: 1;
-            display: none;
-            flex-direction: column;
-        }
+    nav ul li:hover ul {
+        display: flex;
+    }
 
-        nav ul li:hover ul {
-            display: flex;
-        }
+    nav ul li ul li a {
+        background-color: #333;
+    }
 
-        nav ul li ul li a {
-            background-color: #333;
-        }
+    .main {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        margin: 20px;
+        min-height: 77vh;
+        align-items: center;
+    }
 
-        .main {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            margin: 20px;
-            min-height: 77vh;
-            align-items: center;
-        }
+    .card {
+        background-color: #fff;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        width: 300px;
+        height: 400px;
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .card {
-            background-color: #fff;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            width: 300px;
-            height: 400px;
-            margin: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-around;
-            position: relative;
-            overflow: hidden;
-        }
+    .card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
 
-        .card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: all 0.5s ease;
-        }
+    .card h3 {
+        font-size: 24px;
+        margin: 10px 0;
+        text-align: center;
+    }
 
-        .card h3 {
-            font-size: 24px;
-            margin: 10px 0;
-            text-align: center;
-        }
+    .card p {
+        font-size: 14px;
+        text-align: center;
+        margin: 10px 0;
+    }
 
-        .card p {
-            font-size: 14px;
-            text-align: center;
-            margin: 10px 0;
-        }
+    .card button {
+        background-color: #ffa500;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
 
-        .card button {
-            background-color: #ffa500;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+    .card button:hover {
+        background-color: #ff8c00;
+    }
 
-        .card button:hover {
-            background-color: #ff8c00;
-        }
+    .card:hover img {
+        transform: scale(1.1);
+    }
 
-        .card:hover img {
-            transform: scale(1.1);
-        }
+    .footer {
+        background-color: #333;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        position: sticky;
+        bottom: 0;
+    }
 
-        .footer {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            position: sticky;
-            bottom: 0;
-        }
+    .footer p {
+        margin: 0;
+    }
+</style>
+{% endblock %}
 
-        .footer p {
-            margin: 0;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="header">
-        <h1>Welcome to Your Gas Station</h1>
+{% block body %}
+<div class="header">
+    <h1>Welcome to Your Gas Station</h1>
+</div>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li>
+            <a href="employee/">Employees</a>
+            <ul>
+                <li><a href="contract/">Contracts</a></li>
+                <li><a href="signs/">Signs</a></li>
+                <li><a href="is_assigned_to/">Assigments</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="gas_stations/">Gas Stations</a>
+            <ul>
+                <li><a href="tanks/">Tanks</a></li>
+                <li><a href="pump/">Pumps</a></li>
+                <li><a href="offers/">Offers</a></li>
+                <li><a href="provides/">Provides</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="supplier/">Suppliers</a>
+            <ul>
+                <li><a href="supply/">Supplies</a></li>
+                <li><a href="consists_of/">Content Inside</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="purchases/">Purchases</a>
+            <ul>
+                <li><a href="involves/">Products Inside</a></li>
+                <li><a href="entails/">Services Inside</a></li>
+            </ul>
+        </li>
+        <li><a href="balance_sheet/">Balance Sheet</a></li>
+    </ul>
+</nav>
+<div class="main">
+    <div class="card">
+        <img src="https://media.sproutsocial.com/uploads/2018/05/Customers_Part_of_Company_Blog.png" alt="Gas Pump">
+        <h3>Customers</h3>
+        <p>At our gas station, we value our customers and offer loyalty rewards and promotions</p>
+        <button onclick="visitCustomers()">Visit Customers</button>
     </div>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li>
-                <a href="employee/">Employees</a>
-                <ul>
-                    <li><a href="contract/">Contracts</a></li>
-                    <li><a href="signs/">Signs</a></li>
-                    <li><a href="is_assigned_to/">Assigments</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="gas_stations/">Gas Stations</a>
-                <ul>
-                    <li><a href="tanks/">Tanks</a></li>
-                    <li><a href="pump/">Pumps</a></li>
-                    <li><a href="offers/">Offers</a></li>
-                    <li><a href="provides/">Provides</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="supplier/">Suppliers</a>
-                <ul>
-                    <li><a href="supply/">Supplies</a></li>
-                    <li><a href="consists_of/">Content Inside</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="purchases/">Purchases</a>
-                <ul>
-                    <li><a href="involves/">Products Inside</a></li>
-                    <li><a href="entails/">Services Inside</a></li>
-                </ul>
-            </li>
-            <li><a href="balance_sheet/">Balance Sheet</a></li>
-        </ul>
-    </nav>
-    <div class="main">
-        <div class="card">
-            <img src="https://media.sproutsocial.com/uploads/2018/05/Customers_Part_of_Company_Blog.png" alt="Gas Pump">
-            <h3>Customers</h3>
-            <p>At our gas station, we value our customers and offer loyalty rewards and promotions</p>
-            <button onclick="visitCustomers()">Visit Customers</button>
-        </div>
-        <div class="card">
-            <img src="https://miro.medium.com/max/800/1*dqHEW9iqxYQCTzTY22axfg.png" alt="Convenience Store">
-            <h3>Convenience Store</h3>
-            <p>Our convenience store has all your snacks and essentials. Stop by for a quick bite or to grab something
-                on the go.</p>
-            <button onclick="visitProducts()">Visit Products</button>
-        </div>
-        <div class="card">
-            <img src="https://www.shell.ca/en_ca/motorists/shell-canada-car-wash/_jcr_content/par/grid_562368221/p0/contentblock_copy/image.img.960.jpeg/1664395343561/carwash.jpeg?imwidth=960"
-                alt="Car Wash">
-            <h3>Car Wash</h3>
-            <p>Keep your car looking its best with our self-serve or full-service car wash options.</p>
-            <button onclick="visitServices()">Visit Services</button>
-        </div>
+    <div class="card">
+        <img src="https://miro.medium.com/max/800/1*dqHEW9iqxYQCTzTY22axfg.png" alt="Convenience Store">
+        <h3>Convenience Store</h3>
+        <p>Our convenience store has all your snacks and essentials. Stop by for a quick bite or to grab something
+            on the go.</p>
+        <button onclick="visitProducts()">Visit Products</button>
     </div>
-    <div class="footer">
-        <p>Copyright 2022 Gas Station</p>
+    <div class="card">
+        <img src="https://www.shell.ca/en_ca/motorists/shell-canada-car-wash/_jcr_content/par/grid_562368221/p0/contentblock_copy/image.img.960.jpeg/1664395343561/carwash.jpeg?imwidth=960"
+            alt="Car Wash">
+        <h3>Car Wash</h3>
+        <p>Keep your car looking its best with our self-serve or full-service car wash options.</p>
+        <button onclick="visitServices()">Visit Services</button>
     </div>
-</body>
+</div>
+<div class="footer">
+    <p>Copyright 2022 Gas Station</p>
+</div>
+{% endblock %}
+
+{% block js %}
 <script>
     function visitCustomers() {
         window.location = "customer/";
@@ -228,4 +225,4 @@
     }
 </script>
 
-</html>
+{% endblock %}

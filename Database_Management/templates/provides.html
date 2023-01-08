@@ -1,160 +1,157 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Provides{% endblock %}
+{% block style %}
+<style>
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+  }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index</title>
-  <style>
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
 
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
 
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+  }
 
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-    }
+  nav a:hover {
+    color: #ccc;
+    cursor: pointer;
+  }
 
-    nav a:hover {
-      color: #ccc;
-      cursor: pointer;
-    }
+  a {
+    color: #0066c0;
+    text-decoration: none;
+  }
 
-    a {
-      color: #0066c0;
-      text-decoration: none;
-    }
+  a:hover {
+    color: #003399;
+  }
 
-    a:hover {
-      color: #003399;
-    }
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: 10px auto;
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 5px;
+  }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      width: 50%;
-      margin: 10px auto;
-      padding: 20px;
-      border: 2px solid #333;
-      border-radius: 5px;
-    }
+  form label {
+    margin-top: 10px;
+    font-size: 18px;
+  }
 
-    form label {
-      margin-top: 10px;
-      font-size: 18px;
-    }
+  form input,
+  form textarea {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
 
-    form input,
-    form textarea {
-      margin-top: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
+  form #submit {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
 
-    form #submit {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+  form #submit:hover {
+    background-color: #555;
+  }
+</style>
+{% endblock %}
 
-    form #submit:hover {
-      background-color: #555;
-    }
-  </style>
-</head>
+{% block body %}
+<div class="header">
+  <h1>Providing Handling</h1>
+</div>
+<nav>
+  <a href="/">Home</a>
+  <a id="all_provides_nav" onclick="ShowProvides()">Provides</a>
+  <a id="search_provides_nav" onclick="SearchProvides()">Search Provides</a>
+  <a id="add_provides_nav" onclick="AddProvides()">Add Provides</a>
+</nav>
+<div id="all_provides" style="display: block">
+  <table>
+    <thead>
+      <tr>
+        <th>Service ID</th>
+        <th>GS Longitude</th>
+        <th>GS Latitude</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tuple in provides %}
+      <tr id="{{tuple.0}}_{{tuple.1}}_{{tuple.2}}">
+        <td>{{tuple.0}}</td>
+        <td>{{tuple.1}}</td>
+        <td>{{tuple.2}}</td>
+        <td>
+          <a href="#'{{tuple.0}}_{{tuple.1}}_{{tuple.2}}'"
+            onclick="editProvides('{{tuple.0}}_{{tuple.1}}_{{tuple.2}}')">Edit</a>
+          |
+          <a href="{{tuple.0}}_{{tuple.1}}_{{tuple.2}}/">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="search_provides" style="display: none">
+  <p>Select fields you want to search for</p>
+  <select id="dropdown">
+    <option value="serv-id">Service ID</option>
+    <option value="gs-longitude">GS_Longitude</option>
+    <option value="gs-latitude">GS_Latitude</option>
+  </select>
+  <button id="add-input-button" onclick="addInput()">Add Input</button>
+  <form id="searchProvidesForm" method="POST">
+    {% csrf_token %}
+    <input type="submit" id="submit-search-provides" name="search_provides" value="submit" disabled />
+  </form>
+</div>
+<div id="add_provides" style="display: none">
+  <form id="addProvidesForm" method="POST">
+    {% csrf_token %}
+    <label for="serv-id">Service ID:</label><br>
+    <input type="number" step="1" min="1" id="serv-id" name="serv-id" required><br>
+    <label for="gs-longitude">GS_Longitude:</label><br>
+    <input type="number" step="any" id="gs-longitude" name="gs-longitude" required><br>
+    <label for="gs-latitude">GS_Latitude:</label><br>
+    <input type="number" step="any" id="gs-latitude" name="gs-latitude" required><br>
+    <input type="submit" id="submit-add-provides" name="add_provides" value="submit" />
+  </form>
+</div>
+{% endblock %}
 
-<body>
-  <div class="header">
-    <h1>Providing Handling</h1>
-  </div>
-  <nav>
-    <a href="/">Home</a>
-    <a id="all_provides_nav" onclick="ShowProvides()">Provides</a>
-    <a id="search_provides_nav" onclick="SearchProvides()">Search Provides</a>
-    <a id="add_provides_nav" onclick="AddProvides()">Add Provides</a>
-  </nav>
-  <div id="all_provides" style="display: block">
-    <table>
-      <thead>
-        <tr>
-          <th>Service ID</th>
-          <th>GS Longitude</th>
-          <th>GS Latitude</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for tuple in provides %}
-        <tr id="{{tuple.0}}_{{tuple.1}}_{{tuple.2}}">
-          <td>{{tuple.0}}</td>
-          <td>{{tuple.1}}</td>
-          <td>{{tuple.2}}</td>
-          <td>
-            <a href="#'{{tuple.0}}_{{tuple.1}}_{{tuple.2}}'"
-              onclick="editProvides('{{tuple.0}}_{{tuple.1}}_{{tuple.2}}')">Edit</a>
-            |
-            <a href="{{tuple.0}}_{{tuple.1}}_{{tuple.2}}/">Delete</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <div id="search_provides" style="display: none">
-    <p>Select fields you want to search for</p>
-    <select id="dropdown">
-      <option value="serv-id">Service ID</option>
-      <option value="gs-longitude">GS_Longitude</option>
-      <option value="gs-latitude">GS_Latitude</option>
-    </select>
-    <button id="add-input-button" onclick="addInput()">Add Input</button>
-    <form id="searchProvidesForm" method="POST">
-      {% csrf_token %}
-      <input type="submit" id="submit-search-provides" name="search_provides" value="submit" disabled />
-    </form>
-  </div>
-  <div id="add_provides" style="display: none">
-    <form id="addProvidesForm" method="POST">
-      {% csrf_token %}
-      <label for="serv-id">Service ID:</label><br>
-      <input type="number" step="1" min="1" id="serv-id" name="serv-id" required><br>
-      <label for="gs-longitude">GS_Longitude:</label><br>
-      <input type="number" step="any" id="gs-longitude" name="gs-longitude" required><br>
-      <label for="gs-latitude">GS_Latitude:</label><br>
-      <input type="number" step="any" id="gs-latitude" name="gs-latitude" required><br>
-      <input type="submit" id="submit-add-provides" name="add_provides" value="submit" />
-    </form>
-  </div>
-</body>
+{% block js %}
 
 {% if serv_id_fault %}
 <script>
@@ -314,4 +311,4 @@
   }
 </script>
 
-</html>
+{% endblock %}

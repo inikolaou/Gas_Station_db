@@ -1,186 +1,183 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Consists Of{% endblock %}
+{% block style %}
+<style>
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+  }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index</title>
-  <style>
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
 
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
 
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+  }
 
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-    }
+  nav a:hover {
+    color: #ccc;
+    cursor: pointer;
+  }
 
-    nav a:hover {
-      color: #ccc;
-      cursor: pointer;
-    }
+  a {
+    color: #0066c0;
+    text-decoration: none;
+  }
 
-    a {
-      color: #0066c0;
-      text-decoration: none;
-    }
+  a:hover {
+    color: #003399;
+  }
 
-    a:hover {
-      color: #003399;
-    }
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: 10px auto;
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 5px;
+  }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      width: 50%;
-      margin: 10px auto;
-      padding: 20px;
-      border: 2px solid #333;
-      border-radius: 5px;
-    }
+  form label {
+    margin-top: 10px;
+    font-size: 18px;
+  }
 
-    form label {
-      margin-top: 10px;
-      font-size: 18px;
-    }
+  form input,
+  form textarea {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
 
-    form input,
-    form textarea {
-      margin-top: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
+  form #submit {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
 
-    form #submit {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+  form #submit:hover {
+    background-color: #555;
+  }
+</style>
+{% endblock %}
 
-    form #submit:hover {
-      background-color: #555;
-    }
-  </style>
-</head>
+{% block body %}
+<div class="header">
+  <h1>Consistency Handling</h1>
+</div>
+<nav>
+  <a href="/">Home</a>
+  <a id="all_consists_of_nav" onclick="ShowConsistsOf()">Consists Of</a>
+  <a id="search_consists_of_nav" onclick="SearchConsistsOf()">Search Consists Of</a>
+  <a id="add_consists_of_nav" onclick="AddConsistsOf()">Add Consists Of</a>
+</nav>
+<div id="all_consists_of" style="display: block">
+  <table>
+    <thead>
+      <tr>
+        <th>Supply_Id</th>
+        <th>Prod_Id</th>
+        <th>Cost</th>
+        <th>Quantity</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tuple in consistsOf %}
+      <tr id="{{tuple.0}}_{{tuple.1}}">
+        <td>{{tuple.0}}</td>
+        <td>{{tuple.1}}</td>
+        <td>{{tuple.2}}</td>
+        <td>{{tuple.3}}</td>
+        <td>
+          <a href="#'{{tuple.0}}_{{tuple.1}}'" onclick="editConsistsOf('{{tuple.0}}_{{tuple.1}}')">Edit<a>
+              |
+              <a href="{{tuple.0}}_{{tuple.1}}/">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="search_consists_of" style="display: none">
+  <p>Select fields you want to search for</p>
+  <select id="dropdown">
+    <option value="supply-id">Supply ID</option>
+    <option value="prod-id">Product ID</option>
+    <option value="cost">Cost</option>
+    <option value="quantity">Quantity</option>
+  </select>
+  <button id="add-input-button" onclick="addInput()">Add Input</button>
+  <form id="searchConsistsOfForm" method="POST">
+    {% csrf_token %}
+    <input type="submit" id="submit-search-consists-of" name="search_consists_of" value="submit">
+  </form>
+</div>
+<div id="add_consists_of" style="display: none">
+  <form id="addConsistsOfForm" method="POST">
+    {% csrf_token %}
+    <label for="supply-id">Supply ID:</label><br>
+    <input type="number" step="1" min="1" id="supply-id" name="supply-id" required><br>
+    <label for="prod-id">Product ID:</label><br>
+    <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
+    <label for="cost">Cost:</label><br>
+    <input type="number" step=".01" min="0" max="99999.99" id="cost" name="cost" required><br>
+    <label for="quantity">Quantity:</label><br>
+    <input type="number" step=".001" min="0" max="15000.000" id="quantity" name="quantity" required><br>
+    <input type="submit" id="submit-add-consists-of" name="add_consists_of" value="submit">
+  </form>
+</div>
+{% endblock %}
 
-<body>
-  <div class="header">
-    <h1>Consistency Handling</h1>
-  </div>
-  <nav>
-    <a href="/">Home</a>
-    <a id="all_consists_of_nav" onclick="ShowConsistsOf()">Consists Of</a>
-    <a id="search_consists_of_nav" onclick="SearchConsistsOf()">Search Consists Of</a>
-    <a id="add_consists_of_nav" onclick="AddConsistsOf()">Add Consists Of</a>
-  </nav>
-  <div id="all_consists_of" style="display: block">
-    <table>
-      <thead>
-        <tr>
-          <th>Supply_Id</th>
-          <th>Prod_Id</th>
-          <th>Cost</th>
-          <th>Quantity</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for tuple in consistsOf %}
-        <tr id="{{tuple.0}}_{{tuple.1}}">
-          <td>{{tuple.0}}</td>
-          <td>{{tuple.1}}</td>
-          <td>{{tuple.2}}</td>
-          <td>{{tuple.3}}</td>
-          <td>
-            <a href="#'{{tuple.0}}_{{tuple.1}}'" onclick="editConsistsOf('{{tuple.0}}_{{tuple.1}}')">Edit<a>
-                |
-                <a href="{{tuple.0}}_{{tuple.1}}/">Delete</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <div id="search_consists_of" style="display: none">
-    <p>Select fields you want to search for</p>
-    <select id="dropdown">
-      <option value="supply-id">Supply ID</option>
-      <option value="prod-id">Product ID</option>
-      <option value="cost">Cost</option>
-      <option value="quantity">Quantity</option>
-    </select>
-    <button id="add-input-button" onclick="addInput()">Add Input</button>
-    <form id="searchConsistsOfForm" method="POST">
-      {% csrf_token %}
-      <input type="submit" id="submit-search-consists-of" name="search_consists_of" value="submit">
-    </form>
-  </div>
-  <div id="add_consists_of" style="display: none">
-    <form id="addConsistsOfForm" method="POST">
-      {% csrf_token %}
-      <label for="supply-id">Supply ID:</label><br>
-      <input type="number" step="1" min="1" id="supply-id" name="supply-id" required><br>
-      <label for="prod-id">Product ID:</label><br>
-      <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
-      <label for="cost">Cost:</label><br>
-      <input type="number" step=".01" min="0" max="99999.99" id="cost" name="cost" required><br>
-      <label for="quantity">Quantity:</label><br>
-      <input type="number" step=".001" min="0" max="15000.000" id="quantity" name="quantity" required><br>
-      <input type="submit" id="submit-add-consists-of" name="add_consists_of" value="submit">
-    </form>
-  </div>
-</body>
+{% block js %}
 
 {% if supply_id_fault %}
 <script>
-    alert('{{supply_id_fault}}');
+  alert('{{supply_id_fault}}');
 </script>
 {% endif %}
 
 {% if prod_id_fault %}
 <script>
-    alert('{{prod_id_fault}}');
+  alert('{{prod_id_fault}}');
 </script>
 {% endif %}
 
 {% if cost_fault %}
 <script>
-    alert('{{cost_fault}}');
+  alert('{{cost_fault}}');
 </script>
 {% endif %}
 
 {% if quantity_fault %}
 <script>
-    alert('{{quantity_fault}}');
+  alert('{{quantity_fault}}');
 </script>
 {% endif %}
 
@@ -220,15 +217,15 @@
     // Get selected option value
     var dropdown = document.getElementById("dropdown");
     var selectedOption = dropdown.value;
-    
+
     if (typeof addInput.counter == 'undefined') {
-        addInput.counter = 0;
+      addInput.counter = 0;
     }
     addInput.counter++;
     dropdown.selectedIndex++;
 
     if (addInput.counter === 4) {
-        document.getElementById("add-input-button").disabled = true;
+      document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;
@@ -275,7 +272,7 @@
     if (type == "number") {
       input.step = step;
       input.min = min;
-      if (selectedOption == "quantity" or selectedOption == "cost") {
+      if (selectedOption == "quantity" || selectedOption == "cost") {
         input.max = max;
       }
     }
@@ -333,4 +330,4 @@
   }
 </script>
 
-</html>
+{% endblock %}

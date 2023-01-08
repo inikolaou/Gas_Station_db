@@ -1,174 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Supply{% endblock %}
+{% block style %}
+<style>
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+  }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index</title>
-  <style>
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
 
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
 
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+  }
 
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-    }
+  nav a:hover {
+    color: #ccc;
+    cursor: pointer;
+  }
 
-    nav a:hover {
-      color: #ccc;
-      cursor: pointer;
-    }
+  a {
+    color: #0066c0;
+    text-decoration: none;
+  }
 
-    a {
-      color: #0066c0;
-      text-decoration: none;
-    }
+  a:hover {
+    color: #003399;
+  }
 
-    a:hover {
-      color: #003399;
-    }
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: 10px auto;
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 5px;
+  }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      width: 50%;
-      margin: 10px auto;
-      padding: 20px;
-      border: 2px solid #333;
-      border-radius: 5px;
-    }
+  form label {
+    margin-top: 10px;
+    font-size: 18px;
+  }
 
-    form label {
-      margin-top: 10px;
-      font-size: 18px;
-    }
+  form input,
+  form textarea {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
 
-    form input,
-    form textarea {
-      margin-top: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
+  form #submit {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
 
-    form #submit {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+  form #submit:hover {
+    background-color: #555;
+  }
+</style>
+{% endblock %}
 
-    form #submit:hover {
-      background-color: #555;
-    }
-  </style>
-</head>
+{% block body %}
+<div class="header">
+  <h1>Supply Handling</h1>
+</div>
+<nav>
+  <a href="/">Home</a>
+  <a id="all_supplies_nav" onclick="ShowSupplies()">Supplies</a>
+  <a id="search_supplies_nav" onclick="SearchSupply()">Search Supply</a>
+  <a id="add_supplies_nav" onclick="AddSupply()">Add Supply</a>
+</nav>
+<div id="all_supplies" style="display: block">
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Expected Arrival Date</th>
+        <th>Real Arrival Date</th>
+        <th>Supplier Email</th>
+        <th>GS Longitude</th>
+        <th>GS Latitude</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for supply in supplies %}
+      <tr id="{{supply.0}}">
+        <td>{{supply.0}}</td>
+        <td>{{supply.1}}</td>
+        <td>{{supply.2}}</td>
+        <td>{{supply.3}}</td>
+        <td>{{supply.4}}</td>
+        <td>{{supply.5}}</td>
+        <td>
+          <a href="#'{{supply.0}}'" onclick="editSupply('{{supply.0}}')">Edit<a>
+              |
+              <a href="{{supply.0}}/">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="search_supply" style="display: none">
+  <p>Select fields you want to search for</p>
+  <select id="dropdown">
+    <option value="id">ID</option>
+    <option value="expected-arrival-date">Expected Arrival Date</option>
+    <option value="real-arrival-date">Real Arrival Date</option>
+    <option value="sup-email">Supplier Email</option>
+    <option value="gs-longitude">GS_Longitude</option>
+    <option value="gs-latitude">GS_Latitude</option>
+  </select>
+  <button id="add-input-button" onclick="addInput()">Add Input</button>
+  <form id="searchSupplyForm" method="POST">
+    {% csrf_token %}
+    <input type="submit" id="submit-search-supply" name="search_supply" value="submit" disabled>
+  </form>
+</div>
+<div id="add_supply" style="display: none">
+  <form id="addSupplyForm" method="POST">
+    {% csrf_token %}
+    <label for="id">ID:</label><br>
+    <input type="number" step="1" min="1" id="id" name="id" required><br>
+    <label for="expected-arrival-date">Expected Arrival Date:</label><br>
+    <input type="date" id="expected-arrival-date" name="expected-arrival-date" required><br>
+    <label for="real-arrival-date">Real Arrival Date:</label><br>
+    <input type="date" id="real-arrival-date" name="real-arrival-date"><br>
+    <label for="sup-email">Supplier Email:</label><br>
+    <input type="email" id="sup-email" name="sup-email" required><br>
+    <label for="gs-longitude">GS_Longitude:</label><br>
+    <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude" required><br>
+    <label for="gs-latitude">GS_Latitude:</label><br>
+    <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude" required><br>
+    <input type="submit" id="submit-add-supply" name="add_supply" value="submit">
+  </form>
+</div>
+{% endblock %}
 
-<body>
-  <div class="header">
-    <h1>Supply Handling</h1>
-  </div>
-  <nav>
-    <a href="/">Home</a>
-    <a id="all_supplies_nav" onclick="ShowSupplies()">Supplies</a>
-    <a id="search_supplies_nav" onclick="SearchSupply()">Search Supply</a>
-    <a id="add_supplies_nav" onclick="AddSupply()">Add Supply</a>
-  </nav>
-  <div id="all_supplies" style="display: block">
-    <table>
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Expected Arrival Date</th>
-          <th>Real Arrival Date</th>
-          <th>Supplier Email</th>
-          <th>GS Longitude</th>
-          <th>GS Latitude</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for supply in supplies %}
-        <tr id="{{supply.0}}">
-          <td>{{supply.0}}</td>
-          <td>{{supply.1}}</td>
-          <td>{{supply.2}}</td>
-          <td>{{supply.3}}</td>
-          <td>{{supply.4}}</td>
-          <td>{{supply.5}}</td>
-          <td>
-            <a href="#'{{supply.0}}'" onclick="editSupply('{{supply.0}}')">Edit<a>
-                |
-                <a href="{{supply.0}}/">Delete</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <div id="search_supply" style="display: none">
-    <p>Select fields you want to search for</p>
-    <select id="dropdown">
-      <option value="id">ID</option>
-      <option value="expected-arrival-date">Expected Arrival Date</option>
-      <option value="real-arrival-date">Real Arrival Date</option>
-      <option value="sup-email">Supplier Email</option>
-      <option value="gs-longitude">GS_Longitude</option>
-      <option value="gs-latitude">GS_Latitude</option>
-    </select>
-    <button id="add-input-button" onclick="addInput()">Add Input</button>
-    <form id="searchSupplyForm" method="POST">
-      {% csrf_token %}
-      <input type="submit" id="submit-search-supply" name="search_supply" value="submit" disabled>
-    </form>
-  </div>
-  <div id="add_supply" style="display: none">
-    <form id="addSupplyForm" method="POST">
-      {% csrf_token %}
-      <label for="id">ID:</label><br>
-      <input type="number" step="1" min="1" id="id" name="id" required><br>
-      <label for="expected-arrival-date">Expected Arrival Date:</label><br>
-      <input type="date" id="expected-arrival-date" name="expected-arrival-date" required><br>
-      <label for="real-arrival-date">Real Arrival Date:</label><br>
-      <input type="date" id="real-arrival-date" name="real-arrival-date"><br>
-      <label for="sup-email">Supplier Email:</label><br>
-      <input type="email" id="sup-email" name="sup-email" required><br>
-      <label for="gs-longitude">GS_Longitude:</label><br>
-      <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude" required><br>
-      <label for="gs-latitude">GS_Latitude:</label><br>
-      <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude" required><br>
-      <input type="submit" id="submit-add-supply" name="add_supply" value="submit">
-    </form>
-  </div>
-</body>
+{% block js %}
 
 {% if id_fault %}
 <script>
@@ -368,4 +365,4 @@
   }
 </script>
 
-</html>
+{% endblock %}

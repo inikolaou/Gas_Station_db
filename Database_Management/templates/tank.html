@@ -1,181 +1,176 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Tank{% endblock %}
+{% block style %}
+<style>
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+    }
 
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-    <style>
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+    nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+    }
 
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-        }
+    nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+    }
 
-        nav a:hover {
-            color: #ccc;
-            cursor: pointer;
-        }
+    a {
+        color: #0066c0;
+        text-decoration: none;
+    }
 
-        a {
-            color: #0066c0;
-            text-decoration: none;
-        }
+    a:hover {
+        color: #003399;
+    }
 
-        a:hover {
-            color: #003399;
-        }
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+    }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 50%;
-            margin: 10px auto;
-            padding: 20px;
-            border: 2px solid #333;
-            border-radius: 5px;
-        }
+    form label {
+        margin-top: 10px;
+        font-size: 18px;
+    }
 
-        form label {
-            margin-top: 10px;
-            font-size: 18px;
-        }
+    form input,
+    form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
 
-        form input,
-        form textarea {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
+    form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-        form #submit {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    form #submit:hover {
+        background-color: #555;
+    }
+</style>
+{% endblock %}
 
-        form #submit:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
+{% block body %}
+<div class="header">
+    <h1>Tank Handling</h1>
+</div>
+<nav>
+    <a href="/">Home</a>
+    <a id="all_tank_nav" onclick="ShowTank()">Tanks</a>
+    <a id="search_tank_nav" onclick="SearchTank()">Search Tank</a>
+    <a id="add_tank_nav" onclick="AddTank()">Add Tank</a>
+</nav>
+<div id="all_tanks" style="display: block">
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Last Check Up</th>
+                <th>Capacity</th>
+                <th>Quantity</th>
+                <th>Prod Id</th>
+                <th>GS Longitude</th>
+                <th>GS Latitude</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tank in tanks %}
+            <tr id="{{tank.0}}_{{tank.5}}_{{tank.6}}">
+                <td>{{tank.0}}</td>
+                <td>{{tank.1}}</td>
+                <td>{{tank.2}}</td>
+                <td>{{tank.3}}</td>
+                <td>{{tank.4}}</td>
+                <td>{{tank.5}}</td>
+                <td>{{tank.6}}</td>
+                <td>
+                    <a href="#'{{tank.0}}_{{tank.5}}_{{tank.6}}'"
+                        onclick="editTank('{{tank.0}}_{{tank.5}}_{{tank.6}}')">Edit</a>
+                    |
+                    <a href="{{tank.0}}_{{tank.5}}_{{tank.6}}/">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div id="search_tank" style="display: none">
+    <p>Select fields you want to search for</p>
+    <select id="dropdown">
+        <option value="id">Id</option>
+        <option value="last-check-up">Last_Check_Up</option>
+        <option value="capacity">Capacity</option>
+        <option value="quantity">Quantity</option>
+        <option value="prod-id">Prod_Id</option>
+        <option value="gs-longitude">GS_Longitude</option>
+        <option value="gs-latitude">GS_Latitude</option>
+    </select>
+    <button id="add-input-button" onclick="addInput()">Add Input</button>
+    <form id="searchTankForm" method="POST">
+        {% csrf_token %}
+        <input type="submit" id="submit-search-tank" name="search_tank" value="submit" disabled />
+    </form>
+</div>
+<div id="add_tank" style="display: none">
+    <form id="addTankForm" method="POST">
+        {% csrf_token %}
+        <label for="id">Id:</label><br>
+        <input type="number" step="1" min="1" id="id" name="id" required><br>
+        <label for="last-check-up">Last Check Up:</label><br>
+        <input type="date" id="last-check-up" name="last-check-up"><br>
+        <label for="capacity">Capacity:</label><br>
+        <input type="number" value="15000" id="capacity" name="capacity" readonly="readonly"><br>
+        <label for="quantity">Quantity:</label><br>
+        <input type="number" step=".001" min="0" max="15000" id="quantity" name="quantity" required><br>
+        <label for="prod-id">Product Id:</label><br>
+        <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
+        <label for="gs-longitude">GS_Longitude:</label><br>
+        <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude" required><br>
+        <label for="gs-latitude">GS_Latitude:</label><br>
+        <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude" required><br>
+        <input type="submit" id="submit-add-tank" name="add_tank" value="submit" />
+    </form>
+</div>
+{% endblock %}
 
-<body>
-    <div class="header">
-        <h1>Tank Handling</h1>
-    </div>
-    <nav>
-        <a href="/">Home</a>
-        <a id="all_tank_nav" onclick="ShowTank()">Tanks</a>
-        <a id="search_tank_nav" onclick="SearchTank()">Search Tank</a>
-        <a id="add_tank_nav" onclick="AddTank()">Add Tank</a>
-    </nav>
-    <div id="all_tanks" style="display: block">
-        <table>
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Last Check Up</th>
-                    <th>Capacity</th>
-                    <th>Quantity</th>
-                    <th>Prod Id</th>
-                    <th>GS Longitude</th>
-                    <th>GS Latitude</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tank in tanks %}
-                <tr id="{{tank.0}}_{{tank.5}}_{{tank.6}}">
-                    <td>{{tank.0}}</td>
-                    <td>{{tank.1}}</td>
-                    <td>{{tank.2}}</td>
-                    <td>{{tank.3}}</td>
-                    <td>{{tank.4}}</td>
-                    <td>{{tank.5}}</td>
-                    <td>{{tank.6}}</td>
-                    <td>
-                        <a href="#'{{tank.0}}_{{tank.5}}_{{tank.6}}'"
-                            onclick="editTank('{{tank.0}}_{{tank.5}}_{{tank.6}}')">Edit</a>
-                        |
-                        <a href="{{tank.0}}_{{tank.5}}_{{tank.6}}/">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div id="search_tank" style="display: none">
-        <p>Select fields you want to search for</p>
-        <select id="dropdown">
-            <option value="id">Id</option>
-            <option value="last-check-up">Last_Check_Up</option>
-            <option value="capacity">Capacity</option>
-            <option value="quantity">Quantity</option>
-            <option value="prod-id">Prod_Id</option>
-            <option value="gs-longitude">GS_Longitude</option>
-            <option value="gs-latitude">GS_Latitude</option>
-        </select>
-        <button id="add-input-button" onclick="addInput()">Add Input</button>
-        <form id="searchTankForm" method="POST">
-            {% csrf_token %}
-            <input type="submit" id="submit-search-tank" name="search_tank" value="submit" disabled />
-        </form>
-    </div>
-    <div id="add_tank" style="display: none">
-        <form id="addTankForm" method="POST">
-            {% csrf_token %}
-            <label for="id">Id:</label><br>
-            <input type="number" step="1" min="1" id="id" name="id" required><br>
-            <label for="last-check-up">Last Check Up:</label><br>
-            <input type="date" id="last-check-up" name="last-check-up"><br>
-            <label for="capacity">Capacity:</label><br>
-            <input type="number" value="15000" id="capacity" name="capacity" readonly="readonly"><br>
-            <label for="quantity">Quantity:</label><br>
-            <input type="number" step=".001" min="0" max="15000" id="quantity" name="quantity" required><br>
-            <label for="prod-id">Product Id:</label><br>
-            <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
-            <label for="gs-longitude">GS_Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude"
-                required><br>
-            <label for="gs-latitude">GS_Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude"
-                required><br>
-            <input type="submit" id="submit-add-tank" name="add_tank" value="submit" />
-        </form>
-    </div>
-</body>
+{% block js %}
 
 {% if id_fault %}
 <script>
@@ -392,4 +387,4 @@
     }
 </script>
 
-</html>
+{% endblock %}

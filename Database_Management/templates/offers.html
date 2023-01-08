@@ -1,167 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Offers{% endblock %}
+{% block style %}
+<style>
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+    }
 
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index</title>
-    <style>
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+    nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+    }
 
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-        }
+    nav a:hover {
+        color: #ccc;
+        cursor: pointer;
+    }
 
-        nav a:hover {
-            color: #ccc;
-            cursor: pointer;
-        }
+    a {
+        color: #0066c0;
+        text-decoration: none;
+    }
 
-        a {
-            color: #0066c0;
-            text-decoration: none;
-        }
+    a:hover {
+        color: #003399;
+    }
 
-        a:hover {
-            color: #003399;
-        }
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        margin: 10px auto;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 5px;
+    }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 50%;
-            margin: 10px auto;
-            padding: 20px;
-            border: 2px solid #333;
-            border-radius: 5px;
-        }
+    form label {
+        margin-top: 10px;
+        font-size: 18px;
+    }
 
-        form label {
-            margin-top: 10px;
-            font-size: 18px;
-        }
+    form input,
+    form textarea {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
 
-        form input,
-        form textarea {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
+    form #submit {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-        form #submit {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    form #submit:hover {
+        background-color: #555;
+    }
+</style>
+{% endblock %}
 
-        form #submit:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
+{% block body %}
+<div class="header">
+    <h1>Offering Handling</h1>
+</div>
+<nav>
+    <a href="/">Home</a>
+    <a id="all_offers_nav" onclick="ShowOffers()">Offers</a>
+    <a id="search_offers_nav" onclick="SearchOffers()">Search Offers</a>
+    <a id="add_offers_nav" onclick="AddOffers()">Add Offers</a>
+</nav>
+<div id="all_offers" style="display: block">
+    <table>
+        <thead>
+            <tr>
+                <th>Product Id</th>
+                <th>GS Longitude</th>
+                <th>GS Latitude</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for offer in offers %}
+            <tr id="{{offer.0}}_{{offer.1}}_{{offer.2}}">
+                <td>{{offer.0}}</td>
+                <td>{{offer.1}}</td>
+                <td>{{offer.2}}</td>
+                <td>{{offer.3}}</td>
+                <td>
+                    <a href="#'{{offer.0}}_{{offer.1}}_{{offer.2}}'"
+                        onclick="editOffers('{{offer.0}}_{{offer.1}}_{{offer.2}}')">Edit</a>
+                    |
+                    <a href="{{offer.0}}_{{offer.1}}_{{offer.2}}/">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div id="search_offers" style="display: none">
+    <p>Select fields you want to search for</p>
+    <select id="dropdown">
+        <option value="prod-id">Product_Id</option>
+        <option value="gs-longitude">GS_Longitude</option>
+        <option value="gs-latitude">GS_Latitude</option>
+        <option value="quantity">Quantity</option>
+    </select>
+    <button id="add-input-button" onclick="addInput()">Add Input</button>
+    <form id="searchOffersForm" method="POST">
+        {% csrf_token %}
+        <input type="submit" id="submit-search-offers" name="search_offers" value="submit" disabled />
+    </form>
+</div>
+<div id="add_offers" style="display: none">
+    <form id="addOffersForm" method="POST">
+        {% csrf_token %}
+        <label for="prod-id">Id:</label><br>
+        <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
+        <label for="gs-longitude">GS_Longitude:</label><br>
+        <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude" required><br>
+        <label for="gs-latitude">GS_Latitude:</label><br>
+        <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude" required><br>
+        <label for="quantity">Quantity:</label><br>
+        <input type="number" step=".001" min="0" max="15000" id="quantity" name="quantity" required><br>
+        <input type="submit" id="submit-add-offers" name="add_offers" value="submit" />
+    </form>
+</div>
+{% endblock %}
 
-<body>
-    <div class="header">
-        <h1>Offering Handling</h1>
-    </div>
-    <nav>
-        <a href="/">Home</a>
-        <a id="all_offers_nav" onclick="ShowOffers()">Offers</a>
-        <a id="search_offers_nav" onclick="SearchOffers()">Search Offers</a>
-        <a id="add_offers_nav" onclick="AddOffers()">Add Offers</a>
-    </nav>
-    <div id="all_offers" style="display: block">
-        <table>
-            <thead>
-                <tr>
-                    <th>Product Id</th>
-                    <th>GS Longitude</th>
-                    <th>GS Latitude</th>
-                    <th>Quantity</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for offer in offers %}
-                <tr id="{{offer.0}}_{{offer.1}}_{{offer.2}}">
-                    <td>{{offer.0}}</td>
-                    <td>{{offer.1}}</td>
-                    <td>{{offer.2}}</td>
-                    <td>{{offer.3}}</td>
-                    <td>
-                        <a href="#'{{offer.0}}_{{offer.1}}_{{offer.2}}'"
-                            onclick="editOffers('{{offer.0}}_{{offer.1}}_{{offer.2}}')">Edit</a>
-                        |
-                        <a href="{{offer.0}}_{{offer.1}}_{{offer.2}}/">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div id="search_offers" style="display: none">
-        <p>Select fields you want to search for</p>
-        <select id="dropdown">
-            <option value="prod-id">Product_Id</option>
-            <option value="gs-longitude">GS_Longitude</option>
-            <option value="gs-latitude">GS_Latitude</option>
-            <option value="quantity">Quantity</option>
-        </select>
-        <button id="add-input-button" onclick="addInput()">Add Input</button>
-        <form id="searchOffersForm" method="POST">
-            {% csrf_token %}
-            <input type="submit" id="submit-search-offers" name="search_offers" value="submit" disabled />
-        </form>
-    </div>
-    <div id="add_offers" style="display: none">
-        <form id="addOffersForm" method="POST">
-            {% csrf_token %}
-            <label for="prod-id">Id:</label><br>
-            <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
-            <label for="gs-longitude">GS_Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude"
-                required><br>
-            <label for="gs-latitude">GS_Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude"
-                required><br>
-            <label for="quantity">Quantity:</label><br>
-            <input type="number" step=".001" min="0" max="15000" id="quantity" name="quantity" required><br>
-            <input type="submit" id="submit-add-offers" name="add_offers" value="submit" />
-        </form>
-    </div>
-</body>
+{% block js %}
 
 {% if prod_id_fault %}
 <script>
@@ -335,4 +330,4 @@
     }
 </script>
 
-</html>
+{% endblock %}

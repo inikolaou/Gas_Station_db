@@ -1,180 +1,176 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Customer{% endblock %}
+{% block style %}
+<style>
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+  }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index</title>
-  <style>
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
 
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
 
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+  }
 
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-    }
+  nav a:hover {
+    color: #ccc;
+    cursor: pointer;
+  }
 
-    nav a:hover {
-      color: #ccc;
-      cursor: pointer;
-    }
+  a {
+    color: #0066c0;
+    text-decoration: none;
+  }
 
-    a {
-      color: #0066c0;
-      text-decoration: none;
-    }
+  a:hover {
+    color: #003399;
+  }
 
-    a:hover {
-      color: #003399;
-    }
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: 10px auto;
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 5px;
+  }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      width: 50%;
-      margin: 10px auto;
-      padding: 20px;
-      border: 2px solid #333;
-      border-radius: 5px;
-    }
+  form label {
+    margin-top: 10px;
+    font-size: 18px;
+  }
 
-    form label {
-      margin-top: 10px;
-      font-size: 18px;
-    }
+  form input,
+  form textarea {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
 
-    form input,
-    form textarea {
-      margin-top: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
+  form #submit {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
 
-    form #submit {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+  form #submit:hover {
+    background-color: #555;
+  }
+</style>
+{% endblock %}
 
-    form #submit:hover {
-      background-color: #555;
-    }
-  </style>
-</head>
+{% block body %}
+<div class="header">
+  <h1>Customer Handling</h1>
+</div>
+<nav>
+  <a href="/">Home</a>
+  <a id="all_customers_nav" onclick="ShowCustomers()">Customers</a>
+  <a id="search_customer_nav" onclick="SearchCustomer()">Search Customer</a>
+  <a id="add_customer_nav" onclick="AddCustomer()">Add Customer</a>
+</nav>
+<div id="all_customers" style="display: block">
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Birth Date</th>
+        <th>Phone Number</th>
+        <th>Longitude</th>
+        <th>Latitude</th>
+        <th>Remaining Points</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for customer in customers %}
+      <tr id="{{customer.0}}">
+        <td>{{customer.0}}</td>
+        <td>{{customer.1}}</td>
+        <td>{{customer.2}}</td>
+        <td>{{customer.3}}</td>
+        <td>{{customer.4}}</td>
+        <td>{{customer.5}}</td>
+        <td>{{customer.6}}</td>
+        <td>{{customer.7}}</td>
+        <td>
+          <a href="#'{{customer.0}}'" onclick="editCustomer('{{customer.0}}')">Edit</a>
+          |
+          <a href="{{customer.0}}/">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div id="search_customer" style="display: none">
+  <p>Select fields you want to search for</p>
+  <select id="dropdown">
+    <option value="email">Email</option>
+    <option value="phone-number">Phone_Number</option>
+    <option value="remaining-points">Remaining_Points</option>
+  </select>
+  <button id="add-input-button" onclick="addInput()">Add Input</button>
+  <form id="searchCustomerForm" method="POST">
+    {% csrf_token %}
+    <input type="submit" id="submit-search-customer" name="search_customer" value="submit" disabled />
+  </form>
+</div>
+<div id="add_customer" style="display: none">
+  <form id="addCustomerForm" method="POST">
+    {% csrf_token %}
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br>
+    <label for="first-name">First Name:</label><br>
+    <input type="text" maxlength="30" id="first-name" name="first-name" required><br>
+    <label for="last-name">Last Name:</label><br>
+    <input type="text" maxlength="30" id="last-name" name="last-name" required><br>
+    <label for="birth-date">Birth Date:</label><br>
+    <input type="date" id="birth-date" name="birth-date" required><br>
+    <label for="phone-number">Phone Number:</label><br>
+    <input type="number" step="1" min="6900000000" max="6999999999" id="phone-number" name="phone-number" required><br>
+    <label for="longitude">Longitude:</label><br>
+    <input type="number" step="0.000001" min="0" max="99.999999" id="longitude" name="longitude"><br>
+    <label for="latitude">Latitude:</label><br>
+    <input type="number" step="0.000001" min="0" max="999.999999" id="latitude" name="latitude"><br>
+    <label for="remaining-points">Remaining Points:</label><br>
+    <input type="number" step="10" min="0" max="990" id="remaining-points" name="remaining-points" required><br>
+    <input type="submit" id="submit-add-customer" name="add_customer" value="submit" />
+  </form>
+</div>
+{% endblock %}
 
-<body>
-  <div class="header">
-    <h1>Customer Handling</h1>
-  </div>
-  <nav>
-    <a href="/">Home</a>
-    <a id="all_customers_nav" onclick="ShowCustomers()">Customers</a>
-    <a id="search_customer_nav" onclick="SearchCustomer()">Search Customer</a>
-    <a id="add_customer_nav" onclick="AddCustomer()">Add Customer</a>
-  </nav>
-  <div id="all_customers" style="display: block">
-    <table>
-      <thead>
-        <tr>
-          <th>Email</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Birth Date</th>
-          <th>Phone Number</th>
-          <th>Longitude</th>
-          <th>Latitude</th>
-          <th>Remaining Points</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for customer in customers %}
-        <tr id="{{customer.0}}">
-          <td>{{customer.0}}</td>
-          <td>{{customer.1}}</td>
-          <td>{{customer.2}}</td>
-          <td>{{customer.3}}</td>
-          <td>{{customer.4}}</td>
-          <td>{{customer.5}}</td>
-          <td>{{customer.6}}</td>
-          <td>{{customer.7}}</td>
-          <td>
-            <a href="#'{{customer.0}}'" onclick="editCustomer('{{customer.0}}')">Edit</a>
-            |
-            <a href="{{customer.0}}/">Delete</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <div id="search_customer" style="display: none">
-    <p>Select fields you want to search for</p>
-    <select id="dropdown">
-      <option value="email">Email</option>
-      <option value="phone-number">Phone_Number</option>
-      <option value="remaining-points">Remaining_Points</option>
-    </select>
-    <button id="add-input-button" onclick="addInput()">Add Input</button>
-    <form id="searchCustomerForm" method="POST">
-      {% csrf_token %}
-      <input type="submit" id="submit-search-customer" name="search_customer" value="submit" disabled />
-    </form>
-  </div>
-  <div id="add_customer" style="display: none">
-    <form id="addCustomerForm" method="POST">
-      {% csrf_token %}
-      <label for="email">Email:</label><br>
-      <input type="email" id="email" name="email" required><br>
-      <label for="first-name">First Name:</label><br>
-      <input type="text" maxlength="30" id="first-name" name="first-name" required><br>
-      <label for="last-name">Last Name:</label><br>
-      <input type="text" maxlength="30" id="last-name" name="last-name" required><br>
-      <label for="birth-date">Birth Date:</label><br>
-      <input type="date" id="birth-date" name="birth-date" required><br>
-      <label for="phone-number">Phone Number:</label><br>
-      <input type="number" step="1" min="6900000000" max="6999999999" id="phone-number" name="phone-number"
-        required><br>
-      <label for="longitude">Longitude:</label><br>
-      <input type="number" step="0.000001" min="0" max="99.999999" id="longitude" name="longitude"><br>
-      <label for="latitude">Latitude:</label><br>
-      <input type="number" step="0.000001" min="0" max="999.999999" id="latitude" name="latitude"><br>
-      <label for="remaining-points">Remaining Points:</label><br>
-      <input type="number" step="10" min="0" max="990" id="remaining-points" name="remaining-points" required><br>
-      <input type="submit" id="submit-add-customer" name="add_customer" value="submit" />
-    </form>
-  </div>
-</body>
+{% block js %}
 
 {% if email_fault %}
 <script>
@@ -372,4 +368,4 @@
   }
 </script>
 
-</html>
+{% endblock %}

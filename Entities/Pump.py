@@ -244,6 +244,24 @@ def update(id, tank_id, tank_gs_longitude, tank_gs_latitude, current_state, last
     conn.close()
 
 
+def updateQuantity(id, tank_id, tank_gs_longitude, tank_gs_latitude, quantity):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''
+                        UPDATE PUMP
+                        SET Product_Quantity = Product_Quantity - ?
+                        WHERE Id = ? AND Tank_Id = ? AND T_GS_Longitude = ? AND T_GS_Latitude = ?
+                    ''',
+                      (quantity, id, tank_id, tank_gs_longitude, tank_gs_latitude))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+
 def delete(id_tankId_tankLongitude_tankLatitude):
     id_tankId_tankLongitude_tankLatitude = id_tankId_tankLongitude_tankLatitude.split(
         '_')

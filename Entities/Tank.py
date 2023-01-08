@@ -201,6 +201,24 @@ def update(id, last_check, capacity, quantity, product_id, longitude, latitude):
     conn.close()
 
 
+def updateQuantity(id, gs_longitude, gs_latitude, quantity):
+    conn = sqlite3.connect("Gas_Station.db")
+    conn.execute("PRAGMA foreign_keys = 1")
+    c = conn.cursor()
+    with conn:
+        try:
+            c.execute('''
+                        UPDATE TANK
+                        SET Quantity = Quantity - ?
+                        WHERE Id = ? AND GS_Longitude = ? AND GS_Latitude = ?
+                    ''',
+                      (quantity, id, gs_longitude, gs_latitude))
+        except Exception as e:
+            print("Update exception")
+            print(e)
+    conn.close()
+
+
 def delete(id_longitude_latitude):
     id_longitude_latitude = id_longitude_latitude.split('_')
     id = id_longitude_latitude[0]
@@ -246,6 +264,32 @@ def allTankIdsGsCoords(gs_longitude, gs_latitude):
                 FROM TANK
                 WHERE GS_Longitude = ? AND GS_Latitude = ?
             ''', (gs_longitude, gs_latitude))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allFuelIdsGSCoords(tank, gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Prod_Id
+                FROM TANK
+                WHERE Id = ? AND GS_Longitude = ? AND GS_Latitude = ?
+            ''', (tank, gs_longitude, gs_latitude))
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def fuelQuantity(prod_id, tank_id, gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Quantity
+                FROM TANK
+                WHERE Prod_Id = ? AND Id = ? AND GS_Longitude = ? AND GS_Latitude = ?
+            ''', (prod_id, tank_id, gs_longitude, gs_latitude))
     data = c.fetchall()
     conn.close()
     return data

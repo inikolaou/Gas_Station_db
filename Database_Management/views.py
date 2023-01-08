@@ -259,6 +259,21 @@ def customer(request):
         remaining_points = request.POST.get('remaining-points', False)
 
         error_occured = False
+        
+        if (email != False):
+            email = email.strip()
+            try:
+                validation = validate_email(email)
+                email = validation.email
+                # check if the email belongs to another customer
+                all_customer_emails = Customer.allCustomerEmails()
+                check_customer_emails = (email, )
+                if ((check_customer_emails in all_customer_emails) and ("add_customer" in request.POST)):
+                    email_fault = "Please write a valid email. This email belongs to another customer"
+                error_occured = True
+            except EmailNotValidError as e:
+                email_fault = str(e)
+                error_occured = True
 
         if (first_name != False):
             first_name = first_name.strip()
@@ -267,25 +282,6 @@ def customer(request):
                 error_occured = True
             else:
                 first_name = first_name.capitalize()
-
-        if (email != False):
-            email = email.strip()
-            try:
-                validation = validate_email(email)
-                email = validation.email
-                # check if the email belongs to another customer
-                if (not error_occured):
-                    all_customer_emails = Customer.allCustomerEmails()
-                    check_customer_emails = (email, )
-                    all_customer_names = Customer.allCustomerNames()
-                    first_name = first_name.strip()
-                    check_customer_names = (first_name, )
-                    if ((check_customer_emails in all_customer_emails) and (check_customer_names not in all_customer_names) and ("add_customer" in request.POST)):
-                        email_fault = "Please write a valid email. This email belongs to another customer"
-                    error_occured = True
-            except EmailNotValidError as e:
-                email_fault = str(e)
-                error_occured = True
 
         if (last_name != False):
             last_name = last_name.strip()
@@ -2035,6 +2031,21 @@ def supplier(request):
         latitude = request.POST.get('latitude', False)
 
         error_occured = False
+        
+        if (email != False):
+            email = email.strip()
+            try:
+                validation = validate_email(email)
+                email = validation.email
+                # check if the email belongs to another supplier
+                all_supplier_emails = Supplier.allSupplierEmails()
+                check_supplier_emails = (email, )
+                if ((check_supplier_emails in all_supplier_emails) and ("add_supplier" in request.POST)):
+                    email_fault = "Please write a valid email. This email belongs to another supplier"
+                error_occured = True
+            except EmailNotValidError as e:
+                email_fault = str(e)
+                error_occured = True
 
         if (first_name != False):
             first_name = first_name.strip()
@@ -2043,25 +2054,6 @@ def supplier(request):
                 error_occured = True
             else:
                 first_name = first_name.capitalize()
-
-        if (email != False):
-            email = email.strip()
-            try:
-                validation = validate_email(email)
-                email = validation.email
-                # check if the email belongs to another supplier
-                if (not error_occured):
-                    all_supplier_emails = Supplier.allSupplierEmails()
-                    check_supplier_emails = (email, )
-                    all_supplier_names = Supplier.allSupplierNames()
-                    first_name = first_name.strip()
-                    check_supplier_names = (first_name, )
-                    if ((check_supplier_emails in all_supplier_emails) and (check_supplier_names not in all_supplier_names) and ("add_supplier" in request.POST)):
-                        email_fault = "Please write a valid email. This email belongs to another supplier"
-                    error_occured = True
-            except EmailNotValidError as e:
-                email_fault = str(e)
-                error_occured = True
 
         if (last_name != False):
             last_name = last_name.strip()

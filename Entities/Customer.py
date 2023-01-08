@@ -182,7 +182,7 @@ def allCustomerEmails():
 def allCustomerNames():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
-    c.execute("select Name from CUSTOMER")
+    c.execute("select Fname from CUSTOMER")
     data = c.fetchall()
     conn.close()
     return data

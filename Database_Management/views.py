@@ -1567,8 +1567,7 @@ def pump(request):
             pumps = Pump.retrieveAllColumns()
     else:
         pumps = Pump.retrieveAllColumns()
-    all_pumps = Pump.retrieveAllColumns()
-    return render(request, 'pump.html', {'pumps': pumps, 'number_of_pumps': len(all_pumps),  'id_fault': id_fault, 'tank_id_fault': tank_id_fault, 'tank_gs_longitude_fault': tank_gs_longitude_fault, 'tank_gs_latitude_fault': tank_gs_latitude_fault, 'current_state_fault': current_state_fault, 'current_state_fault': current_state_fault, 'last_check_up_fault': last_check_up_fault, 'nozzle_last_check_up_fault': nozzle_last_check_up_fault, 'product_quantity_fault': product_quantity_fault})
+    return render(request, 'pump.html', {'pumps': pumps, 'id_fault': id_fault, 'tank_id_fault': tank_id_fault, 'tank_gs_longitude_fault': tank_gs_longitude_fault, 'tank_gs_latitude_fault': tank_gs_latitude_fault, 'current_state_fault': current_state_fault, 'current_state_fault': current_state_fault, 'last_check_up_fault': last_check_up_fault, 'nozzle_last_check_up_fault': nozzle_last_check_up_fault, 'product_quantity_fault': product_quantity_fault})
 
 
 def pump_delete(request, id_tankId_tankLongitude_tankLatitude):
@@ -2376,8 +2375,7 @@ def tank(request):
             tanks = Tank.retrieveAllColumns()
     else:
         tanks = Tank.retrieveAllColumns()
-    all_tanks = Tank.retrieveAllColumns()
-    return render(request, 'tank.html', {'tanks': tanks, 'number_of_tanks': len(all_tanks), 'id_fault': id_fault, 'last_check_up_fault': last_check_up_fault, 'capacity_fault': capacity_fault, 'quantity_fault': quantity_fault, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
+    return render(request, 'tank.html', {'tanks': tanks, 'id_fault': id_fault, 'last_check_up_fault': last_check_up_fault, 'capacity_fault': capacity_fault, 'quantity_fault': quantity_fault, 'prod_id_fault': prod_id_fault, 'gs_longitude_fault': gs_longitude_fault, 'gs_latitude_fault': gs_latitude_fault})
 
 
 def tank_delete(request, id_longitude_latitude):

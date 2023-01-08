@@ -136,7 +136,7 @@
         <button id="add-input-button" onclick="addInput()">Add Input</button>
         <form id="searchaAsignmentForm" method="POST">
             {% csrf_token %}
-            <input type="submit" id="submit-search-assignment" name="search_assignment" value="submit" />
+            <input type="submit" id="submit-search-assignment" name="search_assignment" value="submit" disabled />
         </form>
     </div>
     <div id="add_assignment" style="display: none">
@@ -181,7 +181,6 @@
         search_assignment.style.display = "block";
         const add_assignment = document.getElementById("add_assignment");
         add_assignment.style.display = "none";
-        document.getElementById("submit-search-assignment").disabled = true;
     }
 
     function AddAssignments() {
@@ -239,6 +238,10 @@
         input.type = type;
         if (type == "number") {
             input.step = step;
+            input.min = min;
+        }
+        if (selectedOption == "essn") {
+            input.setAttribute("maxlength", maxlength);
         }
         input.name = selectedOption;
         label.setAttribute("for", selectedOption);

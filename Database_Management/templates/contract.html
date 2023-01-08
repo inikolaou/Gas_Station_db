@@ -250,6 +250,7 @@
                 step = ".01";
                 min = "0";
                 max = "99999.99";
+                break;
             default:
                 type = "text";
         }
@@ -269,6 +270,10 @@
         input.type = type;
         if (type == "number") {
             input.step = step;
+            input.min = min;
+            if (selectedOption == "salary") {
+                input.max = max;
+            }
         }
         input.name = selectedOption;
         label.setAttribute("for", selectedOption);

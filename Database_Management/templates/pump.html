@@ -154,7 +154,7 @@
         <button id="add-input-button" onclick="addInput()">Add Input</button>
         <form id="searchPumpForm" method="POST">
             {% csrf_token %}
-            <input type="submit" id="submit-search-pump" name="search_pump" value="submit" />
+            <input type="submit" id="submit-search-pump" name="search_pump" value="submit" disabled />
         </form>
     </div>
     <div id="add_pump" style="display: none">
@@ -165,9 +165,11 @@
             <label for="tank-id">Tank Id:</label><br>
             <input type="number" step="1" min="1" id="tank-id" name="tank-id" required><br>
             <label for="tank-gs-longitude">Tank GS Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" id="tank-gs-longitude" name="tank-gs-longitude" required><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" id="tank-gs-longitude" name="tank-gs-longitude"
+                required><br>
             <label for="tank-gs-latitude">Tank GS Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" id="tank-gs-latitude" name="tank-gs-latitude" required><br>
+            <input type="number" min="0" max="999.999999" step="0.000001" id="tank-gs-latitude" name="tank-gs-latitude"
+                required><br>
             <label for="current-state">Current State:</label><br>
             <input type="number" step="1" min="0" max="1" id="current-state" name="current-state"><br>
             <label for="last-check-up">Last Check Up:</label><br>
@@ -175,7 +177,8 @@
             <label for="nozzle-last-check-up">Nozzle Last Check Up Id:</label><br>
             <input type="date" id="nozzle-last-check-up" name="nozzle-last-check-up"><br>
             <label for="product-quantity">Product Quantity:</label><br>
-            <input type="number" step=".001" min="0" max="5000" id="product-quantity" name="product-quantity" required><br>
+            <input type="number" step=".001" min="0" max="5000" id="product-quantity" name="product-quantity"
+                required><br>
 
             <input type="submit" id="submit-add-pump" name="add_pump" value="submit" />
         </form>
@@ -249,7 +252,6 @@
         search_pump.style.display = "block";
         const add_pump = document.getElementById("add_pump");
         add_pump.style.display = "none";
-        document.getElementById("submit-search-pump").disabled = true;
     }
 
     function AddPump() {
@@ -259,8 +261,6 @@
         search_pump.style.display = "none";
         const add_pump = document.getElementById("add_pump");
         add_pump.style.display = "block";
-        const id_field = document.getElementById("id");
-        id_field.value = parseInt('{{number_of_pumps}}') + 1;
     }
 
     function addInput() {
@@ -340,9 +340,9 @@
         input.type = type;
         if (type == "number") {
             input.step = step;
-            if (selectedOption == "current-state") {
+            input.min = min;
+            if (selectedOption != "pump-id" && selectedOption != "tank-id") {
                 input.max = max;
-                input.min = min;
             }
         }
         input.name = selectedOption;

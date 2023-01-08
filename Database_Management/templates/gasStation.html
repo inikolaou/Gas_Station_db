@@ -304,10 +304,11 @@
         input.type = type;
         if (type == "number") {
             input.step = step;
-            if (selectedOption == "minimarket") {
-                input.max = max;
-                input.min = min;
-            }
+            input.max = max;
+            input.min = min;
+        }
+        if (type == "text") {
+            input.setAttribute("maxlength", maxlength);
         }
         input.name = selectedOption;
         label.setAttribute("for", selectedOption);

@@ -135,7 +135,7 @@
     <button id="add-input-button" onclick="addInput()">Add Input</button>
     <form id="searchEntailsForm" method="POST">
       {% csrf_token %}
-      <input type="submit" id="submit-search-entails" name="search_entails" value="submit" />
+      <input type="submit" id="submit-search-entails" name="search_entails" value="submit" disabled />
     </form>
   </div>
   <div id="add_entails" style="display: none">
@@ -152,13 +152,13 @@
 
 {% if serv_id_fault %}
 <script>
-    alert('{{serv_id_fault}}');
+  alert('{{serv_id_fault}}');
 </script>
 {% endif %}
 
 {% if pur_id_fault %}
 <script>
-    alert('{{pur_id_fault}}');
+  alert('{{pur_id_fault}}');
 </script>
 {% endif %}
 
@@ -180,7 +180,6 @@
     search_entails.style.display = "block";
     const add_entails = document.getElementById("add_entails");
     add_entails.style.display = "none";
-    document.getElementById("submit-search-entails").disabled = true;
   }
 
   function AddEntails() {
@@ -199,13 +198,13 @@
     var selectedOption = dropdown.value;
 
     if (typeof addInput.counter == 'undefined') {
-        addInput.counter = 0;
+      addInput.counter = 0;
     }
     addInput.counter++;
     dropdown.selectedIndex++;
 
     if (addInput.counter === 2) {
-        document.getElementById("add-input-button").disabled = true;
+      document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;
@@ -239,6 +238,7 @@
     input.type = type;
     if (type == "number") {
       input.step = step;
+      input.min = min;
     }
     input.name = selectedOption;
     label.setAttribute("for", selectedOption);

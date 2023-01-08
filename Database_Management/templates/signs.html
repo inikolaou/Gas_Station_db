@@ -135,7 +135,7 @@
     <button id="add-input-button" onclick="addInput()">Add Input</button>
     <form id="searchSignForm" method="POST">
       {% csrf_token %}
-      <input type="submit" id="submit-search-sign" name="search_sign" value="submit" />
+      <input type="submit" id="submit-search-sign" name="search_sign" value="submit" disabled />
     </form>
   </div>
   <div id="add_sign" style="display: none">
@@ -152,13 +152,13 @@
 
 {% if essn_fault %}
 <script>
-    alert('{{essn_fault}}');
+  alert('{{essn_fault}}');
 </script>
 {% endif %}
 
 {% if contract_id_fault %}
 <script>
-    alert('{{contract_id_fault}}');
+  alert('{{contract_id_fault}}');
 </script>
 {% endif %}
 
@@ -180,7 +180,6 @@
     search_sign.style.display = "block";
     const add_sign = document.getElementById("add_sign");
     add_sign.style.display = "none";
-    document.getElementById("submit-search-sign").disabled = true;
   }
 
   function AddSign() {
@@ -199,13 +198,13 @@
     var selectedOption = dropdown.value;
 
     if (typeof addInput.counter == 'undefined') {
-        addInput.counter = 0;
+      addInput.counter = 0;
     }
     addInput.counter++;
     dropdown.selectedIndex++;
 
     if (addInput.counter === 2) {
-        document.getElementById("add-input-button").disabled = true;
+      document.getElementById("add-input-button").disabled = true;
     }
     // Set input type based on selected option
     var type;
@@ -238,6 +237,11 @@
     input.type = type;
     if (type == "number") {
       input.step = step;
+      input.min = min;
+      input.max = max;
+    }
+    if (selectedOption == "essn") {
+      input.setAttribute("maxlength", maxlength);
     }
     input.name = selectedOption;
     label.setAttribute("for", selectedOption);

@@ -154,14 +154,14 @@
         <button id="add-input-button" onclick="addInput()">Add Input</button>
         <form id="searchPurchaseForm" method="POST">
             {% csrf_token %}
-            <input type="submit" id="submit-search-purchase" name="search_purchase" value="submit" />
+            <input type="submit" id="submit-search-purchase" name="search_purchase" value="submit" disabled />
         </form>
     </div>
     <div id="add_purchase" style="display: none">
         <form id="addPurchaseForm" method="POST">
             {% csrf_token %}
             <label for="purchase-id">Purchase Id:</label><br>
-            <input type="number" step="1" min="1" id="purchase-id" name="purchase-id" readonly="readonly" required><br>
+            <input type="number" step="1" min="1" id="purchase-id" name="purchase-id" readonly="readonly"><br>
             <label for="purchase-date">Purchase Date:</label><br>
             <input type="date" id="purchase-date" name="purchase-date" required><br>
             <label for="type-of-payment">Type of Payment:</label><br>
@@ -169,11 +169,11 @@
             <label for="customer-email">Customer Email:</label><br>
             <input type="email" id="customer-email" name="customer-email"><br>
             <label for="gs-longitude">GS_Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude"
-                name="gs-longitude" required><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude"
+                required><br>
             <label for="gs-latitude">GS_Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude"
-                name="gs-latitude" required><br>
+            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude"
+                required><br>
             <label for="pump-id">Pump Id:</label><br>
             <input type="number" step="1" min="1" id="pump-id" name="pump-id"><br>
             <label for="tank-id">Tank Id:</label><br>
@@ -249,7 +249,6 @@
         search_purchase.style.display = "block";
         const add_purchase = document.getElementById("add_purchase");
         add_purchase.style.display = "none";
-        document.getElementById("submit-search-purchase").disabled = true;
     }
 
     function AddPurchase() {
@@ -259,7 +258,7 @@
         search_purchase.style.display = "none";
         const add_purchase = document.getElementById("add_purchase");
         add_purchase.style.display = "block";
-        const id_field = document.getElementById("id");
+        const id_field = document.getElementById("purchase-id");
         id_field.value = parseInt('{{number_of_purchases}}') + 1;
     }
 
@@ -291,7 +290,7 @@
                 break;
             case "type-of-payment":
                 type = "text";
-                maxlength="30"
+                maxlength = "30"
                 break;
             case "customer-email":
                 type = "email";
@@ -337,6 +336,13 @@
         input.type = type;
         if (type == "number") {
             input.step = step;
+            input.min = min;
+            if (selectedOption == "gs-longitude" || selectedOption == "gs-latitude") {
+                input.max = max;
+            }
+        }
+        if (selectedOption == "type-of-payment") {
+            input.setAttribute("maxlength", maxlength);
         }
         input.name = selectedOption;
         label.setAttribute("for", selectedOption);

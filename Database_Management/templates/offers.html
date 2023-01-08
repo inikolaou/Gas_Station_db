@@ -142,7 +142,7 @@
         <button id="add-input-button" onclick="addInput()">Add Input</button>
         <form id="searchOffersForm" method="POST">
             {% csrf_token %}
-            <input type="submit" id="submit-search-offers" name="search_offers" value="submit" />
+            <input type="submit" id="submit-search-offers" name="search_offers" value="submit" disabled />
         </form>
     </div>
     <div id="add_offers" style="display: none">
@@ -151,11 +151,11 @@
             <label for="prod-id">Id:</label><br>
             <input type="number" step="1" min="1" id="prod-id" name="prod-id" required><br>
             <label for="gs-longitude">GS_Longitude:</label><br>
-            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude"
-                name="gs-longitude" required><br>
+            <input type="number" min="0" max="99.999999" step="0.000001" id="gs-longitude" name="gs-longitude"
+                required><br>
             <label for="gs-latitude">GS_Latitude:</label><br>
-            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude"
-                name="gs-latitude" required><br>
+            <input type="number" min="0" max="999.999999" step="0.000001" id="gs-latitude" name="gs-latitude"
+                required><br>
             <label for="quantity">Quantity:</label><br>
             <input type="number" step=".001" min="0" max="15000" id="quantity" name="quantity" required><br>
             <input type="submit" id="submit-add-offers" name="add_offers" value="submit" />
@@ -205,7 +205,6 @@
         search_offers.style.display = "block";
         const add_offers = document.getElementById("add_offers");
         add_offers.style.display = "none";
-        document.getElementById("submit-search-offers").disabled = true;
     }
 
     function AddOffers() {
@@ -222,7 +221,7 @@
         // Get selected option value
         var dropdown = document.getElementById("dropdown");
         var selectedOption = dropdown.value;
-        
+
         if (typeof addInput.counter == 'undefined') {
             addInput.counter = 0;
         }
@@ -277,8 +276,9 @@
         input.type = type;
         if (type == "number") {
             input.step = step;
-            if (selectedOption == "prod-id" || selectedOption == "quantity") {
-                input.min = min;
+            input.min = min;
+            if (selectedOption != "prod-id") {
+                input.max = max;
             }
         }
         input.name = selectedOption;

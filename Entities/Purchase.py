@@ -12,8 +12,8 @@ def createPurchaseTable():
                         Purchase_Date       TEXT        NOT NULL,
                         Type_of_Payment     TEXT        NOT NULL,
                         Cus_Email           TEXT                ,
-                        GS_Longitude        REAL                ,
-                        GS_Latitude         REAL                ,
+                        GS_Longitude        REAL        NOT NULL,
+                        GS_Latitude         REAL        NOT NULL,
                         Pump_Id             INTEGER             ,
                         Tank_Id             INTEGER             ,
                         PRIMARY KEY (Id),
@@ -701,6 +701,18 @@ def allPurchaseIds():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     c.execute("select Id from PURCHASE")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allTypeOfPayments():
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT DISTINCT Type_of_Payment 
+                FROM PURCHASE
+            ''')
     data = c.fetchall()
     conn.close()
     return data

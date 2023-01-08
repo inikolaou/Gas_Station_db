@@ -21,8 +21,8 @@ def createPumpTable():
                         );''')
             insertFromCsv()
         except Exception as e:
-            #print(e)
-            pass # Table already created and data from csv has been passed to the database
+            # print(e)
+            pass  # Table already created and data from csv has been passed to the database
     conn.close()
 
 
@@ -278,6 +278,19 @@ def allPumpIds():
     conn = sqlite3.connect("Gas_Station.db")
     c = conn.cursor()
     c.execute("select Id from PUMP")
+    data = c.fetchall()
+    conn.close()
+    return data
+
+
+def allPumpIdsTankGsCoords(tank_id, t_gs_longitude, t_gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+            SELECT ID
+            FROM PUMP
+            WHERE Tank_Id = ? AND T_GS_Longitude = ? AND T_GS_Latitude = ?
+            ''', (tank_id, t_gs_longitude, t_gs_latitude))
     data = c.fetchall()
     conn.close()
     return data

@@ -236,3 +236,16 @@ def allTankIds():
     data = c.fetchall()
     conn.close()
     return data
+
+
+def allTankIdsGsCoords(gs_longitude, gs_latitude):
+    conn = sqlite3.connect("Gas_Station.db")
+    c = conn.cursor()
+    c.execute('''
+                SELECT Id
+                FROM TANK
+                WHERE GS_Longitude = ? AND GS_Latitude = ?
+            ''', (gs_longitude, gs_latitude))
+    data = c.fetchall()
+    conn.close()
+    return data

@@ -1591,20 +1591,10 @@ def purchase(request):
         purchase_date = request.POST.get('purchase-date', False)
         type_of_payment = request.POST.get('type-of-payment', False)
         customer_email = request.POST.get('customer-email', False)
-        if (customer_email == ''):
-            customer_email = None
         gs_longitude = request.POST.get('gs-longitude', False)
         gs_latitude = request.POST.get('gs-latitude', False)
         pump_id = request.POST.get('pump-id', False)
         tank_id = request.POST.get('tank-id', False)
-        if (pump_id == ''):
-            pump_id = None
-        else:
-            pump_id = int(pump_id)
-        if (tank_id == ''):
-            tank_id = None
-        else:
-            tank_id = int(tank_id)
 
         error_occured = False
 
@@ -1614,15 +1604,16 @@ def purchase(request):
                 id_fault = "Please write a positive integer for id"
                 error_occured = True
             else:
-                all_purchases = Purchase.allPurchaseIds()
                 id = int(id)
-                check_purchase = (id, )
                 if (id < 0):
                     id_fault = "Please write a positive integer for id"
                     error_occured = True
-                if (check_purchase in all_purchases and "add_purchase" in request.POST):
-                    id_fault = "Please write a valid id. Purchase id already exists"
-                    error_occured = True
+                else:
+                    all_purchases = Purchase.allPurchaseIds()
+                    check_purchase = (id, )
+                    if ((check_purchase in all_purchases) and ("add_purchase" in request.POST)):
+                        id_fault = "Please write a valid id. Purchase id already exists"
+                        error_occured = True
 
         if (purchase_date != False):
             purchase_date = purchase_date.strip()
@@ -1640,19 +1631,26 @@ def purchase(request):
 
         if (type_of_payment != False):
             type_of_payment = type_of_payment.strip()
-            all_type_of_payment = Purchase.allRoles()
-            if (type_of_payment not in all_type_of_payment and "search_purchase" not in request.POST):
+            if (not type_of_payment.replace(' ', '', 1).isalpha()):
                 type_of_payment_fault = "Please write a valid type of payment. The types are Cash, Debit Card and Credit Card"
                 error_occured = True
+            else:
+                all_type_of_payments = Purchase.allTypeOfPayments()
+                type_of_payment_check = (type_of_payment, )
+                if ((type_of_payment_check not in all_type_of_payments) and ("search_purchase" not in request.POST)):
+                    type_of_payment_fault = "Please write a valid type of payment. The types are Cash, Debit Card and Credit Card"
+                    error_occured = True
 
         if (customer_email != False):
             customer_email = customer_email.strip()
-            try:
-                validation = validate_email(customer_email)
-                customer_email = validation.customer_email
-            except EmailNotValidError as e:
-                customer_email_fault = str(e)
-                error_occured = True
+            if (customer_email == ''):
+                customer_email = None
+            else:
+                all_customer_emails = Customer.allCustomerEmails()
+                customer_email_check = (customer_email, )
+                if ((customer_email_check not in all_customer_emails) and ("search_purchase" not in request.POST)):
+                    customer_email_fault = "Please specify an existing customer email."
+                    error_occured = True
 
         if (gs_longitude != False):
             gs_longitude = gs_longitude.strip()
@@ -1684,25 +1682,52 @@ def purchase(request):
                 else:
                     numbers = str(gs_latitude).split('.')
                     decimal_part = numbers[1]
+                    gs_longitude_latitude_check = (
+                        gs_longitude, gs_latitude)
+                    all_gs_longitudes_latitudes = GasStation.allGSLongitudesLatitudes()
                     if (len(decimal_part) > 6):
                         gs_latitude_fault = "Please write a float number between 000.000000 and 999.999999 with 6 decimal places for GS Latitude"
                         error_occured = True
-
-        if (pump_id != False):
-            pump_id = pump_id.strip()
-            if (not pump_id.isdigit()):
-                pump_id_fault = "Please write a positive integer for Pump ID"
-                error_occured = True
-            else:
-                pump_id = int(pump_id)
+                    elif ((gs_longitude_latitude_check not in all_gs_longitudes_latitudes) and ("search_purchase" not in request.POST)):
+                        gs_longitude_fault = "Specify an existing gas station longitude"
+                        gs_latitude_fault = "Specify an existing gas station latitude"
+                        error_occured = True
 
         if (tank_id != False):
             tank_id = tank_id.strip()
-            if (not tank_id.isdigit()):
-                tank_id_fault = "Please write a positive integer for Tank ID"
-                error_occured = True
+            if (tank_id == ''):
+                tank_id = None
             else:
-                tank_id = int(tank_id)
+                if (not tank_id.isdigit()):
+                    tank_id_fault = "Please write a positive integer for Tank ID"
+                    error_occured = True
+                else:
+                    if (not error_occured):
+                        all_tank_ids_gs_coords = Tank.allTankIdsGsCoords(
+                            gs_longitude, gs_latitude)
+                        tank_id = int(tank_id)
+                        check_tank_id = (tank_id, )
+                        if ((check_tank_id in all_tank_ids_gs_coords) and ("add_purchase" in request.POST)):
+                            tank_id_fault = "Please write an existing tank id with the corresponding gas station coordinates"
+                            error_occured = True
+
+        if (pump_id != False):
+            pump_id = pump_id.strip()
+            if (pump_id == ''):
+                pump_id = None
+            else:
+                if (not pump_id.isdigit()):
+                    pump_id_fault = "Please write a positive integer for Pump ID"
+                    error_occured = True
+                else:
+                    if (not error_occured):
+                        all_pump_ids_tank_gs_coords = Pump.allPumpIdsTankGsCoords(
+                            tank_id, gs_longitude, gs_latitude)
+                        pump_id = int(pump_id)
+                        check_pump_id = (pump_id, )
+                        if ((check_pump_id in all_pump_ids_tank_gs_coords) and ("add_purchase" in request.POST)):
+                            pump_id_fault = "Please write an existing pump id with the corresponding tank id and gas station coordinates"
+                            error_occured = True
 
         if (not error_occured):
             if "add_purchase" in request.POST:
